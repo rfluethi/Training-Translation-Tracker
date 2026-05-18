@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/rfluethi/wp-translation-tracker-data/schemas/scope.schema.json",
+  "title": "Translation Tracker Scope",
+  "description": "Schema for scope.yml — defines which URLs are in scope for the Translation Tracker. Phase 1 uses a pure URL list (see Arbeitsplan §A.1.6).",
+  "type": "object",
+  "required": ["locale", "locale_short", "items"],
+  "additionalProperties": false,
+  "properties": {
+    "locale": {
+      "description": "Project V2 Locale value, e.g. 'German'.",
+      "type": "string",
+      "minLength": 1
+    },
+    "locale_short": {
+      "description": "Short ISO-639-1 code, lowercase, e.g. 'de'.",
+      "type": "string",
+      "pattern": "^[a-z]{2}$"
+    },
+    "items": {
+      "description": "Normalized URLs of items to include in the tracker. Form: lowercase host+path, https, trailing slash, no query, no fragment, no www.",
+      "type": "array",
+      "minItems": 0,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^https://(learn\\.wordpress\\.org|make\\.wordpress\\.org/training/handbook)/[a-z0-9\\-/]*/$"
+      }
+    }
+  }
+}

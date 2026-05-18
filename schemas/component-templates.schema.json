@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/rfluethi/wp-translation-tracker-data/schemas/component-templates.schema.json",
+  "title": "Translation Tracker Component Templates",
+  "description": "Schema for component-templates.yml — maps each item type to its default list of components. Used when an item has no issue yet (all default components are then marked 'open').",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "lesson":         { "$ref": "#/$defs/ComponentList" },
+    "lesson_plan":    { "$ref": "#/$defs/ComponentList" },
+    "tutorial":       { "$ref": "#/$defs/ComponentList" },
+    "handbook_text":  { "$ref": "#/$defs/ComponentList" },
+    "handbook_video": { "$ref": "#/$defs/ComponentList" }
+  },
+
+  "$defs": {
+    "ComponentList": {
+      "description": "Ordered list of component names. Recommended names: text, thumbnails, video, subtitles, quiz, exercise, audio.",
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9_]*$",
+        "minLength": 1
+      }
+    }
+  }
+}

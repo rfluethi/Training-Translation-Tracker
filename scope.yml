@@ -1,0 +1,28 @@
+# Scope der DACH-Übersetzung
+#
+# Eine Zeile pro URL — was im Tracker erscheinen soll.
+# Items, die in scope.yml stehen, erscheinen immer.
+# Items, die ein DACH-Issue haben aber NICHT in scope.yml stehen, landen in der Orphan-Gruppe.
+#
+# URL-Form muss kanonisch sein:
+#   - lowercase, https
+#   - mit Trailing-Slash
+#   - ohne Query-Parameter, ohne Fragment
+#   - ohne www.-Subdomäne
+#
+# Validierung gegen schemas/scope.schema.json
+# Erweiterung: einfach weitere URLs anhängen.
+
+locale: German
+locale_short: de
+
+items:
+  # Course: Beginner WordPress User
+  # (Initialer Scope für den Action-Prototyp — weitere Pathways folgen in Phase 3.)
+  - https://learn.wordpress.org/lesson/what-is-wordpress/
+  - https://learn.wordpress.org/lesson/wordpress-com-vs-wordpress-org/
+  - https://learn.wordpress.org/lesson/choosing-a-domain-and-host/
+  - https://learn.wordpress.org/lesson/installing-wordpress/
+  - https://learn.wordpress.org/lesson/the-wordpress-admin-dashboard/
+  - https://learn.wordpress.org/lesson/creating-your-first-page/
+  - https://learn.wordpress.org/lesson/creating-your-first-post/

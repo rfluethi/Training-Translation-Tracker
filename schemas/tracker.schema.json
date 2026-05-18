@@ -1,0 +1,224 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/rfluethi/wp-translation-tracker-data/schemas/tracker.schema.json",
+  "title": "Translation Tracker Output",
+  "description": "Schema for tracker.json — output of the Translation Tracker GitHub Action. Read by the WordPress plugin.",
+  "type": "object",
+  "required": ["schema_version", "generated_at", "stats", "groups"],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "description": "Major schema version. Plugin rejects unknown major versions.",
+      "type": "integer",
+      "const": 1
+    },
+    "generated_at": {
+      "description": "UTC timestamp of when this file was built by the Action.",
+      "type": "string",
+      "format": "date-time"
+    },
+    "scope_version": {
+      "description": "Free-form identifier of the scope.yml that produced this output (e.g. its commit date or hash).",
+      "type": "string"
+    },
+    "stats": { "$ref": "#/$defs/Stats" },
+    "groups": {
+      "description": "Top-level grouping of items.",
+      "type": "array",
+      "minItems": 0,
+      "items": { "$ref": "#/$defs/Group" }
+    }
+  },
+
+  "$defs": {
+
+    "Stats": {
+      "description": "Item-level aggregation. Component statuses are NOT aggregated into this.",
+      "type": "object",
+      "required": ["total_items", "done", "review", "wip", "open", "na"],
+      "additionalProperties": false,
+      "properties": {
+        "total_items": { "type": "integer", "minimum": 0 },
+        "done":        { "type": "integer", "minimum": 0 },
+        "review":      { "type": "integer", "minimum": 0 },
+        "wip":         { "type": "integer", "minimum": 0 },
+        "open":        { "type": "integer", "minimum": 0 },
+        "na":          { "type": "integer", "minimum": 0 }
+      }
+    },
+
+    "Status": {
+      "description": "Status value used for components and overall_status.",
+      "type": "string",
+      "enum": ["na", "done", "review", "wip", "open"]
+    },
+
+    "ItemType": {
+      "description": "Item type. Constrains which metadata fields are meaningful.",
+      "type": "string",
+      "enum": ["lesson", "lesson_plan", "tutorial", "handbook_text", "handbook_video"]
+    },
+
+    "OrphanReason": {
+      "type": "string",
+      "enum": ["outside_scope", "missing_in_inventory"]
+    },
+
+    "NormalizedUrl": {
+      "description": "URL in canonical form: lowercase host+path, https, with trailing slash, no query, no fragment, no www.",
+      "type": "string",
+      "format": "uri",
+      "pattern": "^https://[a-z0-9.\\-]+/[a-z0-9\\-/]*/$"
+    },
+
+    "Component": {
+      "type": "object",
+      "required": ["name", "status"],
+      "additionalProperties": false,
+      "properties": {
+        "name":     { "type": "string", "minLength": 1 },
+        "status":   { "$ref": "#/$defs/Status" },
+        "creator":  { "type": "string" },
+        "reviewer": { "type": "string" }
+      }
+    },
+
+    "Issue": {
+      "type": "object",
+      "required": ["number", "url"],
+      "additionalProperties": false,
+      "properties": {
+        "number":    { "type": "integer", "minimum": 1 },
+        "url":       { "type": "string", "format": "uri" },
+        "state":     { "type": "string", "enum": ["open", "closed"] },
+        "assignees": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+
+    "Item": {
+      "description": "A single translatable content unit. Some optional fields are only meaningful for certain item types — the plugin treats unknown/missing fields defensively.",
+      "type": "object",
+      "required": ["type", "slug", "title_en", "url_en"],
+      "additionalProperties": false,
+      "properties": {
+        "type":      { "$ref": "#/$defs/ItemType" },
+        "slug":      { "type": "string", "minLength": 1 },
+        "title_en":  { "type": "string" },
+        "title_de":  { "type": "string" },
+        "url_en":    { "$ref": "#/$defs/NormalizedUrl" },
+        "url_de":    { "$ref": "#/$defs/NormalizedUrl" },
+        "url_wptv":  { "type": "string", "format": "uri" },
+        "url_youtube": { "type": "string", "format": "uri" },
+
+        "draft_original": {
+          "description": "True when the English source is still in draft status.",
+          "type": "boolean"
+        },
+        "parse_error": {
+          "description": "True when the issue body contained an unparseable status table.",
+          "type": "boolean"
+        },
+        "orphan_reason": {
+          "description": "Set when the item is not matched cleanly between inventory and issues.",
+          "$ref": "#/$defs/OrphanReason"
+        },
+
+        "issue": { "$ref": "#/$defs/Issue" },
+        "duplicate_issues": {
+          "description": "When multiple issues exist for the same URL+language, all are listed here. The primary one is in `issue`.",
+          "type": "array",
+          "items": { "$ref": "#/$defs/Issue" }
+        },
+
+        "components": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/Component" }
+        },
+        "overall_status": { "$ref": "#/$defs/Status" }
+      }
+    },
+
+    "Section": {
+      "description": "A section inside a course (Sensei modules) or inside a handbook group.",
+      "type": "object",
+      "required": ["slug", "label", "items"],
+      "additionalProperties": false,
+      "properties": {
+        "slug":  { "type": "string", "minLength": 1 },
+        "label": { "type": "string" },
+        "items": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/Item" }
+        }
+      }
+    },
+
+    "Course": {
+      "type": "object",
+      "required": ["slug", "label", "sections"],
+      "additionalProperties": false,
+      "properties": {
+        "slug":  { "type": "string", "minLength": 1 },
+        "label": { "type": "string" },
+        "sections": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/Section" }
+        }
+      }
+    },
+
+    "PathwayGroup": {
+      "type": "object",
+      "required": ["type", "slug", "label", "courses"],
+      "additionalProperties": false,
+      "properties": {
+        "type":  { "const": "pathway" },
+        "slug":  { "type": "string", "minLength": 1 },
+        "label": { "type": "string" },
+        "courses": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/Course" }
+        }
+      }
+    },
+
+    "HandbookGroup": {
+      "type": "object",
+      "required": ["type", "label", "sections"],
+      "additionalProperties": false,
+      "properties": {
+        "type":  { "const": "handbook" },
+        "label": { "type": "string" },
+        "sections": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/Section" }
+        }
+      }
+    },
+
+    "OrphanGroup": {
+      "type": "object",
+      "required": ["type", "label", "items"],
+      "additionalProperties": false,
+      "properties": {
+        "type":  { "const": "orphan" },
+        "label": { "type": "string" },
+        "items": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/Item" }
+        }
+      }
+    },
+
+    "Group": {
+      "oneOf": [
+        { "$ref": "#/$defs/PathwayGroup" },
+        { "$ref": "#/$defs/HandbookGroup" },
+        { "$ref": "#/$defs/OrphanGroup" }
+      ]
+    }
+  }
+}

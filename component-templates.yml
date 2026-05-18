@@ -1,0 +1,35 @@
+# Default-Komponenten pro Item-Typ.
+#
+# Wenn ein Item KEIN GitHub-Issue hat, bekommen alle hier gelisteten
+# Komponenten den Status "open" und werden so im Tracker angezeigt.
+# Sobald ein Issue da ist, gewinnt dessen Status-Tabelle.
+#
+# Validierung gegen schemas/component-templates.schema.json
+
+lesson:
+  - text
+  - thumbnails
+  - video
+  - subtitles
+  - quiz
+  - exercise
+  - audio
+
+lesson_plan:
+  - text
+  - thumbnails
+
+tutorial:
+  - text
+  - thumbnails
+  - video
+  - subtitles
+
+handbook_text:
+  - text
+
+handbook_video:
+  - text
+  - thumbnails
+  - video
+  - subtitles
