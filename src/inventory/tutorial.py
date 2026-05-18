@@ -26,11 +26,11 @@ class TutorialInventorySource(InventorySource):
             raise InventoryError(f"Not a tutorial URL: {normalized_url!r}")
         slug = match.group(1)
 
+        # Anonymous requests can't query drafts — see lesson.py for the reasoning.
         items = self._get_json(
             LIST_URL,
             params={
                 "slug": slug,
-                "status": "publish,draft",
                 "_fields": "id,slug,title,status",
             },
         )

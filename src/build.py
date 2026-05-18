@@ -86,8 +86,12 @@ def main(argv: list[str] | None = None) -> int:
     )
 
     # ----------------------------------------------------------------- step 3
-    LOG.info("Resolving inventory items")
-    dispatcher = Dispatcher()
+    # Throttle between learn.wordpress.org requests — quick consecutive
+    # calls otherwise hit HTTP 429 (rate limit). 0.3s is empirically gentle
+    # enough; override via INVENTORY_THROTTLE_S env var if needed.
+    throttle_s = float(os.environ.get("INVENTORY_THROTTLE_S", "0.3"))
+    LOG.info("Resolving inventory items (throttle=%.2fs)", throttle_s)
+    dispatcher = Dispatcher(throttle_s=throttle_s)
     inventory_items = []
     inventory_warnings: list[str] = []
     for url in scope["items"]:

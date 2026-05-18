@@ -44,12 +44,15 @@ class LessonInventorySource(InventorySource):
     def fetch(self, normalized_url: str) -> InventoryItem:
         slug = self._extract_slug(normalized_url)
 
-        # Step 1: fetch the lesson itself for title and draft status.
+        # Step 1: fetch the lesson itself for title and (publish) status.
+        # NB: anonymous requests cannot query non-publish posts — the
+        # WP REST API returns HTTP 400 if `status=draft` is included.
+        # As a result, drafts are invisible to this Action; `draft_original`
+        # is always False until we add authentication (future phase).
         items = self._get_json(
             LESSON_LIST_URL,
             params={
                 "slug": slug,
-                "status": "publish,draft",
                 "_fields": "id,slug,title,status",
             },
         )

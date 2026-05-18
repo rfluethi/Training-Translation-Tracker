@@ -71,6 +71,13 @@
       "pattern": "^https://[a-z0-9.\\-]+/[a-z0-9\\-/]*/$"
     },
 
+    "AnyHttpsUrl": {
+      "description": "Any https URL. Used only on orphan items where a normalized content URL could not be extracted.",
+      "type": "string",
+      "format": "uri",
+      "pattern": "^https://"
+    },
+
     "Component": {
       "type": "object",
       "required": ["name", "status"],
@@ -129,6 +136,39 @@
         "issue": { "$ref": "#/$defs/Issue" },
         "duplicate_issues": {
           "description": "When multiple issues exist for the same URL+language, all are listed here. The primary one is in `issue`.",
+          "type": "array",
+          "items": { "$ref": "#/$defs/Issue" }
+        },
+
+        "components": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/Component" }
+        },
+        "overall_status": { "$ref": "#/$defs/Status" }
+      }
+    },
+
+    "OrphanItem": {
+      "description": "Like Item, but url_en may be any https URL (not necessarily a normalized content URL). Used for issues whose original-content URL could not be parsed — the GitHub issue URL is then used as a placeholder.",
+      "type": "object",
+      "required": ["type", "slug", "title_en"],
+      "additionalProperties": false,
+      "properties": {
+        "type":      { "$ref": "#/$defs/ItemType" },
+        "slug":      { "type": "string", "minLength": 1 },
+        "title_en":  { "type": "string" },
+        "title_de":  { "type": "string" },
+        "url_en":    { "$ref": "#/$defs/AnyHttpsUrl" },
+        "url_de":    { "$ref": "#/$defs/AnyHttpsUrl" },
+        "url_wptv":  { "type": "string", "format": "uri" },
+        "url_youtube": { "type": "string", "format": "uri" },
+
+        "draft_original": { "type": "boolean" },
+        "parse_error":    { "type": "boolean" },
+        "orphan_reason":  { "$ref": "#/$defs/OrphanReason" },
+
+        "issue":            { "$ref": "#/$defs/Issue" },
+        "duplicate_issues": {
           "type": "array",
           "items": { "$ref": "#/$defs/Issue" }
         },
@@ -208,7 +248,7 @@
         "label": { "type": "string" },
         "items": {
           "type": "array",
-          "items": { "$ref": "#/$defs/Item" }
+          "items": { "$ref": "#/$defs/OrphanItem" }
         }
       }
     },

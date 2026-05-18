@@ -53,7 +53,6 @@ def test_lesson_source_resolves_title_and_course():
         ],
         params={
             "slug": "what-is-wordpress",
-            "status": "publish,draft",
             "_fields": "id,slug,title,status",
         },
     )
@@ -97,30 +96,6 @@ def test_lesson_source_resolves_title_and_course():
     assert item.draft_original is False
 
 
-def test_lesson_source_draft_status_is_detected():
-    fake = FakeSession()
-    fake.register(
-        "https://learn.wordpress.org/wp-json/wp/v2/lessons",
-        [{"id": 42, "slug": "secret", "title": {"rendered": "Secret"}, "status": "draft"}],
-        params={
-            "slug": "secret",
-            "status": "publish,draft",
-            "_fields": "id,slug,title,status",
-        },
-    )
-    fake.register(
-        "https://learn.wordpress.org/wp-json/wp/v2/courses",
-        [],
-        params={"_fields": "id,slug", "per_page": 100, "page": 1},
-    )
-
-    source = LessonInventorySource(session=fake)
-    item = source.fetch("https://learn.wordpress.org/lesson/secret/")
-
-    assert item.draft_original is True
-    assert item.parent_path == []
-
-
 def test_lesson_source_missing_slug_raises():
     fake = FakeSession()
     fake.register(
@@ -128,7 +103,6 @@ def test_lesson_source_missing_slug_raises():
         [],
         params={
             "slug": "nope",
-            "status": "publish,draft",
             "_fields": "id,slug,title,status",
         },
     )
@@ -149,7 +123,6 @@ def test_lesson_plan_source():
         [{"id": 5, "slug": "intro-to-blocks", "title": {"rendered": "Intro to Blocks"}, "status": "publish"}],
         params={
             "slug": "intro-to-blocks",
-            "status": "publish,draft",
             "_fields": "id,slug,title,status",
         },
     )
@@ -173,7 +146,6 @@ def test_tutorial_source():
         [{"id": 9, "slug": "css-flexbox", "title": {"rendered": "CSS Flexbox"}, "status": "publish"}],
         params={
             "slug": "css-flexbox",
-            "status": "publish,draft",
             "_fields": "id,slug,title,status",
         },
     )
@@ -251,7 +223,6 @@ def test_dispatcher_routes_to_lesson_module():
         [{"id": 7, "slug": "x", "title": {"rendered": "X"}, "status": "publish"}],
         params={
             "slug": "x",
-            "status": "publish,draft",
             "_fields": "id,slug,title,status",
         },
     )

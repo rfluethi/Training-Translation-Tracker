@@ -6,6 +6,7 @@ Used by the builder to resolve each scope.yml entry to an InventoryItem.
 from __future__ import annotations
 
 import re
+import time
 
 import requests
 
@@ -37,13 +38,28 @@ def classify(normalized_url: str) -> str:
 
 
 class Dispatcher:
-    """Routes URLs to the correct source. Sources are reused across calls."""
+    """Routes URLs to the correct source. Sources are reused across calls.
 
-    def __init__(self, session: requests.Session | None = None) -> None:
+    `throttle_s`, if > 0, applies a `time.sleep(throttle_s)` between
+    fetch() calls. Used by build.py to back off learn.wordpress.org's
+    rate limiter. Default 0 keeps tests fast.
+    """
+
+    def __init__(
+        self,
+        session: requests.Session | None = None,
+        throttle_s: float = 0.0,
+    ) -> None:
         self.session = session or requests.Session()
+        self.throttle_s = max(0.0, float(throttle_s))
         self._sources: dict[str, InventorySource] = {}
+        self._first_call = True
 
     def fetch(self, url: str) -> InventoryItem:
+        if self.throttle_s > 0 and not self._first_call:
+            time.sleep(self.throttle_s)
+        self._first_call = False
+
         normalized = normalize(url)
         kind = classify(normalized)
         source = self._sources.get(kind)
