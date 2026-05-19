@@ -38,51 +38,17 @@ def test_dispatcher_rejects_unknown_url():
 # Lesson source — happy path with course-structure lookup
 # ---------------------------------------------------------------------------
 
-def test_lesson_source_resolves_title_and_course():
+def test_lesson_source_resolves_title():
+    """LessonInventorySource hits exactly one endpoint and returns a flat item.
+
+    By design (May 2026), hierarchy resolution via /courses + course-structure
+    was removed — see lesson.py docstring. parent_path is always empty.
+    """
     fake = FakeSession()
-    # 1) Lesson lookup
     fake.register(
         "https://learn.wordpress.org/wp-json/wp/v2/lessons",
-        [
-            {
-                "id": 101,
-                "slug": "what-is-wordpress",
-                "title": {"rendered": "What is WordPress"},
-                "status": "publish",
-            }
-        ],
-        params={
-            "slug": "what-is-wordpress",
-            "_fields": "id,slug,title,status",
-        },
-    )
-    # 2) All courses
-    fake.register(
-        "https://learn.wordpress.org/wp-json/wp/v2/courses",
-        [{"id": 1, "slug": "beginner-wordpress-user"}],
-        params={"_fields": "id,slug", "per_page": 100, "page": 1},
-    )
-    # 3) Course structure for course id 1
-    fake.register(
-        "https://learn.wordpress.org/wp-json/sensei-internal/v1/course-structure/1",
-        {
-            "lessons": [],
-            "modules": [
-                {
-                    "id": 10,
-                    "title": "Getting Started",
-                    "slug": "getting-started",
-                    "lessons": [
-                        {
-                            "id": 101,
-                            "slug": "what-is-wordpress",
-                            "title": "What is WordPress",
-                            "type": "lesson",
-                        }
-                    ],
-                }
-            ],
-        },
+        [{"id": 101, "slug": "what-is-wordpress", "title": {"rendered": "What is WordPress"}, "status": "publish"}],
+        params={"slug": "what-is-wordpress", "_fields": "id,slug,title,status"},
     )
 
     source = LessonInventorySource(session=fake)
@@ -92,8 +58,10 @@ def test_lesson_source_resolves_title_and_course():
     assert item.slug == "what-is-wordpress"
     assert item.title_en == "What is WordPress"
     assert item.url_en == "https://learn.wordpress.org/lesson/what-is-wordpress/"
-    assert item.parent_path == ["beginner-wordpress-user", "getting-started"]
+    assert item.parent_path == []
     assert item.draft_original is False
+    # Exactly one GET — no /courses, no /course-structure spam.
+    assert len(fake.calls) == 1
 
 
 def test_lesson_source_missing_slug_raises():
@@ -101,56 +69,12 @@ def test_lesson_source_missing_slug_raises():
     fake.register(
         "https://learn.wordpress.org/wp-json/wp/v2/lessons",
         [],
-        params={
-            "slug": "nope",
-            "_fields": "id,slug,title,status",
-        },
+        params={"slug": "nope", "_fields": "id,slug,title,status"},
     )
 
     source = LessonInventorySource(session=fake)
     with pytest.raises(InventoryError):
         source.fetch("https://learn.wordpress.org/lesson/nope/")
-
-
-def test_lesson_source_survives_index_build_failure(monkeypatch):
-    """If the course list can't be fetched (e.g. 429 exhaustion), the lesson
-    is still returned — just with an empty parent_path."""
-    from src.inventory import base as base_mod
-    monkeypatch.setattr(base_mod.time, "sleep", lambda _s: None)
-
-    fake = FakeSession()
-    # Lesson itself succeeds.
-    fake.register(
-        "https://learn.wordpress.org/wp-json/wp/v2/lessons",
-        [{"id": 7, "slug": "x", "title": {"rendered": "X"}, "status": "publish"}],
-        params={"slug": "x", "_fields": "id,slug,title,status"},
-    )
-    # Course list returns 429 persistently → index build fails.
-    fake.register(
-        "https://learn.wordpress.org/wp-json/wp/v2/courses",
-        None,
-        params={"_fields": "id,slug", "per_page": 100, "page": 1},
-        status=429,
-    )
-
-    source = LessonInventorySource(session=fake)
-    item = source.fetch("https://learn.wordpress.org/lesson/x/")
-    # Lesson came back even though hierarchy is unknown.
-    assert item.slug == "x"
-    assert item.parent_path == []
-
-    # Second lesson with the same source should NOT re-trigger the index build.
-    fake.register(
-        "https://learn.wordpress.org/wp-json/wp/v2/lessons",
-        [{"id": 8, "slug": "y", "title": {"rendered": "Y"}, "status": "publish"}],
-        params={"slug": "y", "_fields": "id,slug,title,status"},
-    )
-    calls_before = len(fake.calls)
-    item2 = source.fetch("https://learn.wordpress.org/lesson/y/")
-    calls_after = len(fake.calls)
-    # Exactly one new call: the lesson lookup. No /courses retry.
-    assert calls_after - calls_before == 1
-    assert item2.slug == "y"
 
 
 # ---------------------------------------------------------------------------
@@ -262,15 +186,7 @@ def test_dispatcher_routes_to_lesson_module():
     fake.register(
         "https://learn.wordpress.org/wp-json/wp/v2/lessons",
         [{"id": 7, "slug": "x", "title": {"rendered": "X"}, "status": "publish"}],
-        params={
-            "slug": "x",
-            "_fields": "id,slug,title,status",
-        },
-    )
-    fake.register(
-        "https://learn.wordpress.org/wp-json/wp/v2/courses",
-        [],
-        params={"_fields": "id,slug", "per_page": 100, "page": 1},
+        params={"slug": "x", "_fields": "id,slug,title,status"},
     )
 
     dispatcher = Dispatcher(session=fake)

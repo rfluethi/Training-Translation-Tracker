@@ -1,5 +1,78 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-05-19T00:00:00Z",
-  "items": {}
+  "generated_at": "2026-05-19T08:53:18Z",
+  "items": {
+    "https://learn.wordpress.org/lesson-plan/setting-a-static-page-as-your-homepage/": {
+      "type": "lesson_plan",
+      "slug": "setting-a-static-page-as-your-homepage",
+      "title_en": "Setting A Static Page As Your Homepage",
+      "url_en": "https://learn.wordpress.org/lesson-plan/setting-a-static-page-as-your-homepage/"
+    },
+    "https://learn.wordpress.org/lesson-plan/how-to-find-theme-specific-documentation/": {
+      "type": "lesson_plan",
+      "slug": "how-to-find-theme-specific-documentation",
+      "title_en": "How To Find Theme Specific Documentation",
+      "url_en": "https://learn.wordpress.org/lesson-plan/how-to-find-theme-specific-documentation/"
+    },
+    "https://learn.wordpress.org/lesson/introduction-to-wordpress-2/": {
+      "type": "lesson",
+      "slug": "introduction-to-wordpress-2",
+      "title_en": "Introduction to WordPress",
+      "url_en": "https://learn.wordpress.org/lesson/introduction-to-wordpress-2/"
+    },
+    "https://learn.wordpress.org/lesson/wordpress-essentials-domains-and-hosting/": {
+      "type": "lesson",
+      "slug": "wordpress-essentials-domains-and-hosting",
+      "title_en": "WordPress essentials: Domains and hosting",
+      "url_en": "https://learn.wordpress.org/lesson/wordpress-essentials-domains-and-hosting/"
+    },
+    "https://learn.wordpress.org/lesson/getting-started-with-the-wordpress-dashboard/": {
+      "type": "lesson",
+      "slug": "getting-started-with-the-wordpress-dashboard",
+      "title_en": "Getting started with the WordPress dashboard",
+      "url_en": "https://learn.wordpress.org/lesson/getting-started-with-the-wordpress-dashboard/"
+    },
+    "https://learn.wordpress.org/lesson/basic-wordpress-settings/": {
+      "type": "lesson",
+      "slug": "basic-wordpress-settings",
+      "title_en": "Basic WordPress settings",
+      "url_en": "https://learn.wordpress.org/lesson/basic-wordpress-settings/"
+    },
+    "https://learn.wordpress.org/lesson/choosing-and-installing-a-theme/": {
+      "type": "lesson",
+      "slug": "choosing-and-installing-a-theme",
+      "title_en": "Choosing and installing a theme",
+      "url_en": "https://learn.wordpress.org/lesson/choosing-and-installing-a-theme/"
+    },
+    "https://learn.wordpress.org/lesson/choosing-and-installing-a-plugin/": {
+      "type": "lesson",
+      "slug": "choosing-and-installing-a-plugin",
+      "title_en": "Choosing and installing a plugin",
+      "url_en": "https://learn.wordpress.org/lesson/choosing-and-installing-a-plugin/"
+    },
+    "https://learn.wordpress.org/lesson/using-the-media-library-2/": {
+      "type": "lesson",
+      "slug": "using-the-media-library-2",
+      "title_en": "Using the Media Library",
+      "url_en": "https://learn.wordpress.org/lesson/using-the-media-library-2/"
+    },
+    "https://learn.wordpress.org/lesson/creating-posts-and-pages-with-the-wordpress-block-editor/": {
+      "type": "lesson",
+      "slug": "creating-posts-and-pages-with-the-wordpress-block-editor",
+      "title_en": "Creating posts and pages with the WordPress Block Editor",
+      "url_en": "https://learn.wordpress.org/lesson/creating-posts-and-pages-with-the-wordpress-block-editor/"
+    },
+    "https://learn.wordpress.org/lesson/what-is-the-difference-between-the-block-editor-and-site-editor/": {
+      "type": "lesson",
+      "slug": "what-is-the-difference-between-the-block-editor-and-site-editor",
+      "title_en": "What is the difference between the Block Editor and Site Editor?",
+      "url_en": "https://learn.wordpress.org/lesson/what-is-the-difference-between-the-block-editor-and-site-editor/"
+    },
+    "https://learn.wordpress.org/lesson/intro-to-the-site-editor/": {
+      "type": "lesson",
+      "slug": "intro-to-the-site-editor",
+      "title_en": "Intro to the Site Editor",
+      "url_en": "https://learn.wordpress.org/lesson/intro-to-the-site-editor/"
+    }
+  }
 }
