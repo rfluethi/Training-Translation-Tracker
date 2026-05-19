@@ -72,6 +72,11 @@ jobs:
             cat _output/last-run.md
             echo "-----------------------"
           fi
+          if [ -f _output/data-hygiene.md ]; then
+            echo "----- data-hygiene.md -----"
+            cat _output/data-hygiene.md
+            echo "---------------------------"
+          fi
 
       # ---------------------------------------------------------------
       # Output committen — force-push auf data-Branch (Arbeitsplan §A.4.6)
@@ -92,10 +97,11 @@ jobs:
           git rm -rf . >/dev/null 2>&1 || true
           cp ../_output/tracker.json .
           cp ../_output/last-run.md .
+          cp ../_output/data-hygiene.md .
 
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add tracker.json last-run.md
+          git add tracker.json last-run.md data-hygiene.md
           git commit -m "Update tracker.json ($(date -u +%Y-%m-%dT%H:%M:%SZ))"
 
           # Force-push: data-Branch trägt nur den letzten Stand

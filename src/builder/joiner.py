@@ -19,6 +19,7 @@ from typing import Any
 
 from ..github.issues import ParsedIssue
 from ..inventory.base import InventoryItem
+from .hygiene import HygieneReport, collect_hygiene
 
 LOG = logging.getLogger(__name__)
 
@@ -29,6 +30,7 @@ LOG = logging.getLogger(__name__)
 class JoinerResult:
     groups: list[dict[str, Any]] = field(default_factory=list)
     warnings: list[str] = field(default_factory=list)
+    hygiene: HygieneReport = field(default_factory=HygieneReport)
 
 
 def build_groups(
@@ -125,7 +127,15 @@ def build_groups(
             "items": orphan_items,
         })
 
-    return JoinerResult(groups=groups, warnings=warnings)
+    # 7) Hygiene-Bericht — sammelt pflegerelevante Beobachtungen
+    hygiene = collect_hygiene(
+        parsed_issues=issues,
+        inventory=inventory,
+        matched_inventory_urls=matched_inventory_urls,
+        issue_index=dict(issue_index),
+    )
+
+    return JoinerResult(groups=groups, warnings=warnings, hygiene=hygiene)
 
 
 # ---------------------------------------------------------------------------

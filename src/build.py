@@ -40,7 +40,7 @@ from pathlib import Path
 import yaml
 from jsonschema import Draft202012Validator
 
-from .builder import build_groups, calculate_stats, write_outputs
+from .builder import build_groups, calculate_stats, render_hygiene_markdown, write_outputs
 from .github.issues import IssueFetcher
 from .inventory.cache import CACHE_FILENAME, load_cache, save_cache
 from .inventory.dispatcher import Dispatcher
@@ -225,16 +225,31 @@ def _build_tracker(repo_root: Path, output_dir: Path | None, skip_issues: bool) 
 
     # ----------------------------------------------------------------- step 7
     scope_version = _scope_version(repo_root)
+    generated_at = datetime.now(timezone.utc)
     tracker_path, report_path = write_outputs(
         output_dir,
         schema_version=1,
-        generated_at=datetime.now(timezone.utc),
+        generated_at=generated_at,
         scope_version=scope_version,
         stats=stats,
         groups=result.groups,
         warnings=warnings,
     )
     LOG.info("Wrote %s and %s", tracker_path.name, report_path.name)
+
+    # ----------------------------------------------------------------- step 7b
+    # Pflege-Bericht (Datenhygiene). Wird zusätzlich auf den data-Branch
+    # committet — siehe .github/workflows/build.yml.
+    hygiene_md = render_hygiene_markdown(result.hygiene, generated_at=generated_at)
+    hygiene_path = output_dir / "data-hygiene.md"
+    hygiene_path.write_text(hygiene_md, encoding="utf-8")
+    LOG.info(
+        "Wrote %s (%d markers/parse-errors, %d duplicates, %d items without issue)",
+        hygiene_path.name,
+        len(result.hygiene.issues_without_markers) + len(result.hygiene.issues_with_parse_errors),
+        len(result.hygiene.duplicate_url_clusters),
+        len(result.hygiene.inventory_items_without_issue),
+    )
 
     # ----------------------------------------------------------------- self-check
     _validate_tracker_against_schema(tracker_path, repo_root / "schemas" / "tracker.schema.json")
