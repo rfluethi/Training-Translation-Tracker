@@ -112,6 +112,47 @@ def test_lesson_source_missing_slug_raises():
         source.fetch("https://learn.wordpress.org/lesson/nope/")
 
 
+def test_lesson_source_survives_index_build_failure(monkeypatch):
+    """If the course list can't be fetched (e.g. 429 exhaustion), the lesson
+    is still returned — just with an empty parent_path."""
+    from src.inventory import base as base_mod
+    monkeypatch.setattr(base_mod.time, "sleep", lambda _s: None)
+
+    fake = FakeSession()
+    # Lesson itself succeeds.
+    fake.register(
+        "https://learn.wordpress.org/wp-json/wp/v2/lessons",
+        [{"id": 7, "slug": "x", "title": {"rendered": "X"}, "status": "publish"}],
+        params={"slug": "x", "_fields": "id,slug,title,status"},
+    )
+    # Course list returns 429 persistently → index build fails.
+    fake.register(
+        "https://learn.wordpress.org/wp-json/wp/v2/courses",
+        None,
+        params={"_fields": "id,slug", "per_page": 100, "page": 1},
+        status=429,
+    )
+
+    source = LessonInventorySource(session=fake)
+    item = source.fetch("https://learn.wordpress.org/lesson/x/")
+    # Lesson came back even though hierarchy is unknown.
+    assert item.slug == "x"
+    assert item.parent_path == []
+
+    # Second lesson with the same source should NOT re-trigger the index build.
+    fake.register(
+        "https://learn.wordpress.org/wp-json/wp/v2/lessons",
+        [{"id": 8, "slug": "y", "title": {"rendered": "Y"}, "status": "publish"}],
+        params={"slug": "y", "_fields": "id,slug,title,status"},
+    )
+    calls_before = len(fake.calls)
+    item2 = source.fetch("https://learn.wordpress.org/lesson/y/")
+    calls_after = len(fake.calls)
+    # Exactly one new call: the lesson lookup. No /courses retry.
+    assert calls_after - calls_before == 1
+    assert item2.slug == "y"
+
+
 # ---------------------------------------------------------------------------
 # Lesson plan source
 # ---------------------------------------------------------------------------

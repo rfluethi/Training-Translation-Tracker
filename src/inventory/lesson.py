@@ -85,11 +85,26 @@ class LessonInventorySource(InventorySource):
         return match.group(1)
 
     def _get_lesson_index(self) -> dict[str, tuple[str, str | None]]:
-        """Build slug → (course_slug, section_slug) map. Cached per instance."""
+        """Build slug → (course_slug, section_slug) map. Cached per instance.
+
+        On any inventory error during index construction, returns an empty
+        index and caches that empty result. This keeps the lesson itself
+        usable (with empty parent_path) and prevents N more retry storms
+        for each subsequent lesson lookup.
+        """
         if self._lesson_index is not None:
             return self._lesson_index
 
-        courses = self._fetch_all_courses()
+        try:
+            courses = self._fetch_all_courses()
+        except InventoryError as exc:
+            LOG.warning(
+                "Could not build lesson index (course list unreachable): %s. "
+                "Lessons will be returned without parent_path.", exc,
+            )
+            self._lesson_index = {}
+            return self._lesson_index
+
         index: dict[str, tuple[str, str | None]] = {}
 
         for course in courses:
