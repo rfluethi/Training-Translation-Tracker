@@ -17,6 +17,7 @@ on:
     paths:
       - "scope.yml"
       - "component-templates.yml"
+      - "inventory-cache.json"
       - "src/**"
       - "schemas/**"
       - ".github/workflows/build.yml"
