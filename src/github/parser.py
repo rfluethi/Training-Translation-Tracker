@@ -52,6 +52,15 @@ class IssueBody:
 
     url_original: str = ""
     url_translated: str = ""
+    # Recording URLs: getrennt für englische Originale und deutsche Übersetzungen.
+    # `url_wptv` / `url_youtube` sind Backwards-Compat-Aliasse:
+    # alte Bodies mit nur "Link to WordPress.tv recording" landen in `url_wptv_de`,
+    # weil das die übliche Bedeutung in den bestehenden DACH-Issues ist.
+    url_wptv_en: str = ""
+    url_wptv_de: str = ""
+    url_youtube_en: str = ""
+    url_youtube_de: str = ""
+    # Deprecated Aliasse — bleibt aus Konsistenz im Output (mapping auf _de).
     url_wptv: str = ""
     url_youtube: str = ""
     components: list[ComponentStatus] | None = None
@@ -65,11 +74,33 @@ class IssueBody:
 def parse_issue_body(body: str) -> IssueBody:
     """Parse a full issue body into structured data."""
     body = body or ""
+
+    # WP.tv: erst nach den expliziten "original" / "translated"-Labels suchen.
+    # Falls die fehlen, alter Stil "Link to WordPress.tv recording" → DE-Slot.
+    # Falls auch das fehlt, Auto-Detect (irgendein wordpress.tv-Link) → DE-Slot.
+    wptv_en = _extract_url(body, _WPTV_EN_PATTERNS)
+    wptv_de = (
+        _extract_url(body, _WPTV_DE_PATTERNS)
+        or _extract_url(body, _WPTV_GENERIC_PATTERNS)
+        or _auto_wptv(body)
+    )
+    youtube_en = _extract_url(body, _YOUTUBE_EN_PATTERNS)
+    youtube_de = (
+        _extract_url(body, _YOUTUBE_DE_PATTERNS)
+        or _extract_url(body, _YOUTUBE_GENERIC_PATTERNS)
+        or _auto_youtube(body)
+    )
+
     return IssueBody(
         url_original=_extract_url(body, _ORIGINAL_PATTERNS),
         url_translated=_extract_url(body, _TRANSLATED_PATTERNS),
-        url_wptv=_extract_url(body, _WPTV_PATTERNS) or _auto_wptv(body),
-        url_youtube=_extract_url(body, _YOUTUBE_PATTERNS) or _auto_youtube(body),
+        url_wptv_en=wptv_en,
+        url_wptv_de=wptv_de,
+        url_youtube_en=youtube_en,
+        url_youtube_de=youtube_de,
+        # Alias: bisherige Konsumenten lesen `url_wptv` und `url_youtube`.
+        url_wptv=wptv_de,
+        url_youtube=youtube_de,
         components=_parse_table_or_none(body),
         parse_error=_has_table_markers(body) and not _parse_table_or_none(body),
     )
@@ -108,7 +139,29 @@ _TRANSLATED_PATTERNS = [
     ),
 ]
 
-_WPTV_PATTERNS = [
+# WP.tv: explizite "original" / "translated"-Labels
+_WPTV_EN_PATTERNS = [
+    (
+        re.compile(
+            r"(?:link to original wordpress\.tv recording|original wordpress\.tv|english wordpress\.tv)[^\n:]*:.*?(https?://[^\s\n<>)\]]+)",
+            re.IGNORECASE,
+        ),
+        1,
+    ),
+]
+
+_WPTV_DE_PATTERNS = [
+    (
+        re.compile(
+            r"(?:link to translated wordpress\.tv recording|translated wordpress\.tv|german wordpress\.tv|deutsche wordpress\.tv)[^\n:]*:.*?(https?://[^\s\n<>)\]]+)",
+            re.IGNORECASE,
+        ),
+        1,
+    ),
+]
+
+# Backwards-Compat: alte Form ohne "original/translated" → mappt auf DE
+_WPTV_GENERIC_PATTERNS = [
     (
         re.compile(
             r"(?:link to wordpress\.tv recording|link to wptv|link to tv)[^\n:]*:.*?(https?://[^\s\n<>)\]]+)",
@@ -118,7 +171,27 @@ _WPTV_PATTERNS = [
     ),
 ]
 
-_YOUTUBE_PATTERNS = [
+_YOUTUBE_EN_PATTERNS = [
+    (
+        re.compile(
+            r"(?:link to original youtube recording|original youtube|english youtube)[^\n:]*:.*?(https?://[^\s\n<>)\]]+)",
+            re.IGNORECASE,
+        ),
+        1,
+    ),
+]
+
+_YOUTUBE_DE_PATTERNS = [
+    (
+        re.compile(
+            r"(?:link to translated youtube recording|translated youtube|german youtube|deutsche youtube)[^\n:]*:.*?(https?://[^\s\n<>)\]]+)",
+            re.IGNORECASE,
+        ),
+        1,
+    ),
+]
+
+_YOUTUBE_GENERIC_PATTERNS = [
     (
         re.compile(
             r"(?:link to youtube recording|link to youtube|youtube url)[^\n:]*:.*?(https?://[^\s\n<>)\]]+)",

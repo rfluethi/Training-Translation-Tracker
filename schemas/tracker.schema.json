@@ -117,8 +117,18 @@
         "title_de":  { "type": "string" },
         "url_en":    { "$ref": "#/$defs/NormalizedUrl" },
         "url_de":    { "$ref": "#/$defs/NormalizedUrl" },
-        "url_wptv":  { "type": "string", "format": "uri" },
-        "url_youtube": { "type": "string", "format": "uri" },
+        "url_wptv":  {
+          "description": "Deprecated: alias for url_wptv_de. Kept for backwards compatibility.",
+          "type": "string", "format": "uri"
+        },
+        "url_wptv_en":    { "type": "string", "format": "uri" },
+        "url_wptv_de":    { "type": "string", "format": "uri" },
+        "url_youtube": {
+          "description": "Deprecated: alias for url_youtube_de. Kept for backwards compatibility.",
+          "type": "string", "format": "uri"
+        },
+        "url_youtube_en": { "type": "string", "format": "uri" },
+        "url_youtube_de": { "type": "string", "format": "uri" },
 
         "draft_original": {
           "description": "True when the English source is still in draft status.",
@@ -160,8 +170,12 @@
         "title_de":  { "type": "string" },
         "url_en":    { "$ref": "#/$defs/AnyHttpsUrl" },
         "url_de":    { "$ref": "#/$defs/AnyHttpsUrl" },
-        "url_wptv":  { "type": "string", "format": "uri" },
-        "url_youtube": { "type": "string", "format": "uri" },
+        "url_wptv":       { "type": "string", "format": "uri" },
+        "url_wptv_en":    { "type": "string", "format": "uri" },
+        "url_wptv_de":    { "type": "string", "format": "uri" },
+        "url_youtube":    { "type": "string", "format": "uri" },
+        "url_youtube_en": { "type": "string", "format": "uri" },
+        "url_youtube_de": { "type": "string", "format": "uri" },
 
         "draft_original": { "type": "boolean" },
         "parse_error":    { "type": "boolean" },

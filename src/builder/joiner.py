@@ -303,8 +303,17 @@ def _item_to_dict(
 
     if primary.parsed.url_translated:
         item["url_de"] = primary.parsed.url_translated
+    # Video-URLs: getrennt nach EN/DE; Alias-Felder fürs alte Konsumenten-API.
+    if primary.parsed.url_wptv_en:
+        item["url_wptv_en"] = primary.parsed.url_wptv_en
+    if primary.parsed.url_wptv_de:
+        item["url_wptv_de"] = primary.parsed.url_wptv_de
     if primary.parsed.url_wptv:
         item["url_wptv"] = primary.parsed.url_wptv
+    if primary.parsed.url_youtube_en:
+        item["url_youtube_en"] = primary.parsed.url_youtube_en
+    if primary.parsed.url_youtube_de:
+        item["url_youtube_de"] = primary.parsed.url_youtube_de
     if primary.parsed.url_youtube:
         item["url_youtube"] = primary.parsed.url_youtube
     if primary.parsed.parse_error:
