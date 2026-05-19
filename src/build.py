@@ -108,6 +108,8 @@ def _refresh_cache(repo_root: Path) -> int:
         repo_root / "scope.yml",
         repo_root / "schemas" / "scope.schema.json",
     )
+    scope_urls = _extract_scope_urls(scope)
+    LOG.info("Refreshing %d URLs from scope.yml", len(scope_urls))
 
     # Higher throttle for local refresh — we have all the time in the world,
     # and we want to be polite to wordpress.org.
@@ -117,7 +119,7 @@ def _refresh_cache(repo_root: Path) -> int:
 
     out: dict = {}
     failed: list[tuple[str, str]] = []
-    for url in scope["items"]:
+    for url in scope_urls:
         try:
             item = dispatcher.fetch(url)
         except Exception as exc:  # noqa: BLE001 — log and continue
@@ -155,7 +157,11 @@ def _build_tracker(repo_root: Path, output_dir: Path | None, skip_issues: bool) 
         repo_root / "scope.yml",
         repo_root / "schemas" / "scope.schema.json",
     )
-    LOG.info("scope.yml: %d URLs, locale=%s", len(scope["items"]), scope["locale"])
+    scope_urls = _extract_scope_urls(scope)
+    LOG.info(
+        "scope.yml: locale=%s, %d pathway(s), %d URL(s)",
+        scope["locale"], len(scope.get("pathways") or []), len(scope_urls),
+    )
 
     # ----------------------------------------------------------------- step 2
     LOG.info("Loading component-templates.yml")
@@ -171,7 +177,7 @@ def _build_tracker(repo_root: Path, output_dir: Path | None, skip_issues: bool) 
     cached_items = load_cache(cache_path)
     inventory_items = []
     inventory_warnings: list[str] = []
-    for url in scope["items"]:
+    for url in scope_urls:
         if url in cached_items:
             inventory_items.append(cached_items[url])
             continue
@@ -179,7 +185,7 @@ def _build_tracker(repo_root: Path, output_dir: Path | None, skip_issues: bool) 
         LOG.warning("%s — run `python -m src.build --refresh-cache` locally", msg)
         inventory_warnings.append(msg)
     LOG.info("Loaded %d inventory items from cache (of %d scope URLs)",
-             len(inventory_items), len(scope["items"]))
+             len(inventory_items), len(scope_urls))
 
     # ----------------------------------------------------------------- step 4
     issues = []
@@ -200,7 +206,9 @@ def _build_tracker(repo_root: Path, output_dir: Path | None, skip_issues: bool) 
 
     # ----------------------------------------------------------------- step 5
     LOG.info("Joining inventory and issues")
-    result = build_groups(inventory_items, issues, component_templates)
+    # The full scope.yml dict carries the pathways hierarchy — that's what the
+    # joiner uses to place each inventory item.
+    result = build_groups(inventory_items, issues, component_templates, scope)
     warnings = inventory_warnings + result.warnings
 
     # ----------------------------------------------------------------- step 6
@@ -244,6 +252,20 @@ def _load_and_validate_yaml(yaml_path: Path, schema_path: Path):
     schema = json.loads(schema_path.read_text(encoding="utf-8"))
     Draft202012Validator(schema).validate(data)
     return data
+
+
+def _extract_scope_urls(scope: dict) -> list[str]:
+    """Walk scope.yml's pathways tree and return all leaf-item URLs in order."""
+    out: list[str] = []
+    seen: set[str] = set()
+    for pathway in scope.get("pathways") or []:
+        for course in pathway.get("courses") or []:
+            for section in course.get("sections") or []:
+                for url in section.get("items") or []:
+                    if url not in seen:
+                        seen.add(url)
+                        out.append(url)
+    return out
 
 
 def _validate_tracker_against_schema(tracker_path: Path, schema_path: Path) -> None:

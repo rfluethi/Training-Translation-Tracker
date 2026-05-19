@@ -1,8 +1,12 @@
-# Scope der DACH-Übersetzung
+# Scope der DACH-Übersetzung — eine einzige Datei
 #
-# Eine Zeile pro URL — was im Tracker erscheinen soll.
-# Items, die in scope.yml stehen, erscheinen immer.
-# Items, die ein DACH-Issue haben aber NICHT in scope.yml stehen, landen in der Orphan-Gruppe.
+# Diese Datei vereint zwei Dinge:
+#   1. Welche Locale wird übersetzt (für den GitHub-Project-Filter).
+#   2. Welche URLs sind in Scope UND wie sind sie gruppiert (Pathway → Course → Section).
+#
+# Die Menge der „in Scope"-URLs ergibt sich aus allen items: in der Hierarchie unten.
+# Es gibt keine separate flache URL-Liste — eine URL ist genau dann in Scope, wenn sie
+# unten in einer Section auftaucht.
 #
 # URL-Form muss kanonisch sein:
 #   - lowercase, https
@@ -10,39 +14,92 @@
 #   - ohne Query-Parameter, ohne Fragment
 #   - ohne www.-Subdomäne
 #
+# Slugs auf den Hierarchie-Ebenen: kebab-case, eindeutig je Ebene. Frei wählbar
+# (sind unsere internen IDs). Labels sind das, was im Tracker angezeigt wird.
+#
 # Validierung gegen schemas/scope.schema.json
-# Erweiterung: einfach weitere URLs anhängen.
 
 locale: German
 locale_short: de
 
-items:
+pathways:
+
   # ------------------------------------------------------------
-  # Initialer Scope abgeleitet aus den derzeit existierenden
-  # DACH-Übersetzungs-Issues (Project V2 #104, Locale=German).
-  # Stand: 2026-05-18
-  #
-  # Bei Bedarf erweitern, sobald neue Inhalte ins DACH-Plan kommen.
+  # Pathway 1: Start using WordPress (mit Course "Beginner WordPress User")
   # ------------------------------------------------------------
+  - slug: user
+    label: Start using WordPress
+    courses:
+      - slug: beginner-wordpress-user
+        label: Beginner WordPress User
+        sections:
 
-  # Lesson Plans
-  - https://learn.wordpress.org/lesson-plan/setting-a-static-page-as-your-homepage/
-  - https://learn.wordpress.org/lesson-plan/how-to-find-theme-specific-documentation/
+          - slug: get-started-with-wordpress
+            label: Get Started With WordPress
+            items:
+              - https://learn.wordpress.org/lesson/introduction-to-wordpress-2/
+              - https://learn.wordpress.org/lesson/wordpress-essentials-domains-and-hosting/
+              - https://learn.wordpress.org/lesson/choosing-and-installing-a-theme/
+              - https://learn.wordpress.org/lesson/choosing-and-installing-a-plugin/
+              - https://learn.wordpress.org/lesson/getting-started-with-the-wordpress-dashboard/
 
-  # Lessons – Einstieg & Grundlagen
-  - https://learn.wordpress.org/lesson/introduction-to-wordpress-2/
-  - https://learn.wordpress.org/lesson/wordpress-essentials-domains-and-hosting/
-  - https://learn.wordpress.org/lesson/getting-started-with-the-wordpress-dashboard/
-  - https://learn.wordpress.org/lesson/basic-wordpress-settings/
+          - slug: gain-familiarity-with-the-wordpress-interface
+            label: Gain a familiarity with the WordPress Interface
+            items:
+              - https://learn.wordpress.org/lesson/understanding-the-difference-between-wordpress-posts-and-pages/
+              - https://learn.wordpress.org/lesson/using-the-media-library-2/
+              - https://learn.wordpress.org/lesson/creating-posts-and-pages-with-the-wordpress-block-editor/
+              - https://learn.wordpress.org/lesson/basic-wordpress-settings/
+              - https://learn.wordpress.org/lesson/what-is-the-difference-between-the-block-editor-and-site-editor/
 
-  # Lessons – Themes & Plugins
-  - https://learn.wordpress.org/lesson/choosing-and-installing-a-theme/
-  - https://learn.wordpress.org/lesson/choosing-and-installing-a-plugin/
+          - slug: site-editing
+            label: Site Editing
+            items:
+              - https://learn.wordpress.org/lesson/intro-to-the-site-editor/
+              - https://learn.wordpress.org/lesson/using-page-templates/
+              - https://learn.wordpress.org/lesson/using-template-parts/
 
-  # Lessons – Inhalte erstellen
-  - https://learn.wordpress.org/lesson/using-the-media-library-2/
-  - https://learn.wordpress.org/lesson/creating-posts-and-pages-with-the-wordpress-block-editor/
+          - slug: content-creation
+            label: Content Creation
+            items:
+              - https://learn.wordpress.org/lesson/setting-up-your-pages-posts-site-logo-and-navigation-menu/
+              - https://learn.wordpress.org/lesson/creating-and-customizing-a-header-and-footer/
+              - https://learn.wordpress.org/lesson/nesting-and-using-blocks-to-create-visually-appealing-content/
+              - https://learn.wordpress.org/lesson/using-block-patterns-2/
+              - https://learn.wordpress.org/lesson/embedding-media-and-third-party-content-on-your-website/
 
-  # Lessons – Block & Site Editor
-  - https://learn.wordpress.org/lesson/what-is-the-difference-between-the-block-editor-and-site-editor/
-  - https://learn.wordpress.org/lesson/intro-to-the-site-editor/
+          - slug: security-spam-and-backups
+            label: Security, Spam and Backups
+            items:
+              - https://learn.wordpress.org/lesson/7-tips-to-improve-website-security/
+              - https://learn.wordpress.org/lesson/managing-spam-on-your-site/
+              - https://learn.wordpress.org/lesson/how-to-backup-your-site/
+
+          - slug: seo
+            label: SEO
+            items:
+              - https://learn.wordpress.org/lesson/how-to-improve-your-seo-rankings/
+              - https://learn.wordpress.org/lesson/how-to-use-headings-for-accessibility-and-seo/
+
+          - slug: getting-help
+            label: Getting help
+            items:
+              - https://learn.wordpress.org/lesson/how-to-find-help-with-wordpress-2/
+
+  # ------------------------------------------------------------
+  # Pathway 2: Lesson Plans (auf gleicher Ebene wie die User-Pathway)
+  # Hat technisch einen Course-Wrapper "all", weil unser Schema
+  # die Hierarchie Pathway → Course → Section verlangt. Im
+  # WP-Plugin kann das visuell anders gerendert werden.
+  # ------------------------------------------------------------
+  - slug: lesson-plans
+    label: Lesson Plans
+    courses:
+      - slug: all
+        label: Lesson Plans
+        sections:
+          - slug: all
+            label: Lesson Plans
+            items:
+              - https://learn.wordpress.org/lesson-plan/setting-a-static-page-as-your-homepage/
+              - https://learn.wordpress.org/lesson-plan/how-to-find-theme-specific-documentation/

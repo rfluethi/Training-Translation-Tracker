@@ -80,6 +80,76 @@ def _issue(url_orig, components=None, number=1, url_translated=""):
     return ParsedIssue(raw=raw, parsed=body, normalized_original=url_orig)
 
 
+def test_joiner_uses_scope_hierarchy():
+    """scope.yml's `pathways` tree maps URLs to pathway/course/section labels."""
+    inv = [
+        _inventory_item("introduction-to-wordpress-2"),
+        _inventory_item("using-the-media-library-2"),
+    ]
+    scope_config = {
+        "locale": "German",
+        "locale_short": "de",
+        "pathways": [
+            {
+                "slug": "user",
+                "label": "User Learning Pathway",
+                "courses": [
+                    {
+                        "slug": "beginner",
+                        "label": "Beginner WordPress User",
+                        "sections": [
+                            {
+                                "slug": "intro",
+                                "label": "Get Started",
+                                "items": ["https://learn.wordpress.org/lesson/introduction-to-wordpress-2/"],
+                            },
+                            {
+                                "slug": "interface",
+                                "label": "Gain a familiarity with the WordPress Interface",
+                                "items": ["https://learn.wordpress.org/lesson/using-the-media-library-2/"],
+                            },
+                        ],
+                    }
+                ],
+            }
+        ]
+    }
+
+    result = build_groups(inv, [], COMPONENT_TEMPLATES, scope_config)
+
+    pathways = [g for g in result.groups if g["type"] == "pathway"]
+    assert len(pathways) == 1
+    pathway = pathways[0]
+    assert pathway["slug"] == "user"
+    assert pathway["label"] == "User Learning Pathway"
+    assert len(pathway["courses"]) == 1
+
+    sections = pathway["courses"][0]["sections"]
+    section_labels = [s["label"] for s in sections]
+    assert "Get Started" in section_labels
+    assert "Gain a familiarity with the WordPress Interface" in section_labels
+
+
+def test_joiner_url_outside_hierarchy_falls_back():
+    """An inventory URL that isn't placed anywhere in scope.yml lands under 'Ohne Gruppe'."""
+    inv = [_inventory_item("not-mapped")]
+    scope_config = {"locale": "German", "locale_short": "de", "pathways": []}
+
+    result = build_groups(inv, [], COMPONENT_TEMPLATES, scope_config)
+
+    pathways = [g for g in result.groups if g["type"] == "pathway"]
+    assert len(pathways) == 1
+    assert pathways[0]["label"] == "Ohne Gruppe"
+
+
+def test_joiner_without_scope_config():
+    """Backwards compatibility: build_groups still works without scope_config."""
+    inv = [_inventory_item()]
+    result = build_groups(inv, [], COMPONENT_TEMPLATES)
+    pathways = [g for g in result.groups if g["type"] == "pathway"]
+    assert len(pathways) == 1
+
+
 def test_joiner_matches_item_with_issue():
     inv = [_inventory_item()]
     issues = [

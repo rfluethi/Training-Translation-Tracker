@@ -1,19 +1,7 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-05-19T08:53:18Z",
+  "generated_at": "2026-05-19T10:30:13Z",
   "items": {
-    "https://learn.wordpress.org/lesson-plan/setting-a-static-page-as-your-homepage/": {
-      "type": "lesson_plan",
-      "slug": "setting-a-static-page-as-your-homepage",
-      "title_en": "Setting A Static Page As Your Homepage",
-      "url_en": "https://learn.wordpress.org/lesson-plan/setting-a-static-page-as-your-homepage/"
-    },
-    "https://learn.wordpress.org/lesson-plan/how-to-find-theme-specific-documentation/": {
-      "type": "lesson_plan",
-      "slug": "how-to-find-theme-specific-documentation",
-      "title_en": "How To Find Theme Specific Documentation",
-      "url_en": "https://learn.wordpress.org/lesson-plan/how-to-find-theme-specific-documentation/"
-    },
     "https://learn.wordpress.org/lesson/introduction-to-wordpress-2/": {
       "type": "lesson",
       "slug": "introduction-to-wordpress-2",
@@ -25,18 +13,6 @@
       "slug": "wordpress-essentials-domains-and-hosting",
       "title_en": "WordPress essentials: Domains and hosting",
       "url_en": "https://learn.wordpress.org/lesson/wordpress-essentials-domains-and-hosting/"
-    },
-    "https://learn.wordpress.org/lesson/getting-started-with-the-wordpress-dashboard/": {
-      "type": "lesson",
-      "slug": "getting-started-with-the-wordpress-dashboard",
-      "title_en": "Getting started with the WordPress dashboard",
-      "url_en": "https://learn.wordpress.org/lesson/getting-started-with-the-wordpress-dashboard/"
-    },
-    "https://learn.wordpress.org/lesson/basic-wordpress-settings/": {
-      "type": "lesson",
-      "slug": "basic-wordpress-settings",
-      "title_en": "Basic WordPress settings",
-      "url_en": "https://learn.wordpress.org/lesson/basic-wordpress-settings/"
     },
     "https://learn.wordpress.org/lesson/choosing-and-installing-a-theme/": {
       "type": "lesson",
@@ -50,6 +26,18 @@
       "title_en": "Choosing and installing a plugin",
       "url_en": "https://learn.wordpress.org/lesson/choosing-and-installing-a-plugin/"
     },
+    "https://learn.wordpress.org/lesson/getting-started-with-the-wordpress-dashboard/": {
+      "type": "lesson",
+      "slug": "getting-started-with-the-wordpress-dashboard",
+      "title_en": "Getting started with the WordPress dashboard",
+      "url_en": "https://learn.wordpress.org/lesson/getting-started-with-the-wordpress-dashboard/"
+    },
+    "https://learn.wordpress.org/lesson/understanding-the-difference-between-wordpress-posts-and-pages/": {
+      "type": "lesson",
+      "slug": "understanding-the-difference-between-wordpress-posts-and-pages",
+      "title_en": "Understanding the difference between WordPress posts and pages",
+      "url_en": "https://learn.wordpress.org/lesson/understanding-the-difference-between-wordpress-posts-and-pages/"
+    },
     "https://learn.wordpress.org/lesson/using-the-media-library-2/": {
       "type": "lesson",
       "slug": "using-the-media-library-2",
@@ -62,6 +50,12 @@
       "title_en": "Creating posts and pages with the WordPress Block Editor",
       "url_en": "https://learn.wordpress.org/lesson/creating-posts-and-pages-with-the-wordpress-block-editor/"
     },
+    "https://learn.wordpress.org/lesson/basic-wordpress-settings/": {
+      "type": "lesson",
+      "slug": "basic-wordpress-settings",
+      "title_en": "Basic WordPress settings",
+      "url_en": "https://learn.wordpress.org/lesson/basic-wordpress-settings/"
+    },
     "https://learn.wordpress.org/lesson/what-is-the-difference-between-the-block-editor-and-site-editor/": {
       "type": "lesson",
       "slug": "what-is-the-difference-between-the-block-editor-and-site-editor",
@@ -73,6 +67,96 @@
       "slug": "intro-to-the-site-editor",
       "title_en": "Intro to the Site Editor",
       "url_en": "https://learn.wordpress.org/lesson/intro-to-the-site-editor/"
+    },
+    "https://learn.wordpress.org/lesson/using-page-templates/": {
+      "type": "lesson",
+      "slug": "using-page-templates",
+      "title_en": "Using page templates",
+      "url_en": "https://learn.wordpress.org/lesson/using-page-templates/"
+    },
+    "https://learn.wordpress.org/lesson/using-template-parts/": {
+      "type": "lesson",
+      "slug": "using-template-parts",
+      "title_en": "Using template parts",
+      "url_en": "https://learn.wordpress.org/lesson/using-template-parts/"
+    },
+    "https://learn.wordpress.org/lesson/setting-up-your-pages-posts-site-logo-and-navigation-menu/": {
+      "type": "lesson",
+      "slug": "setting-up-your-pages-posts-site-logo-and-navigation-menu",
+      "title_en": "Setting up your pages, posts, site logo and navigation menu",
+      "url_en": "https://learn.wordpress.org/lesson/setting-up-your-pages-posts-site-logo-and-navigation-menu/"
+    },
+    "https://learn.wordpress.org/lesson/creating-and-customizing-a-header-and-footer/": {
+      "type": "lesson",
+      "slug": "creating-and-customizing-a-header-and-footer",
+      "title_en": "Creating and customizing a header and footer",
+      "url_en": "https://learn.wordpress.org/lesson/creating-and-customizing-a-header-and-footer/"
+    },
+    "https://learn.wordpress.org/lesson/nesting-and-using-blocks-to-create-visually-appealing-content/": {
+      "type": "lesson",
+      "slug": "nesting-and-using-blocks-to-create-visually-appealing-content",
+      "title_en": "Nesting and using blocks to create visually appealing content",
+      "url_en": "https://learn.wordpress.org/lesson/nesting-and-using-blocks-to-create-visually-appealing-content/"
+    },
+    "https://learn.wordpress.org/lesson/using-block-patterns-2/": {
+      "type": "lesson",
+      "slug": "using-block-patterns-2",
+      "title_en": "Using block patterns",
+      "url_en": "https://learn.wordpress.org/lesson/using-block-patterns-2/"
+    },
+    "https://learn.wordpress.org/lesson/embedding-media-and-third-party-content-on-your-website/": {
+      "type": "lesson",
+      "slug": "embedding-media-and-third-party-content-on-your-website",
+      "title_en": "Embedding media and third-party content on your website",
+      "url_en": "https://learn.wordpress.org/lesson/embedding-media-and-third-party-content-on-your-website/"
+    },
+    "https://learn.wordpress.org/lesson/7-tips-to-improve-website-security/": {
+      "type": "lesson",
+      "slug": "7-tips-to-improve-website-security",
+      "title_en": "7 Tips to improve website security",
+      "url_en": "https://learn.wordpress.org/lesson/7-tips-to-improve-website-security/"
+    },
+    "https://learn.wordpress.org/lesson/managing-spam-on-your-site/": {
+      "type": "lesson",
+      "slug": "managing-spam-on-your-site",
+      "title_en": "Managing spam on your site",
+      "url_en": "https://learn.wordpress.org/lesson/managing-spam-on-your-site/"
+    },
+    "https://learn.wordpress.org/lesson/how-to-backup-your-site/": {
+      "type": "lesson",
+      "slug": "how-to-backup-your-site",
+      "title_en": "How to backup your site",
+      "url_en": "https://learn.wordpress.org/lesson/how-to-backup-your-site/"
+    },
+    "https://learn.wordpress.org/lesson/how-to-improve-your-seo-rankings/": {
+      "type": "lesson",
+      "slug": "how-to-improve-your-seo-rankings",
+      "title_en": "How to improve SEO rankings",
+      "url_en": "https://learn.wordpress.org/lesson/how-to-improve-your-seo-rankings/"
+    },
+    "https://learn.wordpress.org/lesson/how-to-use-headings-for-accessibility-and-seo/": {
+      "type": "lesson",
+      "slug": "how-to-use-headings-for-accessibility-and-seo",
+      "title_en": "How to use headings for accessibility and SEO",
+      "url_en": "https://learn.wordpress.org/lesson/how-to-use-headings-for-accessibility-and-seo/"
+    },
+    "https://learn.wordpress.org/lesson/how-to-find-help-with-wordpress-2/": {
+      "type": "lesson",
+      "slug": "how-to-find-help-with-wordpress-2",
+      "title_en": "How to find help with WordPress",
+      "url_en": "https://learn.wordpress.org/lesson/how-to-find-help-with-wordpress-2/"
+    },
+    "https://learn.wordpress.org/lesson-plan/setting-a-static-page-as-your-homepage/": {
+      "type": "lesson_plan",
+      "slug": "setting-a-static-page-as-your-homepage",
+      "title_en": "Setting A Static Page As Your Homepage",
+      "url_en": "https://learn.wordpress.org/lesson-plan/setting-a-static-page-as-your-homepage/"
+    },
+    "https://learn.wordpress.org/lesson-plan/how-to-find-theme-specific-documentation/": {
+      "type": "lesson_plan",
+      "slug": "how-to-find-theme-specific-documentation",
+      "title_en": "How To Find Theme Specific Documentation",
+      "url_en": "https://learn.wordpress.org/lesson-plan/how-to-find-theme-specific-documentation/"
     }
   }
 }

@@ -1,10 +1,10 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/rfluethi/wp-translation-tracker-data/schemas/scope.schema.json",
+  "$id": "https://github.com/rfluethi/Training-Translation-Tracker-Inventory-Plugin/schemas/scope.schema.json",
   "title": "Translation Tracker Scope",
-  "description": "Schema for scope.yml — defines which URLs are in scope for the Translation Tracker. Phase 1 uses a pure URL list (see Arbeitsplan §A.1.6).",
+  "description": "Single source of truth: locale config + hierarchical grouping of items. The set of URLs in scope is the union of all leaf items in the pathways tree.",
   "type": "object",
-  "required": ["locale", "locale_short", "items"],
+  "required": ["locale", "locale_short", "pathways"],
   "additionalProperties": false,
   "properties": {
     "locale": {
@@ -17,14 +17,70 @@
       "type": "string",
       "pattern": "^[a-z]{2}$"
     },
-    "items": {
-      "description": "Normalized URLs of items to include in the tracker. Form: lowercase host+path, https, trailing slash, no query, no fragment, no www.",
+    "pathways": {
+      "description": "Top-level grouping. The DACH-team's view of pathway → course → section → items.",
       "type": "array",
       "minItems": 0,
-      "uniqueItems": true,
-      "items": {
-        "type": "string",
-        "pattern": "^https://(learn\\.wordpress\\.org|make\\.wordpress\\.org/training/handbook)/[a-z0-9\\-/]*/$"
+      "items": { "$ref": "#/$defs/Pathway" }
+    }
+  },
+
+  "$defs": {
+    "Slug": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9\\-]*$",
+      "minLength": 1
+    },
+
+    "ItemUrl": {
+      "description": "Canonical URL. Form: lowercase host+path, https, trailing slash, no query, no fragment, no www.",
+      "type": "string",
+      "pattern": "^https://(learn\\.wordpress\\.org|make\\.wordpress\\.org/training/handbook)/[a-z0-9\\-/]*/$"
+    },
+
+    "Pathway": {
+      "type": "object",
+      "required": ["slug", "label", "courses"],
+      "additionalProperties": false,
+      "properties": {
+        "slug":  { "$ref": "#/$defs/Slug" },
+        "label": { "type": "string", "minLength": 1 },
+        "courses": {
+          "type": "array",
+          "minItems": 0,
+          "items": { "$ref": "#/$defs/Course" }
+        }
+      }
+    },
+
+    "Course": {
+      "type": "object",
+      "required": ["slug", "label", "sections"],
+      "additionalProperties": false,
+      "properties": {
+        "slug":  { "$ref": "#/$defs/Slug" },
+        "label": { "type": "string", "minLength": 1 },
+        "sections": {
+          "type": "array",
+          "minItems": 0,
+          "items": { "$ref": "#/$defs/Section" }
+        }
+      }
+    },
+
+    "Section": {
+      "type": "object",
+      "required": ["slug", "label", "items"],
+      "additionalProperties": false,
+      "properties": {
+        "slug":  { "$ref": "#/$defs/Slug" },
+        "label": { "type": "string", "minLength": 1 },
+        "items": {
+          "type": "array",
+          "minItems": 0,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/ItemUrl" }
+        }
       }
     }
   }

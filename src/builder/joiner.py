@@ -1,11 +1,13 @@
 """Join inventory items and parsed issues into the tracker.json group tree.
 
 Builds three buckets:
-  - pathway groups (Lessons + Lesson Plans + Tutorials, grouped by parent_path)
+  - pathway groups (Lessons + Lesson Plans + Tutorials, grouped per groups.yml)
   - handbook groups (Handbook items, grouped by parent_path)
   - orphan group (issues without matching inventory OR items outside scope)
 
-Pulls component defaults from component-templates.yml when an item has no issue.
+Hierarchy comes from groups.yml (DACH-maintained pathway → course → section
+structure). Items in scope.yml but not mentioned in groups.yml fall back to
+a pseudo-pathway 'Ohne Gruppe'.
 """
 
 from __future__ import annotations
@@ -33,46 +35,95 @@ def build_groups(
     inventory: list[InventoryItem],
     issues: list[ParsedIssue],
     component_templates: dict[str, list[str]],
+    scope_config: dict[str, Any] | None = None,
 ) -> JoinerResult:
-    """Top-level entry point. Returns groups + a list of human-readable warnings."""
+    """Top-level entry point. Returns groups + a list of human-readable warnings.
+
+    `scope_config` is the parsed groups.yml (a dict with key "pathways").
+    Pass None to fall back to a single 'Ohne Gruppe' pathway containing all
+    inventory items in scope.yml order.
+    """
 
     # 1) Map issues by normalized original URL (and detect duplicates)
     issue_index: dict[str, list[ParsedIssue]] = defaultdict(list)
     for issue in issues:
         if issue.normalized_original:
             issue_index[issue.normalized_original].append(issue)
-        # Issues without URL or with bad URL go straight to orphans below.
 
     matched_inventory_urls: set[str] = set()
     warnings: list[str] = []
 
-    # 2) Walk inventory items, attach issue data, build group tree
-    pathway_groups, handbook_items = _walk_inventory(
-        inventory, issue_index, matched_inventory_urls, component_templates, warnings
+    # 2) Group lookup: URL → (pathway_slug, pathway_label, course_slug, course_label, section_slug, section_label)
+    url_to_position = _build_url_to_position(scope_config or {})
+
+    # 3) Walk inventory items, attach issue data, sort into pathway/handbook
+    pathway_tree, handbook_items = _walk_inventory(
+        inventory,
+        issue_index,
+        matched_inventory_urls,
+        component_templates,
+        url_to_position,
+        warnings,
     )
 
-    # 3) Orphans = issues that didn't match any inventory item
+    # 4) Orphans = issues that didn't match any inventory item
     orphan_items = _collect_orphans(issues, matched_inventory_urls, warnings)
 
+    # 5) Build the actual pathway groups, in the order they appear in groups.yml
     groups: list[dict[str, Any]] = []
-    if pathway_groups:
-        groups.extend(pathway_groups)
+    pathway_order = _pathway_order_from_config(scope_config or {})
+    pathway_order.append(("__no_group__", "Ohne Gruppe"))  # fallback last
+
+    for pathway_slug, pathway_label in pathway_order:
+        courses_data = pathway_tree.get(pathway_slug)
+        if not courses_data:
+            continue
+        course_blocks = []
+        course_order = _course_order_for_pathway(scope_config or {}, pathway_slug)
+        course_order.append(("__no_course__", "Ohne Kurs"))
+        for course_slug, course_label in course_order:
+            sections_data = courses_data.get(course_slug)
+            if not sections_data:
+                continue
+            section_blocks = []
+            section_order = _section_order_for_course(scope_config or {}, pathway_slug, course_slug)
+            section_order.append(("__no_section__", "Ohne Section"))
+            for section_slug, section_label in section_order:
+                items_in_section = sections_data.get(section_slug)
+                if not items_in_section:
+                    continue
+                section_blocks.append({
+                    "slug": section_slug if section_slug != "__no_section__" else "ohne-section",
+                    "label": section_label,
+                    "items": items_in_section,
+                })
+            if section_blocks:
+                course_blocks.append({
+                    "slug": course_slug if course_slug != "__no_course__" else "ohne-kurs",
+                    "label": course_label,
+                    "sections": section_blocks,
+                })
+        if course_blocks:
+            groups.append({
+                "type": "pathway",
+                "slug": pathway_slug if pathway_slug != "__no_group__" else "ohne-gruppe",
+                "label": pathway_label,
+                "courses": course_blocks,
+            })
+
     if handbook_items:
-        groups.append(
-            {
-                "type": "handbook",
-                "label": "Training Handbook",
-                "sections": _bucket_handbook_items(handbook_items),
-            }
-        )
+        groups.append({
+            "type": "handbook",
+            "label": "Training Handbook",
+            "sections": _bucket_handbook_items(handbook_items),
+        })
+
     if orphan_items:
-        groups.append(
-            {
-                "type": "orphan",
-                "label": "Sonstige (außerhalb Scope / verwaist)",
-                "items": orphan_items,
-            }
-        )
+        groups.append({
+            "type": "orphan",
+            "label": "Sonstige (außerhalb Scope / verwaist)",
+            "items": orphan_items,
+        })
 
     return JoinerResult(groups=groups, warnings=warnings)
 
@@ -99,6 +150,55 @@ def calculate_overall_status(component_statuses: list[str]) -> str:
 
 
 # ---------------------------------------------------------------------------
+# groups.yml lookup helpers
+# ---------------------------------------------------------------------------
+
+# A "position" describes where an URL sits in the pathway tree.
+# Tuple: (pathway_slug, pathway_label, course_slug, course_label, section_slug, section_label)
+Position = tuple[str, str, str, str, str, str]
+
+
+def _build_url_to_position(scope_config: dict[str, Any]) -> dict[str, Position]:
+    """Flatten groups.yml into URL → position lookup."""
+    out: dict[str, Position] = {}
+    for pathway in scope_config.get("pathways", []) or []:
+        ps, pl = pathway["slug"], pathway["label"]
+        for course in pathway.get("courses", []) or []:
+            cs, cl = course["slug"], course["label"]
+            for section in course.get("sections", []) or []:
+                ss, sl = section["slug"], section["label"]
+                for url in section.get("items", []) or []:
+                    out[url] = (ps, pl, cs, cl, ss, sl)
+    return out
+
+
+def _pathway_order_from_config(scope_config: dict[str, Any]) -> list[tuple[str, str]]:
+    """Pathway order as written in groups.yml."""
+    return [(p["slug"], p["label"]) for p in scope_config.get("pathways", []) or []]
+
+
+def _course_order_for_pathway(scope_config: dict[str, Any], pathway_slug: str) -> list[tuple[str, str]]:
+    for pathway in scope_config.get("pathways", []) or []:
+        if pathway["slug"] == pathway_slug:
+            return [(c["slug"], c["label"]) for c in pathway.get("courses", []) or []]
+    return []
+
+
+def _section_order_for_course(
+    scope_config: dict[str, Any],
+    pathway_slug: str,
+    course_slug: str,
+) -> list[tuple[str, str]]:
+    for pathway in scope_config.get("pathways", []) or []:
+        if pathway["slug"] != pathway_slug:
+            continue
+        for course in pathway.get("courses", []) or []:
+            if course["slug"] == course_slug:
+                return [(s["slug"], s["label"]) for s in course.get("sections", []) or []]
+    return []
+
+
+# ---------------------------------------------------------------------------
 # Inventory walking
 # ---------------------------------------------------------------------------
 
@@ -107,17 +207,15 @@ def _walk_inventory(
     issue_index: dict[str, list[ParsedIssue]],
     matched_urls: set[str],
     component_templates: dict[str, list[str]],
+    url_to_position: dict[str, Position],
     warnings: list[str],
-) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
-    """Build the pathway group tree and a flat list of handbook items.
+) -> tuple[dict, list[dict[str, Any]]]:
+    """Build pathway tree dict and a flat list of handbook items.
 
-    Sensei items use parent_path = [course_slug, section_slug?]; handbook items
-    use parent_path = [...ancestor_slugs]. For pathway grouping we treat all
-    learn.wordpress.org items as belonging to one pseudo-pathway named after
-    the course slug — pathway taxonomy resolution is a Phase 3 concern.
+    pathway_tree[pathway_slug][course_slug][section_slug] = [item_dict, ...]
     """
 
-    pathway_tree: dict[str, dict[str, dict[str, list[dict[str, Any]]]]] = defaultdict(
+    pathway_tree: dict = defaultdict(
         lambda: defaultdict(lambda: defaultdict(list))
     )
     handbook_items: list[dict[str, Any]] = []
@@ -130,44 +228,21 @@ def _walk_inventory(
             matched_urls.add(inv_item.url_en)
 
         if inv_item.type in ("handbook_text", "handbook_video"):
-            handbook_items.append(
-                {
-                    "_section_path": inv_item.parent_path,
-                    **item_dict,
-                }
+            handbook_items.append({"_section_path": inv_item.parent_path, **item_dict})
+            continue
+
+        position = url_to_position.get(inv_item.url_en)
+        if position is None:
+            warnings.append(
+                f"URL not in groups.yml — placed under 'Ohne Gruppe': {inv_item.url_en}"
             )
+            pathway_tree["__no_group__"]["__no_course__"]["__no_section__"].append(item_dict)
         else:
-            course_slug = inv_item.parent_path[0] if inv_item.parent_path else "(no course)"
-            section_slug = inv_item.parent_path[1] if len(inv_item.parent_path) > 1 else "(no section)"
-            pathway_tree[course_slug][section_slug]["items"].append(item_dict)
+            _, _, course_slug, _, section_slug, _ = position
+            pathway_slug = position[0]
+            pathway_tree[pathway_slug][course_slug][section_slug].append(item_dict)
 
-    # Flatten pathway tree into the groups structure that tracker.schema expects.
-    # For Phase 1 we emit one pathway group per top-level course slug.
-    out: list[dict[str, Any]] = []
-    for course_slug, sections in pathway_tree.items():
-        out.append(
-            {
-                "type": "pathway",
-                "slug": course_slug,
-                "label": _humanize(course_slug),
-                "courses": [
-                    {
-                        "slug": course_slug,
-                        "label": _humanize(course_slug),
-                        "sections": [
-                            {
-                                "slug": section_slug,
-                                "label": _humanize(section_slug),
-                                "items": payload["items"],
-                            }
-                            for section_slug, payload in sections.items()
-                        ],
-                    }
-                ],
-            }
-        )
-
-    return out, handbook_items
+    return pathway_tree, handbook_items
 
 
 def _bucket_handbook_items(items: list[dict[str, Any]]) -> list[dict[str, Any]]:
@@ -175,7 +250,7 @@ def _bucket_handbook_items(items: list[dict[str, Any]]) -> list[dict[str, Any]]:
     sections: dict[str, list[dict[str, Any]]] = defaultdict(list)
     for entry in items:
         section_path = entry.pop("_section_path")
-        section_slug = section_path[0] if section_path else "(no section)"
+        section_slug = section_path[0] if section_path else "ohne-section"
         sections[section_slug].append(entry)
 
     return [
@@ -197,15 +272,11 @@ def _item_to_dict(
     item = inv_item.to_minimal_dict()
 
     if not matching_issues:
-        # No issue → all default components as "open"
         defaults = component_templates.get(inv_item.type, []) or []
         item["components"] = [{"name": name, "status": "open"} for name in defaults]
         item["overall_status"] = "open"
         return item
 
-    # Choose the primary issue (most recent state-change is hard to derive without
-    # `updatedAt` in the query — for now: the lowest issue number wins, others go
-    # into duplicate_issues). Duplicate detection itself is still raised here.
     matching_sorted = sorted(matching_issues, key=lambda i: i.number)
     primary = matching_sorted[0]
     duplicates = matching_sorted[1:]
@@ -226,11 +297,9 @@ def _item_to_dict(
         item["url_wptv"] = primary.parsed.url_wptv
     if primary.parsed.url_youtube:
         item["url_youtube"] = primary.parsed.url_youtube
-
     if primary.parsed.parse_error:
         item["parse_error"] = True
 
-    # Components: prefer the issue's table; fall back to defaults if empty.
     if primary.components:
         item["components"] = [c.to_dict() for c in primary.components]
         statuses = [c.status for c in primary.components]
@@ -252,50 +321,43 @@ def _collect_orphans(
     matched_urls: set[str],
     warnings: list[str],
 ) -> list[dict[str, Any]]:
-    """Return orphan-bucket items for issues that didn't match the inventory."""
     out: list[dict[str, Any]] = []
 
     for issue in issues:
         normalized = issue.normalized_original
         if not normalized:
-            # Issue without an extractable Original URL
             warnings.append(
                 f"Issue #{issue.number} has no parseable original-content URL"
             )
-            out.append(
-                {
-                    "type": "lesson",  # best guess; not used for Sensei lookup
-                    "slug": f"issue-{issue.number}",
-                    "title_en": issue.raw.title,
-                    "url_en": issue.raw.url,
-                    "orphan_reason": "outside_scope",
-                    "issue": issue.to_issue_dict(),
-                    "components": [c.to_dict() for c in issue.components],
-                    "overall_status": calculate_overall_status(
-                        [c.status for c in issue.components]
-                    ),
-                }
-            )
-            continue
-
-        if normalized in matched_urls:
-            continue
-
-        # The issue points at a URL that the inventory didn't yield → outside_scope
-        out.append(
-            {
-                "type": _guess_type_from_url(normalized),
-                "slug": _last_path_segment(normalized),
+            out.append({
+                "type": "lesson",
+                "slug": f"issue-{issue.number}",
                 "title_en": issue.raw.title,
-                "url_en": normalized,
+                "url_en": issue.raw.url,
                 "orphan_reason": "outside_scope",
                 "issue": issue.to_issue_dict(),
                 "components": [c.to_dict() for c in issue.components],
                 "overall_status": calculate_overall_status(
                     [c.status for c in issue.components]
                 ),
-            }
-        )
+            })
+            continue
+
+        if normalized in matched_urls:
+            continue
+
+        out.append({
+            "type": _guess_type_from_url(normalized),
+            "slug": _last_path_segment(normalized),
+            "title_en": issue.raw.title,
+            "url_en": normalized,
+            "orphan_reason": "outside_scope",
+            "issue": issue.to_issue_dict(),
+            "components": [c.to_dict() for c in issue.components],
+            "overall_status": calculate_overall_status(
+                [c.status for c in issue.components]
+            ),
+        })
 
     return out
 
@@ -305,8 +367,7 @@ def _collect_orphans(
 # ---------------------------------------------------------------------------
 
 def _humanize(slug: str) -> str:
-    """Turn a slug like 'beginner-wordpress-user' into 'Beginner Wordpress User'."""
-    if not slug or slug.startswith("("):
+    if not slug or slug.startswith("ohne-"):
         return slug
     return " ".join(part.capitalize() for part in slug.split("-"))
 

@@ -46,8 +46,9 @@ Vor jedem Push empfehlenswert.
 ```text
 .
 ├── .github/workflows/build.yml   Workflow: cron / dispatch / push
-├── scope.yml                      Welche URLs sind in Scope
+├── scope.yml                      Locale + Hierarchie + URLs (Single Source of Truth)
 ├── component-templates.yml        Default-Komponenten pro Item-Typ
+├── inventory-cache.json           Vorberechnete Inventar-Daten (lokal aktualisiert)
 ├── schemas/                       Phase-0-Schemata (Kopie aus dem Konzept-Ordner)
 ├── src/
 │   ├── inventory/                 REST-Module pro Item-Typ + URL-Normalizer
