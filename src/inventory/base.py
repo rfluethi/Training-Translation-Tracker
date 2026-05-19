@@ -7,6 +7,7 @@ All modules return `InventoryItem` instances via a uniform `InventorySource.fetc
 from __future__ import annotations
 
 import logging
+import time
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from typing import Any
@@ -14,6 +15,14 @@ from typing import Any
 import requests
 
 LOG = logging.getLogger(__name__)
+
+# Retry policy for HTTP 429 (Too Many Requests).
+# learn.wordpress.org aggressively rate-limits the GitHub-hosted runner IPs,
+# so we retry with exponential backoff. Retry-After header is respected if
+# present in the response.
+HTTP_429_MAX_RETRIES = 5
+HTTP_429_INITIAL_BACKOFF_S = 2.0
+HTTP_429_MAX_BACKOFF_S = 30.0
 
 # Item-type values must match the enum in schemas/tracker.schema.json.
 ItemType = str  # one of: lesson | lesson_plan | tutorial | handbook_text | handbook_video
@@ -82,18 +91,54 @@ class InventorySource(ABC):
     # ------------------------------------------------------------------ helpers
 
     def _get_json(self, url: str, *, params: dict[str, Any] | None = None) -> Any:
-        """GET with sane defaults. Returns parsed JSON or raises InventoryError."""
-        try:
-            resp = self.session.get(url, params=params, timeout=15)
-        except requests.RequestException as exc:
-            raise InventoryError(f"GET {url} failed: {exc}") from exc
+        """GET with sane defaults. Returns parsed JSON or raises InventoryError.
 
-        if resp.status_code == 404:
-            raise InventoryError(f"GET {url} → 404")
-        if resp.status_code >= 400:
-            raise InventoryError(f"GET {url} → HTTP {resp.status_code}")
+        Transparently retries on HTTP 429 with exponential backoff (see
+        HTTP_429_* constants). All other errors propagate immediately.
+        """
+        backoff_s = HTTP_429_INITIAL_BACKOFF_S
 
-        try:
-            return resp.json()
-        except ValueError as exc:
-            raise InventoryError(f"GET {url} returned non-JSON body") from exc
+        for attempt in range(1, HTTP_429_MAX_RETRIES + 1):
+            try:
+                resp = self.session.get(url, params=params, timeout=15)
+            except requests.RequestException as exc:
+                raise InventoryError(f"GET {url} failed: {exc}") from exc
+
+            if resp.status_code == 429:
+                if attempt >= HTTP_429_MAX_RETRIES:
+                    raise InventoryError(
+                        f"GET {url} → 429 after {HTTP_429_MAX_RETRIES} attempts"
+                    )
+                sleep_s = _retry_after_seconds(resp) or backoff_s
+                LOG.warning(
+                    "GET %s → 429, backing off %.1fs (attempt %d/%d)",
+                    url, sleep_s, attempt, HTTP_429_MAX_RETRIES,
+                )
+                time.sleep(sleep_s)
+                backoff_s = min(backoff_s * 2, HTTP_429_MAX_BACKOFF_S)
+                continue
+
+            if resp.status_code == 404:
+                raise InventoryError(f"GET {url} → 404")
+            if resp.status_code >= 400:
+                raise InventoryError(f"GET {url} → HTTP {resp.status_code}")
+
+            try:
+                return resp.json()
+            except ValueError as exc:
+                raise InventoryError(f"GET {url} returned non-JSON body") from exc
+
+        # Unreachable — the loop either returns or raises.
+        raise InventoryError(f"GET {url}: retries exhausted")
+
+
+def _retry_after_seconds(resp: requests.Response) -> float | None:
+    """Parse the Retry-After header (seconds or HTTP-date). Returns None on absence."""
+    value = resp.headers.get("Retry-After")
+    if not value:
+        return None
+    try:
+        return float(value)
+    except ValueError:
+        # HTTP-date form is rare from WP REST; ignore.
+        return None

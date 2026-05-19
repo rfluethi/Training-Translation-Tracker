@@ -17,12 +17,32 @@ locale: German
 locale_short: de
 
 items:
-  # Course: Beginner WordPress User
-  # (Initialer Scope für den Action-Prototyp — weitere Pathways folgen in Phase 3.)
-  - https://learn.wordpress.org/lesson/what-is-wordpress/
-  - https://learn.wordpress.org/lesson/wordpress-com-vs-wordpress-org/
-  - https://learn.wordpress.org/lesson/choosing-a-domain-and-host/
-  - https://learn.wordpress.org/lesson/installing-wordpress/
-  - https://learn.wordpress.org/lesson/the-wordpress-admin-dashboard/
-  - https://learn.wordpress.org/lesson/creating-your-first-page/
-  - https://learn.wordpress.org/lesson/creating-your-first-post/
+  # ------------------------------------------------------------
+  # Initialer Scope abgeleitet aus den derzeit existierenden
+  # DACH-Übersetzungs-Issues (Project V2 #104, Locale=German).
+  # Stand: 2026-05-18
+  #
+  # Bei Bedarf erweitern, sobald neue Inhalte ins DACH-Plan kommen.
+  # ------------------------------------------------------------
+
+  # Lesson Plans
+  - https://learn.wordpress.org/lesson-plan/setting-a-static-page-as-your-homepage/
+  - https://learn.wordpress.org/lesson-plan/how-to-find-theme-specific-documentation/
+
+  # Lessons – Einstieg & Grundlagen
+  - https://learn.wordpress.org/lesson/introduction-to-wordpress-2/
+  - https://learn.wordpress.org/lesson/wordpress-essentials-domains-and-hosting/
+  - https://learn.wordpress.org/lesson/getting-started-with-the-wordpress-dashboard/
+  - https://learn.wordpress.org/lesson/basic-wordpress-settings/
+
+  # Lessons – Themes & Plugins
+  - https://learn.wordpress.org/lesson/choosing-and-installing-a-theme/
+  - https://learn.wordpress.org/lesson/choosing-and-installing-a-plugin/
+
+  # Lessons – Inhalte erstellen
+  - https://learn.wordpress.org/lesson/using-the-media-library-2/
+  - https://learn.wordpress.org/lesson/creating-posts-and-pages-with-the-wordpress-block-editor/
+
+  # Lessons – Block & Site Editor
+  - https://learn.wordpress.org/lesson/what-is-the-difference-between-the-block-editor-and-site-editor/
+  - https://learn.wordpress.org/lesson/intro-to-the-site-editor/

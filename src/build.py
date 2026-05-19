@@ -87,9 +87,10 @@ def main(argv: list[str] | None = None) -> int:
 
     # ----------------------------------------------------------------- step 3
     # Throttle between learn.wordpress.org requests — quick consecutive
-    # calls otherwise hit HTTP 429 (rate limit). 0.3s is empirically gentle
-    # enough; override via INVENTORY_THROTTLE_S env var if needed.
-    throttle_s = float(os.environ.get("INVENTORY_THROTTLE_S", "0.3"))
+    # calls otherwise hit HTTP 429 (rate limit). 1.0s plus 429-retry
+    # in InventorySource._get_json is enough for the GitHub-hosted runners;
+    # override via INVENTORY_THROTTLE_S env var if needed.
+    throttle_s = float(os.environ.get("INVENTORY_THROTTLE_S", "1.0"))
     LOG.info("Resolving inventory items (throttle=%.2fs)", throttle_s)
     dispatcher = Dispatcher(throttle_s=throttle_s)
     inventory_items = []
