@@ -1,15 +1,29 @@
 """Entry point for the GitHub Action.
 
-Steps (Arbeitsplan §1.6):
-  1. Load and validate scope.yml against schemas/scope.schema.json.
-  2. Load and validate component-templates.yml.
-  3. Dispatch each scope URL to the matching inventory module.
-  4. Fetch all DACH issues via IssueFetcher.
-  5. Build the group tree via builder.joiner.
-  6. Compute stats.
-  7. Write tracker.json + last-run.md into the output directory.
-  8. On any uncaught error, exit non-zero WITHOUT touching the old tracker.json
-     (the workflow's commit step only runs on a successful build).
+Two run modes:
+
+  default (the GitHub Action uses this)
+      Reads inventory from `inventory-cache.json` (committed to the repo),
+      fetches DACH issues from Project V2, joins them, writes tracker.json.
+      Does NOT call learn.wordpress.org — that lookup is too rate-limited
+      for the GitHub-hosted runner IPs.
+
+  --refresh-cache  (you run this locally from a non-rate-limited IP)
+      Calls learn.wordpress.org for every URL in scope.yml, writes the
+      resulting InventoryItems to `inventory-cache.json`. Does NOT fetch
+      issues, does NOT write tracker.json. Commit the updated cache file
+      and push.
+
+Workflow (see README for the full procedure):
+
+    # On your laptop, occasionally to refresh inventory:
+    python -m src.build --refresh-cache
+    git add inventory-cache.json
+    git commit -m "Refresh inventory cache"
+    git push
+
+    # In CI, on every run:
+    python -m src.build
 """
 
 from __future__ import annotations
@@ -28,6 +42,7 @@ from jsonschema import Draft202012Validator
 
 from .builder import build_groups, calculate_stats, write_outputs
 from .github.issues import IssueFetcher
+from .inventory.cache import CACHE_FILENAME, load_cache, save_cache
 from .inventory.dispatcher import Dispatcher
 
 LOG = logging.getLogger("build")
@@ -38,7 +53,7 @@ DEFAULT_PROJECT_NUMBER = 104
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="Build tracker.json")
+    parser = argparse.ArgumentParser(description="Build tracker.json or refresh inventory cache")
     parser.add_argument(
         "--repo-root",
         type=Path,
@@ -50,6 +65,13 @@ def main(argv: list[str] | None = None) -> int:
         type=Path,
         default=None,
         help="Where to write tracker.json (default: repo root)",
+    )
+    parser.add_argument(
+        "--refresh-cache",
+        action="store_true",
+        help="Call learn.wordpress.org for every scope URL and write "
+             "inventory-cache.json. Skips issue fetch and tracker.json output. "
+             "Run this locally — it's too rate-limited for CI.",
     )
     parser.add_argument(
         "--skip-issues",
@@ -68,7 +90,64 @@ def main(argv: list[str] | None = None) -> int:
     )
 
     repo_root: Path = args.repo_root
-    output_dir: Path = args.output_dir or repo_root
+
+    if args.refresh_cache:
+        return _refresh_cache(repo_root)
+
+    return _build_tracker(repo_root, args.output_dir, args.skip_issues)
+
+
+# ---------------------------------------------------------------------------
+# Mode A: refresh the inventory cache (run this locally)
+# ---------------------------------------------------------------------------
+
+def _refresh_cache(repo_root: Path) -> int:
+    LOG.info("Refreshing inventory cache. This calls learn.wordpress.org.")
+
+    scope = _load_and_validate_yaml(
+        repo_root / "scope.yml",
+        repo_root / "schemas" / "scope.schema.json",
+    )
+
+    # Higher throttle for local refresh — we have all the time in the world,
+    # and we want to be polite to wordpress.org.
+    throttle_s = float(os.environ.get("INVENTORY_THROTTLE_S", "1.5"))
+    LOG.info("Throttle: %.2fs between fetches", throttle_s)
+    dispatcher = Dispatcher(throttle_s=throttle_s)
+
+    out: dict = {}
+    failed: list[tuple[str, str]] = []
+    for url in scope["items"]:
+        try:
+            item = dispatcher.fetch(url)
+        except Exception as exc:  # noqa: BLE001 — log and continue
+            LOG.warning("Could not fetch %s: %s", url, exc)
+            failed.append((url, str(exc)))
+            continue
+        out[item.url_en] = item
+        LOG.info("Cached %s (parent_path=%s)", item.url_en, item.parent_path)
+
+    cache_path = repo_root / CACHE_FILENAME
+    save_cache(cache_path, out)
+
+    LOG.info("Wrote %d cache entries to %s", len(out), cache_path)
+    if failed:
+        LOG.warning(
+            "%d URLs could not be fetched (likely rate-limited). "
+            "Re-run later to fill the gaps:", len(failed),
+        )
+        for url, reason in failed:
+            LOG.warning("  - %s: %s", url, reason)
+
+    return 0
+
+
+# ---------------------------------------------------------------------------
+# Mode B: build tracker.json (this is what the Action runs)
+# ---------------------------------------------------------------------------
+
+def _build_tracker(repo_root: Path, output_dir: Path | None, skip_issues: bool) -> int:
+    output_dir = output_dir or repo_root
 
     # ----------------------------------------------------------------- step 1
     LOG.info("Loading scope.yml")
@@ -86,26 +165,25 @@ def main(argv: list[str] | None = None) -> int:
     )
 
     # ----------------------------------------------------------------- step 3
-    # Throttle between learn.wordpress.org requests — quick consecutive
-    # calls otherwise hit HTTP 429 (rate limit). 1.0s plus 429-retry
-    # in InventorySource._get_json is enough for the GitHub-hosted runners;
-    # override via INVENTORY_THROTTLE_S env var if needed.
-    throttle_s = float(os.environ.get("INVENTORY_THROTTLE_S", "1.0"))
-    LOG.info("Resolving inventory items (throttle=%.2fs)", throttle_s)
-    dispatcher = Dispatcher(throttle_s=throttle_s)
+    # Read inventory from cache (committed to the repo). No live API calls
+    # against wordpress.org — that lookup is too rate-limited in CI.
+    cache_path = repo_root / CACHE_FILENAME
+    cached_items = load_cache(cache_path)
     inventory_items = []
     inventory_warnings: list[str] = []
     for url in scope["items"]:
-        try:
-            inventory_items.append(dispatcher.fetch(url))
-        except Exception as exc:  # noqa: BLE001 — keep going on per-item errors
-            LOG.warning("Inventory fetch failed for %s: %s", url, exc)
-            inventory_warnings.append(f"Inventory fetch failed for {url}: {exc}")
-    LOG.info("Resolved %d inventory items", len(inventory_items))
+        if url in cached_items:
+            inventory_items.append(cached_items[url])
+            continue
+        msg = f"No inventory cache entry for {url}"
+        LOG.warning("%s — run `python -m src.build --refresh-cache` locally", msg)
+        inventory_warnings.append(msg)
+    LOG.info("Loaded %d inventory items from cache (of %d scope URLs)",
+             len(inventory_items), len(scope["items"]))
 
     # ----------------------------------------------------------------- step 4
     issues = []
-    if args.skip_issues:
+    if skip_issues:
         LOG.info("--skip-issues set: not fetching GitHub Project V2")
     else:
         token = os.environ.get("GH_PAT_PROJECT_READ", "")

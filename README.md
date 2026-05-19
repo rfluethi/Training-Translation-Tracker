@@ -90,6 +90,34 @@ data branch
    - Im Repo unter Settings → Secrets and variables → Actions als Repository Secret hinterlegen.
 5. Workflow manuell auslösen unter Actions → „Build tracker.json" → Run workflow.
 
+## Inventar-Cache
+
+Die Action ruft `learn.wordpress.org` **nicht** mehr live an — die
+GitHub-Runner-IPs werden vom WP-CDN aggressiv ratelimitet, in der Praxis
+kommt fast keine Anfrage durch. Stattdessen lebt das Inventar als
+vorberechnete Datei `inventory-cache.json` im Repo. Die Action liest diese
+Datei und macht damit die Pathway-Gruppierung.
+
+Wenn sich `scope.yml` ändert oder Inhalte auf learn.wordpress.org
+umstrukturiert werden, frischt der Maintainer den Cache **lokal** auf
+(Heim-/Büro-IPs sind nicht ratelimitet) und committet die neue Datei:
+
+```bash
+python -m src.build --refresh-cache
+git diff inventory-cache.json     # Review der Änderungen
+git add inventory-cache.json
+git commit -m "Refresh inventory cache"
+git push
+```
+
+`--refresh-cache` fetcht jede URL aus `scope.yml` (mit 1.5s-Throttle,
+default-mäßig) und schreibt die InventoryItems in `inventory-cache.json`.
+Es macht **keinen** Issue-Fetch und schreibt **kein** `tracker.json`.
+
+URLs, die beim Refresh nicht erreichbar sind, bleiben einfach nicht im
+Cache — beim nächsten lokalen Lauf erneut versuchen. Issues zu diesen
+URLs landen dann eben (vorübergehend) im Orphan-Bucket.
+
 ## Lokale Entwicklung
 
 ```bash
@@ -97,12 +125,15 @@ python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
 
-# Dry-Run der Pipeline (gemockte APIs):
+# Tests laufen lassen:
 pytest
 
-# Echter Lauf gegen das WordPress-Learn-Repo (Token in der Umgebung):
+# Lokaler Voll-Build (braucht Token, liest aus Cache):
 export GH_PAT_PROJECT_READ=<your token>
 python -m src.build
+
+# Cache aufbauen / aktualisieren:
+python -m src.build --refresh-cache
 ```
 
 ## Lizenz
