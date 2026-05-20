@@ -27,20 +27,11 @@
 	var LABEL_COLLAPSE_ALL = 'Alle einklappen';
 	var LABEL_EXPAND_ALL = 'Alle ausklappen';
 
-	// Sichtbares Lebenszeichen in der Browser-Konsole — falls Filter/Suche nicht
-	// funktionieren, kann man hier sofort sehen, ob das JS überhaupt lädt.
-	try {
-		console.log('[Translation Tracker] tracker.js loaded');
-	} catch (e) { /* console may be absent */ }
-
 	// Eine globale Initialisierung beim DOMContentLoaded — bindet alle Tracker auf
 	// der Seite. Falls der Shortcode mehrfach vorkommt (z.B. einmal pro Pathway),
 	// werden alle separat gehandhabt.
 	function init() {
 		var trackers = document.querySelectorAll('.ttt-tracker');
-		try {
-			console.log('[Translation Tracker] init — found ' + trackers.length + ' tracker(s)');
-		} catch (e) { /* */ }
 		for (var i = 0; i < trackers.length; i++) {
 			setupTracker(trackers[i]);
 		}

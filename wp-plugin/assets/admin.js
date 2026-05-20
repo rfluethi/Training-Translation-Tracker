@@ -14,9 +14,16 @@
 			return;
 		}
 
+		function setState(state, text) {
+			$msg
+				.removeClass('ttt-clear-msg-pending ttt-clear-msg-success ttt-clear-msg-error')
+				.addClass('ttt-clear-msg-' + state)
+				.text(text);
+		}
+
 		$btn.on('click', function () {
 			$btn.prop('disabled', true);
-			$msg.css('color', '#666').text(tttAdmin.clearing);
+			setState('pending', tttAdmin.clearing);
 
 			$.post(tttAdmin.ajaxUrl, {
 				action: 'ttt_clear_cache',
@@ -24,13 +31,13 @@
 			})
 				.done(function (res) {
 					if (res && res.success && res.data && res.data.message) {
-						$msg.css('color', '#46b450').text(res.data.message);
+						setState('success', res.data.message);
 					} else {
-						$msg.css('color', '#dc3232').text(tttAdmin.errorText);
+						setState('error', tttAdmin.errorText);
 					}
 				})
 				.fail(function () {
-					$msg.css('color', '#dc3232').text(tttAdmin.errorText);
+					setState('error', tttAdmin.errorText);
 				})
 				.always(function () {
 					$btn.prop('disabled', false);

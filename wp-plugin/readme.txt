@@ -2,35 +2,51 @@
 Contributors: learnwpdach, rfluethi
 Tags: translation, learn-wordpress, tracker, dashboard
 Requires at least: 6.0
-Tested up to: 6.6
+Tested up to: 6.9
 Requires PHP: 8.0
-Stable tag: 0.2.3
+Stable tag: 0.2.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Dashboard für den Übersetzungsfortschritt des Learn WP DACH Teams.
+Dashboard for the translation progress of the Learn WP DACH Team.
 
 == Description ==
 
-Dashboard für den Übersetzungsfortschritt des Learn WP DACH Teams. Zeigt den
-Fortschritt pro Pathway → Course → Section → Item mit Karten-Layout, Filter,
-Suche und einklappbaren Sections.
+Dashboard for the translation progress of the Learn WP DACH Team. Shows
+progress per Pathway → Course → Section → Item with a card layout, filters,
+search and collapsible sections.
 
-Das Plugin macht keinerlei eigene API-Calls gegen WordPress/Learn — stattdessen
-liest es eine vorgerechnete JSON-Datei (`tracker.json`), die separat als
-GitHub-Action gebaut wird. Dadurch ist die Webseite schnell, die Pflege gering
-und das Plugin trotzdem aussagekräftig.
+The plugin does not make any API calls against WordPress.org or learn.wordpress.org
+itself. Instead it reads a pre-built JSON file (`tracker.json`) that is
+generated separately by a GitHub Action. This keeps the website fast,
+maintenance low, and the plugin lightweight.
+
+This plugin is currently in beta (0.x.y) and is maintained by the Learn WP
+DACH Team for translating learn.wordpress.org content into German.
 
 == Installation ==
 
-1. Plugin-Verzeichnis nach wp-content/plugins/ kopieren oder ZIP via
-   WordPress-Admin hochladen.
-2. Plugin aktivieren.
-3. Unter Einstellungen → Translation Tracker die URL der tracker.json
-   prüfen und ggf. anpassen.
-4. Shortcode `[translation_tracker]` auf einer beliebigen Seite einbauen.
+1. Copy the plugin directory to wp-content/plugins/ or upload the ZIP via
+   the WordPress admin.
+2. Activate the plugin.
+3. Under Settings → Translation Tracker, check the tracker.json URL and
+   adjust if needed.
+4. Embed the shortcode `[translation_tracker]` on any page.
 
 == Changelog ==
+
+= 0.2.4 =
+* Plugin Check compliance: added missing translators comments, fixed unescaped
+  output in settings field, removed legacy load_plugin_textdomain() call,
+  removed non-existent Domain Path header, updated Tested up to header.
+* readme.txt converted to English (per wp.org Plugin Directory requirements).
+* CSS architecture refactor: design tokens via `--ttt-*` custom properties,
+  theme.json fallbacks for brand colors (`--wp--preset--color--primary` etc.),
+  inline style block and external stylesheet share the same token set.
+* Polish: removed duplicate translators comment in fetcher, removed debug
+  console.log calls from tracker.js, moved inline `style="color:..."` from
+  the settings page to dedicated CSS classes, parameterised the component-icon
+  SVG inline size via the new `--ttt-icon-svg` token.
 
 = 0.2.3 =
 * Erstes Beta-Release mit komplettem Feature-Set.
@@ -48,6 +64,8 @@ und das Plugin trotzdem aussagekräftig.
   show_stats für flexible Filterung pro Seite.
 * Smart-Defaults: pathway="..." blendet Orphan/Handbook automatisch aus.
 * Robuste Inline-Styles-Strategie gegen Theme-Konflikte und Page-Builder.
+
+= Legacy pre-beta releases (internal 2.x numbering, kept for reference) =
 
 = 2.1.5 =
 * Bugfix: Leerer Collapse-Alle-Button beim ersten Seitenaufruf — JS-Labels

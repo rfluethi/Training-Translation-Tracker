@@ -570,21 +570,23 @@ zugeklappt, in denen keine sichtbare Karte mehr enthalten ist.
 
 ### Diagnostik
 
-Beim Laden gibt das JS folgende Konsole-Meldungen aus:
+Das JS schreibt im Produktivbetrieb nichts in die Browser-Konsole.
+Wenn Filter/Suche/Collapse nicht reagieren, ist meist eines davon
+schuld:
 
-```
-[Translation Tracker] tracker.js loaded
-[Translation Tracker] init — found N tracker(s)
-```
+- `tracker.js` lädt nicht (im Network-Tab prüfen, ob die Datei mit
+  HTTP 200 kommt).
+- Ein Page-Builder hat den `<script src>`-Tag aus dem Output entfernt
+  (Source HTML im Browser inspizieren).
+- Eine andere `.ttt-tracker`-Instanz wurde vom Theme/Plugin überlagert.
 
-Diese sind nützlich, um zu prüfen, ob das JS überhaupt zur Ausführung
-kommt (Debug-Sequenz: F12 → Console).
+Für die Debug-Sequenz reicht F12 → Console + Network.
 
 ---
 
-## CSS: Inline-First-Strategie
+## CSS: Inline-First-Strategie + Design-Tokens
 
-Lehre aus den Iterationen 2.0.x:
+### Warum Inline-First
 
 In WordPress-Umgebungen mit Page-Buildern (Elementor, Divi, Beaver Builder)
 und/oder Caching-Plugins (WP Rocket, LiteSpeed Cache) lädt eine via
@@ -593,27 +595,104 @@ Der Plugin-Hook `has_shortcode( $post->post_content, … )` versagt
 insbesondere, wenn der Shortcode in einem Builder-eigenen Meta-Feld
 liegt statt im klassischen `post_content`.
 
-### Lösung
+**Lösung:** alle Styles werden inline als `<style id="ttt-inline-critical">`-
+Block direkt am Anfang der Shortcode-Ausgabe geschrieben (siehe
+`TTT_Renderer::render_inline_styles()`). Die externe `assets/style.css`
+wird zusätzlich enqueued — sie deckt Edge-Cases ab, in denen der Tracker
+außerhalb eines Shortcodes referenziert wird, und enthält denselben
+Regelsatz wie der Inline-Block.
 
-Die kritischen Layout-Styles werden **inline** als `<style id="ttt-inline-critical">`-
-Block direkt am Anfang der Shortcode-Ausgabe geschrieben. Die externe
-`assets/style.css` wird zusätzlich enqueued, aber als Backup für
-„Schöner-Effekte" (Hover-Transitions, Detail-Polishing), nicht für
-das Kern-Layout.
+Wegen der bewussten Abweichung von `wp_enqueue_style()` umklammern
+beide `<style>`-Tags einen
+`phpcs:disable WordPress.WP.EnqueuedResources.NonEnqueuedStylesheet`-Block.
+
+### Design-Tokens
+
+Ab v0.2.4 sind Farben, Spacings, Schriftgrößen, Borders und Icon-Größen
+als CSS-Custom-Properties am `.ttt-tracker`-Root definiert. Sowohl
+`assets/style.css` als auch `render_inline_styles()` deklarieren das
+**gleiche Token-Set** — Pflege passiert über die Token-Werte oben,
+nicht über zig verstreute Regeln.
+
+```css
+.ttt-tracker {
+    /* Brand-Farben — vom Theme über theme.json überschreibbar. */
+    --ttt-color-primary: var(--wp--preset--color--primary, #2271b1);
+    --ttt-color-text:    var(--wp--preset--color--foreground, #222);
+    --ttt-color-bg:      var(--wp--preset--color--base, #fff);
+
+    /* Status-Semantik — Plugin-fix, NICHT überschreibbar. */
+    --ttt-color-done:    #28a745;
+    --ttt-color-review:  #d4a017;
+    --ttt-color-wip:     #1c7ed6;
+
+    /* Spacing-Skala, Typografie, Borders, Icon-Größen */
+    --ttt-space-md:      0.6rem;
+    --ttt-font-size-sm:  0.85rem;
+    --ttt-radius-md:     6px;
+    --ttt-icon-svg:      18px;
+    /* … */
+}
+```
+
+**Konvention:** Brand-Farben fallen auf `--wp--preset--color--*`-Variablen
+zurück, die jedes Theme mit `theme.json` definiert. Status-Farben
+(done/review/wip/open/na) sind bewusst nicht überschreibbar — sie sind
+semantisch (grün = fertig, gelb = Review) und sollten konsistent über
+alle Themes hinweg gleich aussehen.
+
+**Override am Theme:** wer das Default-Styling anpassen will, setzt
+eigene Token-Werte am `.ttt-tracker`-Selektor in Child-Theme- oder
+Customizer-CSS:
+
+```css
+.ttt-tracker {
+    --ttt-color-primary: #8e44ad;
+    --ttt-radius-md: 12px;
+    --ttt-font-size-base: 1.05rem;
+}
+```
+
+Das überschreibt automatisch alle Stellen, die `var(--ttt-color-primary)`
+etc. lesen — ohne `!important`-Krieg mit einzelnen Plugin-Regeln.
 
 ### Specificity-Strategie
 
-Alle Inline-Regeln tragen den `.ttt-tracker`-Parent-Prefix für höhere
+Alle Plugin-Regeln tragen den `.ttt-tracker`-Parent-Prefix für höhere
 Specificity gegen Theme-Rules. Wo Themes Standard-`!important`-Regeln
 haben (z. B. `svg { max-width: 100% !important }`), gewinnt das Plugin
 mit eigenen `!important`-Rules auf den entscheidenden Properties:
 
 - `.ttt-tracker .ttt-card-cols { display: grid !important; grid-template-columns: 1fr 1fr !important; }`
 - `.ttt-tracker .ttt-card-footer-right { display: flex !important; flex-direction: row !important; }`
-- `.ttt-tracker .ttt-card-footer-right .ttt-comp-icon svg { width: 18px !important; height: 18px !important; }`
+- `.ttt-tracker .ttt-card-footer-right .ttt-comp-icon svg { width: var(--ttt-icon-svg) !important; height: var(--ttt-icon-svg) !important; }`
 
-Zusätzlich tragen die `<svg>`-Elemente Inline-`style="width:18px;height:18px"`
-als letzte Verteidigungslinie.
+Die SVG-Größe kommt also vom Token, nicht von hardcodierten Pixel-Werten
+(früher Inline-`style="width:18px;height:18px"` direkt am `<svg>`).
+
+### Doppelpflege style.css ↔ Inline-Block
+
+Solange Stufe 3 (gemeinsame Quelle aus PHP-Array generieren) nicht
+implementiert ist, müssen Änderungen am Token-Set in **beiden** Quellen
+gespiegelt werden. Sanity-Check per Python:
+
+```bash
+python3 - <<'EOF'
+import re
+def check(label, c):
+    used = set(re.findall(r'var\(--ttt-[\w-]+', c))
+    defined = set(f'var({n}' for n in re.findall(r'(--ttt-[\w-]+):', c))
+    print(f'{label}: used={len(used)} defined={len(defined)} '
+          f'missing={sorted(used-defined)} unused={sorted(defined-used)}')
+
+with open('wp-plugin/assets/style.css') as f: check('style.css', f.read())
+with open('wp-plugin/includes/class-renderer.php') as f:
+    m = re.search(r'<style id="ttt-inline-critical">(.*?)</style>', f.read(), re.DOTALL)
+    if m: check('inline   ', m.group(1))
+EOF
+```
+
+Erwartet: keine `missing` und keine `unused` Tokens in beiden Quellen.
 
 ---
 
@@ -762,21 +841,27 @@ ln -s /path/to/Training-Translation-Tracker-Inventory-Plugin/wp-plugin training-
 
 ### Versionierung
 
-Drei Stellen pro Release synchron halten:
+Drei Stellen pro Release synchron halten (Beispiel: aktuelle Beta `0.2.4`):
 
 | Datei | Wert |
 |---|---|
-| `wp-plugin/training-translation-tracker.php` Plugin-Header `Version:` | `2.1.1` |
-| `wp-plugin/training-translation-tracker.php` Konstante `TTT_VERSION` | `2.1.1` |
-| `wp-plugin/readme.txt` `Stable tag:` | `2.1.1` |
+| `wp-plugin/training-translation-tracker.php` Plugin-Header `Version:` | `0.2.4` |
+| `wp-plugin/training-translation-tracker.php` Konstante `TTT_VERSION` | `0.2.4` |
+| `wp-plugin/readme.txt` `Stable tag:` | `0.2.4` |
 
-Semantic Versioning:
+Der CI-Workflow `release-plugin.yml` verifiziert die Konsistenz dieser
+drei Werte beim Tag-Push und bricht ab, wenn sie auseinanderlaufen.
 
-- Patch (`2.1.x`) — Bugfixes, keine Datenmodell-Änderungen.
-- Minor (`2.x.0`) — Neue Features, abwärtskompatibel zur Vorgänger-
-  `schema_version`.
-- Major (`x.0.0`) — Schema-Sprung der `tracker.json`, Plugin lehnt
-  alte Daten ab.
+Beta-Schema `0.x.y`:
+
+- `0.2.x` — laufende Beta-Iteration, gleiches `schema_version=1`.
+- `0.3.0` — geplanter nächster Minor mit neuen Features.
+- `1.0.0` — erstes stabiles Release, wenn Plugin produktiv-ready ist.
+
+Schema-Versionierung des Datenmodells:
+
+- `tracker.json schema_version`-Sprung → Plugin lehnt alte Daten ab
+  (siehe `TTT_TRACKER_SCHEMA_VERSION` in `training-translation-tracker.php`).
 
 ---
 
@@ -794,12 +879,14 @@ Normalisierung ab.
 
 ### Plugin (PHP)
 
-Stand 2.1.1: **keine automatisierten Tests**. Plugin wird per
-Sichtprüfung in einer lokalen WordPress-Installation getestet.
+Stand 0.2.4: **keine automatisierten PHP-Tests**. Plugin wird per
+Sichtprüfung in einer lokalen WordPress-Installation oder im
+[WP-Playground](https://playground.wordpress.net/) getestet, plus
+einen Lauf durch das offizielle [Plugin Check](https://wordpress.org/plugins/plugin-check/).
 
 **Mindest-Smoketest** bei jedem Release:
 
-1. ZIP frisch bauen.
+1. ZIP frisch bauen (via `release-plugin.yml` oder lokalem rsync-Skript).
 2. In einer Test-Installation altes Plugin löschen, neues hochladen,
    aktivieren.
 3. Settings → URL prüfen, Cache leeren.
@@ -813,76 +900,75 @@ Sichtprüfung in einer lokalen WordPress-Installation getestet.
 
 Manuell:
 
-1. F12 → Console.
-2. `[Translation Tracker] tracker.js loaded` und `init — found N tracker(s)`
-   sollten erscheinen.
-3. Klick auf Stats-Pille → entsprechende Karten bleiben, andere
+1. Klick auf Stats-Pille → entsprechende Karten bleiben, andere
    ausgeblendet.
-4. Tippe ins Suchfeld → Live-Filter.
-5. Klick auf Section-Titel → klappt zu.
+2. Tippe ins Suchfeld → Live-Filter.
+3. Klick auf Section-Titel → klappt zu, State überlebt Page-Reload.
+4. F12 → Network: `tracker.js` lädt mit HTTP 200.
 
 ---
 
 ## Bekannte technische Schulden
 
-### 1. JS-Loading nicht universell
-
-Stand v2.1.1: das `<script src="…tracker.js" defer>`-Tag im Shortcode-
-Output funktioniert in lokalen Test-Setups, aber nicht zuverlässig
-in produktiven Page-Builder/Cache-Plugin-Kombinationen beim End-User.
-
-**Hypothesen** (noch nicht verifiziert):
-
-- `wpautop` oder ähnliche Content-Filter zerstören das `<script>`-Tag.
-- Cache-Plugin liefert alte HTML-Response ohne den neuen Script-Tag.
-- Theme strippt `<script>`-Tags aus Content (Sicherheits-Filter).
-
-**Alternative Implementierung** (für nächste Iteration):
-
-- Option A: JS via `wp_footer`-Hook ausgeben — sauber, aber funktioniert
-  nur, wenn das Theme `wp_footer()` aufruft.
-- Option B: `wp_add_inline_script( 'jquery-core', $js )` — hängt am
-  jQuery-Handle, fast immer aktiv.
-- Option C: Filter komplett serverseitig über Query-Parameter
-  (`?ttt_filter=done`) — keine JS-Abhängigkeit. Verliert Live-Suche
-  und Collapse-State, gewinnt Robustheit.
-
-### 2. Keine PHP-Tests
+### 1. Keine PHP-Tests
 
 Plugin hat ~600 LOC PHP ohne Tests. Bei größeren Refactorings sollte
 zumindest PHPUnit oder Pest mit einem Mock-Fetcher dazukommen.
 
-### 3. i18n unvollständig
+### 2. i18n unvollständig
 
-Alle Strings sind via `__()`/`_e()`/`esc_html__()` i18n-fähig, aber das
+Alle Strings sind via `__()`/`_e()`/`esc_html__()` i18n-fähig (mit
+korrekten translators-Kommentaren, Plugin-Check-konform), aber das
 `languages/`-Verzeichnis ist leer (kein `.pot`, kein `de_DE.po/.mo`).
 Frontend zeigt deutsche Strings hardcoded — funktioniert solange das
 Plugin nur für die DACH-Locale gedacht ist.
 
-### 4. Keine GitHub-Releases automatisiert
+**Nächster Schritt:** `wp i18n make-pot wp-plugin/ wp-plugin/languages/training-translation-tracker.pot`
+ausführen und das `.pot` ins Repo legen.
 
-`build-plugin-zip.sh` baut lokal. Es gibt keinen GitHub-Action-Workflow,
-der bei Tag-Push automatisch ein Release mit ZIP erzeugt. Für Phase 4
-(Cutover, GitHub-Updater-Plugin-Distribution) wäre das sinnvoll.
+### 3. CSS-Doppelpflege style.css ↔ Inline-Block
 
-### 5. Komponenten-Icons sind hardcodiert
+Beide Quellen tragen das gleiche Token-Set und denselben Regelsatz.
+Stufe 3 (gemeinsame Quelle aus PHP-Array generieren, sodass beide
+Outputs aus einem Token-Dict gerendert werden) wurde in v0.2.4
+absichtlich nicht umgesetzt, weil Stufe 1+2 für die Pflegbarkeit
+bereits den größten Teil bringt. Falls die Doppelpflege später lästig
+wird, ist Stufe 3 ein gut abgrenzbares Refactoring.
+
+### 4. Komponenten-Icons sind hardcodiert
 
 `COMPONENT_ICONS` ist eine PHP-Konstante. Neue Komponenten brauchen
 eine Plugin-Codeänderung. Alternative: Icons in `component-templates.yml`
 referenzieren und in der `tracker.json` mitliefern — dann ist das
 Plugin komplett konfigurations-getrieben.
 
+### 5. Settings-Status-Hinweis nutzt fixe Hex-Werte
+
+Die Inline-CSS-Klassen in `class-settings.php` (`.ttt-settings-status-active`,
+`.ttt-clear-msg-error` etc.) haben hardcodierte Farb-Hex-Werte und
+profitieren nicht vom `--ttt-*`-Token-System. Akzeptabel, weil diese
+Klassen nur in der wp-admin-Seite auftauchen und das Plugin-Frontend
+nicht beeinflussen, aber konsistenter wäre es, sie auch über Tokens zu
+führen.
+
 ---
 
 ## Versionshistorie
 
+Aktuelle (Beta-Schema 0.x.y):
+
+| Version | Datum | Wesentliche Änderung |
+|---|---|---|
+| 0.2.3 | 2026-05 | Erstes offizielles Beta-Release, vollständiges Feature-Set, GitHub-Release-Workflow. |
+| 0.2.4 | 2026-05 | Plugin-Check-Compliance (translators-Comments, escape-Fixes, Domain-Path entfernt). CSS-Architektur-Refactor mit Design-Tokens und theme.json-Fallbacks. Polish-Findings aus Plugin-Developer-Audit. |
+
+Pre-Beta (internes 2.x-Schema, abgelöst durch 0.x.y):
+
 | Version | Datum | Wesentliche Änderung |
 |---|---|---|
 | 2.0.0 | 2026-04 | Erste Alpha mit Settings, Fetcher, simpler Listen-Renderer. |
-| 2.0.1 – 2.0.7 | 2026-05 | Iterationen am Karten-Layout, Inline-Styles-Strategie. |
-| 2.0.8 | 2026-05 | Karten-Layout final stabil. |
-| 2.1.0 | 2026-05 | Filter, Suche, Section-Collapse via JS. |
-| 2.1.1 | 2026-05 | JS auf `<script src>`-Tag umgestellt, Filter-Button-Reihe entfernt (Stats sind klickbar), `pathway`-Smart-Default, Datum nur für Admins. |
+| 2.0.x | 2026-05 | Iterationen am Karten-Layout, Inline-Styles-Strategie, Karten-Layout final stabil. |
+| 2.1.0 – 2.1.5 | 2026-05 | Filter, Suche, Section-Collapse via JS; `<script src>`-Tag-Umstellung; Stats sind klickbare Filter; Collapse-Toggle „Alle einklappen"; localStorage-State-Stabilität. |
 
 ---
 

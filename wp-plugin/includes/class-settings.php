@@ -159,7 +159,7 @@ class TTT_Settings {
 		printf(
 			'<input type="number" name="%1$s[cache_hours]" value="%2$d" min="1" max="168" class="small-text" />',
 			esc_attr( TTT_OPTION_KEY ),
-			$value
+			(int) $value
 		);
 		echo ' <span class="description">';
 		echo esc_html__( '1–168 Stunden. Empfohlen: 12 (passt zum Action-Intervall).', 'training-translation-tracker' );
@@ -182,7 +182,25 @@ class TTT_Settings {
 		$generated   = $this->extract_generated_at( $last_good );
 		$cache_state = false !== get_transient( TTT_TRANSIENT_KEY );
 
+		// Inline-<style>-Block bewusst statt eines separaten admin-Stylesheets,
+		// um den enqueue-Overhead für eine Handvoll Settings-spezifischer Regeln
+		// zu vermeiden. Wenn die Settings-Seite mal wachsen sollte: in eigene
+		// CSS-Datei umstellen und per wp_enqueue_style laden.
+		// phpcs:disable WordPress.WP.EnqueuedResources.NonEnqueuedStylesheet
 		?>
+		<style>
+			/* Kleine Styles nur für diese Settings-Seite. */
+			.ttt-settings-status-active   { color: #2271b1; }
+			.ttt-settings-status-inactive { color: #999; }
+			.ttt-settings-clear-msg       { margin-left: 10px; }
+			.ttt-settings-shortcode-table { max-width: 800px; }
+			.ttt-settings-shortcode-note  { margin-top: 0.75rem; }
+			/* Status-Farben für die AJAX-Rückmeldung aus admin.js */
+			.ttt-clear-msg-pending { color: #666; }
+			.ttt-clear-msg-success { color: #46b450; }
+			.ttt-clear-msg-error   { color: #dc3232; }
+		</style>
+		<?php // phpcs:enable WordPress.WP.EnqueuedResources.NonEnqueuedStylesheet ?>
 		<div class="wrap">
 			<h1><?php esc_html_e( 'Translation Tracker', 'training-translation-tracker' ); ?></h1>
 
@@ -199,18 +217,18 @@ class TTT_Settings {
 			<h2><?php esc_html_e( 'Cache-Status', 'training-translation-tracker' ); ?></h2>
 			<p>
 				<?php if ( $cache_state ) : ?>
-					<span style="color:#2271b1;">●</span>
+					<span class="ttt-settings-status-active">●</span>
 					<?php esc_html_e( 'Cache ist aktiv.', 'training-translation-tracker' ); ?>
 				<?php else : ?>
-					<span style="color:#999;">○</span>
+					<span class="ttt-settings-status-inactive">○</span>
 					<?php esc_html_e( 'Cache ist leer — beim nächsten Shortcode-Aufruf wird neu geladen.', 'training-translation-tracker' ); ?>
 				<?php endif; ?>
 			</p>
 			<?php if ( $generated ) : ?>
 				<p>
 					<?php
-					/* translators: %s: UTC timestamp from tracker.json. */
 					printf(
+						/* translators: %s: UTC timestamp from tracker.json. */
 						esc_html__( 'Letzter erfolgreicher Stand der tracker.json: %s (UTC)', 'training-translation-tracker' ),
 						'<code>' . esc_html( $generated ) . '</code>'
 					);
@@ -222,7 +240,7 @@ class TTT_Settings {
 				<button type="button" id="ttt-clear-cache" class="button button-secondary">
 					<?php esc_html_e( 'Cache jetzt leeren', 'training-translation-tracker' ); ?>
 				</button>
-				<span id="ttt-clear-cache-msg" style="margin-left:10px;"></span>
+				<span id="ttt-clear-cache-msg" class="ttt-settings-clear-msg"></span>
 			</p>
 
 			<hr>
@@ -231,7 +249,7 @@ class TTT_Settings {
 			<p>
 				<?php esc_html_e( 'Auf einer beliebigen WordPress-Seite einfügen. Mehrere Attribute beliebig kombinierbar.', 'training-translation-tracker' ); ?>
 			</p>
-			<table class="widefat striped" style="max-width:800px;">
+			<table class="widefat striped ttt-settings-shortcode-table">
 				<thead>
 					<tr>
 						<th><?php esc_html_e( 'Shortcode', 'training-translation-tracker' ); ?></th>
@@ -286,7 +304,7 @@ class TTT_Settings {
 				</tbody>
 			</table>
 
-			<p style="margin-top:0.75rem;">
+			<p class="ttt-settings-shortcode-note">
 				<?php esc_html_e( 'Werte "yes/no", "true/false" und "1/0" werden alle akzeptiert.', 'training-translation-tracker' ); ?>
 			</p>
 		</div>

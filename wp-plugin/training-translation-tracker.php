@@ -3,7 +3,7 @@
  * Plugin Name:       Training Translation Tracker
  * Plugin URI:        https://github.com/rfluethi/learn-wp-dach-sitzungen
  * Description:       Dashboard für den Übersetzungsfortschritt des Learn WP DACH Teams.
- * Version:           0.2.3
+ * Version:           0.2.4
  * Requires at least: 6.0
  * Requires PHP:      8.0
  * Author:            Learn WP DACH Team
@@ -11,7 +11,6 @@
  * License:           GPL v2 or later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain:       training-translation-tracker
- * Domain Path:       /languages
  *
  * @package           training-translation-tracker
  */
@@ -22,7 +21,7 @@ defined( 'ABSPATH' ) || exit;
 // Konstanten
 // -----------------------------------------------------------------------------
 
-define( 'TTT_VERSION', '0.2.3' );
+define( 'TTT_VERSION', '0.2.4' );
 define( 'TTT_PLUGIN_FILE', __FILE__ );
 define( 'TTT_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'TTT_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
@@ -59,21 +58,12 @@ require_once TTT_PLUGIN_DIR . 'includes/class-renderer.php';
 // -----------------------------------------------------------------------------
 
 /**
- * Lädt die Plugin-Übersetzungen.
- *
- * @return void
- */
-function ttt_load_textdomain() {
-	load_plugin_textdomain(
-		'training-translation-tracker',
-		false,
-		dirname( plugin_basename( __FILE__ ) ) . '/languages'
-	);
-}
-add_action( 'plugins_loaded', 'ttt_load_textdomain' );
-
-/**
  * Initialisiert die Hauptkomponenten.
+ *
+ * Hinweis: load_plugin_textdomain() wird nicht aufgerufen — seit WordPress 4.6
+ * lädt WordPress die Übersetzungen automatisch, sobald das Plugin auf
+ * WordPress.org gehostet wird oder die Sprach-Dateien unter wp-content/languages/
+ * liegen.
  *
  * @return void
  */

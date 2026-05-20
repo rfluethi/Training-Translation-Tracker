@@ -124,11 +124,10 @@ class TTT_Fetcher {
 
 		$code = wp_remote_retrieve_response_code( $response );
 		if ( $code < 200 || $code >= 300 ) {
-			/* translators: %d: HTTP status code. */
 			return new WP_Error(
 				'ttt_http_error',
 				sprintf(
-					/* translators: %d HTTP status. */
+					/* translators: %d: HTTP status code. */
 					__( 'HTTP-Fehler beim Laden der tracker.json: %d', 'training-translation-tracker' ),
 					$code
 				)
@@ -140,8 +139,8 @@ class TTT_Fetcher {
 		if ( null === $data && JSON_ERROR_NONE !== json_last_error() ) {
 			return new WP_Error(
 				'ttt_json_error',
-				/* translators: %s: JSON decode error message. */
 				sprintf(
+					/* translators: %s: JSON decode error message. */
 					__( 'tracker.json konnte nicht geparst werden: %s', 'training-translation-tracker' ),
 					json_last_error_msg()
 				)
