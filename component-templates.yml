@@ -7,29 +7,29 @@
 # Validierung gegen schemas/component-templates.schema.json
 
 lesson:
-  - text
   - thumbnails
-  - video
+  - text
   - subtitles
-  - quiz
   - exercise
+  - quiz
   - audio
+  - video
 
 lesson_plan:
-  - text
   - thumbnails
+  - text
 
 tutorial:
-  - text
   - thumbnails
-  - video
+  - text
   - subtitles
+  - video
 
 handbook_text:
   - text
 
 handbook_video:
-  - text
   - thumbnails
-  - video
+  - text
   - subtitles
+  - video
