@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.eggs/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.tox/
+.venv/
+venv/
+env/
+
+# Local builds / outputs (live on data branch instead)
+/tracker.json
+/last-run.md
+
+# Editor / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

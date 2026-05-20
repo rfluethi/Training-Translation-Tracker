@@ -1,4 +1,29 @@
-# Python
+# Top-Level .gitignore — Mono-Repo (Action + Plugin)
+
+# ----------------------------------------------------------
+# Konzept-Doku bleibt LOKAL beim Maintainer (Architektur-Diskussion,
+# Issue-Vorlagen, Schema-Original). NICHT ins Repo committen.
+# ----------------------------------------------------------
+/Konzept/
+
+# ----------------------------------------------------------
+# macOS / OS-Metadata
+# ----------------------------------------------------------
+.DS_Store
+Thumbs.db
+
+# ----------------------------------------------------------
+# Build-Outputs (das ZIP wird bei jedem Build neu erzeugt — Source liegt
+# unter wp-plugin/, das ZIP ist nur Distribution-Artefakt)
+# ----------------------------------------------------------
+training-translation-tracker.zip
+*.zip
+tracker-phase3-preview.json
+tracker-preview*.json
+
+# ----------------------------------------------------------
+# Python (action/-Ordner)
+# ----------------------------------------------------------
 __pycache__/
 *.py[cod]
 *$py.class
@@ -11,13 +36,19 @@ __pycache__/
 .venv/
 venv/
 env/
+pytest-cache-files-*/
 
-# Local builds / outputs (live on data branch instead)
-/tracker.json
-/last-run.md
+# Lokale Build-Outputs der Action (live auf data-Branch, nicht auf main)
+/action/tracker.json
+/action/last-run.md
+/action/data-hygiene.md
+/action/_output/
+/action/_data/
 
-# Editor / OS
+# ----------------------------------------------------------
+# Editor / IDE
+# ----------------------------------------------------------
 .vscode/
 .idea/
-.DS_Store
-Thumbs.db
+*.swp
+*~

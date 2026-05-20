@@ -14,17 +14,14 @@ on:
   push:
     branches:
       - main
-    # Nur Action-relevante Pfade triggern den Build — Plugin-Änderungen
-    # (wp-plugin/) lösen die Action NICHT aus, weil sie tracker.json
-    # nicht beeinflussen.
     paths:
-      - "action/scope.yml"
-      - "action/component-templates.yml"
-      - "action/inventory-cache.json"
-      - "action/src/**"
-      - "action/schemas/**"
-      - "action/requirements.txt"
+      - "scope.yml"
+      - "component-templates.yml"
+      - "inventory-cache.json"
+      - "src/**"
+      - "schemas/**"
       - ".github/workflows/build.yml"
+      - "requirements.txt"
 
 # Workflow darf den data-Branch beschreiben, sonst nur lesen.
 permissions:
@@ -38,10 +35,6 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
-    # Alle Action-Schritte laufen im action/-Unterordner (Mono-Repo-Layout).
-    defaults:
-      run:
-        working-directory: action
     steps:
       - name: Checkout main
         uses: actions/checkout@v4
@@ -53,7 +46,6 @@ jobs:
         with:
           python-version: "3.12"
           cache: "pip"
-          cache-dependency-path: action/requirements.txt
 
       - name: Install dependencies
         run: |
@@ -92,8 +84,6 @@ jobs:
       # ---------------------------------------------------------------
       - name: Publish to data branch
         if: success()
-        # Worktree-Operation muss vom Repo-Root aus laufen, nicht aus action/
-        working-directory: ${{ github.workspace }}
         run: |
           set -euo pipefail
 
@@ -105,9 +95,9 @@ jobs:
 
           # Alles aus dem alten Branch entfernen, nur Output rüberkopieren
           git rm -rf . >/dev/null 2>&1 || true
-          cp ../action/_output/tracker.json .
-          cp ../action/_output/last-run.md .
-          cp ../action/_output/data-hygiene.md .
+          cp ../_output/tracker.json .
+          cp ../_output/last-run.md .
+          cp ../_output/data-hygiene.md .
 
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"

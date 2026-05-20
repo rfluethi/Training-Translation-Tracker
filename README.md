@@ -1,142 +1,120 @@
-# Training Translation Tracker — Inventory Plugin
+# Training Translation Tracker (DACH)
 
-> Inventar-getriebener Translation Tracker für das WordPress DACH-Team.
-> Diese Repository enthält die GitHub Action, die `tracker.json` baut.
-> Das schlanke WP-Plugin folgt in einer späteren Phase.
+Mono-Repo für das inventar-getriebene Übersetzungs-Dashboard des
+WordPress-DACH-Teams. Zwei Komponenten, ein Repo:
 
-## Was hier passiert
+1. **`action/`** — GitHub Action (Python), die ein `tracker.json`-Snapshot
+   aller DACH-Übersetzungen erzeugt. Läuft alle 12 Stunden und beim Push
+   auf relevante Action-Pfade.
+2. **`wp-plugin/`** — WordPress-Plugin, das `tracker.json` lädt und auf
+   einer WP-Seite als Dashboard rendert (Karten, Filter, Suche, Collapse).
 
-Eine GitHub Action läuft alle 12 Stunden und:
+---
 
-1. liest `scope.yml` (welche URLs sollen im Tracker erscheinen)
-2. holt für jede URL die Inventar-Daten von `learn.wordpress.org` bzw. `make.wordpress.org/training/handbook/`
-3. holt alle DACH-Übersetzungs-Issues aus `WordPress/Learn` (Project V2 #104, Locale = German)
-4. matched Inventar ↔ Issues über die normalisierte Original-URL
-5. parst die Status-Tabellen aus den Issue-Bodies
-6. schreibt `tracker.json` (und `last-run.md` als Logfile) auf den `data`-Branch
-
-Das resultierende `tracker.json` ist anschließend statisch unter `https://raw.githubusercontent.com/<owner>/Training-Translation-Tracker-Inventory-Plugin/data/tracker.json` abrufbar und wird vom WordPress-Plugin gelesen.
-
-## Konzept und Entscheidungen
-
-Architektur, Entscheidungen und Phase-0-Deliverables liegen im
-Schwester-Ordner `../Konzept/` (lokal im DACH-Workspace, *nicht* Teil dieses
-Repos):
-
-- `Konzept.md` — Gesamtarchitektur
-- `Arbeitsplan.md` — verbindliche Entscheidungen und AI-ausführbare Aufgabenliste
-- `API-Befunde.md` — REST-Endpoint-Liste
-- `Issue-Vorlage-DACH.md` — Vorlage für neue DACH-Übersetzungs-Issues
-- `schemas/` — JSON Schemata (authoritative Spec)
-
-Die JSON-Schemata in `schemas/` dieses Repos sind eine Laufzeit-Kopie und
-müssen synchron mit `../Konzept/schemas/` bleiben. Das Workspace-Skript
-`../sync-schemas.py` hält beide Stände abgleichbar:
-
-```bash
-# Im Workspace-Root (eine Ebene über diesem Repo):
-python sync-schemas.py            # prüft, Exit 1 bei Drift
-python sync-schemas.py --apply    # Konzept/schemas/ → github/schemas/
-```
-
-Vor jedem Push empfehlenswert.
-
-## Repository-Struktur
+## Repo-Layout
 
 ```text
-.
-├── .github/workflows/build.yml   Workflow: cron / dispatch / push
-├── scope.yml                      Locale + Hierarchie + URLs (Single Source of Truth)
-├── component-templates.yml        Default-Komponenten pro Item-Typ
-├── inventory-cache.json           Vorberechnete Inventar-Daten (lokal aktualisiert)
-├── schemas/                       Phase-0-Schemata (Kopie aus dem Konzept-Ordner)
-├── src/
-│   ├── inventory/                 REST-Module pro Item-Typ + URL-Normalizer
-│   ├── github/                    GraphQL-Client + Issue-Parser
-│   ├── builder/                   Joiner, Stats, Output-Writer
-│   └── build.py                   Einstiegspunkt für die Action
-├── tests/                         Unit-Tests (mit gemockter API)
-├── requirements.txt
-├── LICENSE                        GPL-2.0-or-later
-└── README.md
+Training-Translation-Tracker-Inventory-Plugin/
+├── .github/workflows/build.yml   Workflow auf Top-Level (GitHub-Convention)
+├── action/                       Python-Action — baut tracker.json auf data-Branch
+│   ├── src/                      Inventar-Sources, Issue-Parser, Joiner, Build-Entry-Point
+│   ├── tests/                    pytest-Tests
+│   ├── schemas/                  JSON-Schemata (Laufzeit-Kopie)
+│   ├── scope.yml                 DACH-Scope: welche URLs werden getrackt
+│   ├── component-templates.yml   Default-Komponenten pro Item-Typ
+│   ├── inventory-cache.json      Committed Inventory-Snapshot
+│   ├── requirements.txt
+│   ├── README.md                 Action-spezifisches README
+│   └── LICENSE
+│
+├── wp-plugin/                    WordPress-Plugin
+│   ├── training-translation-tracker.php   Plugin-Header + Boot
+│   ├── includes/                 Settings, Fetcher, Renderer
+│   ├── assets/                   CSS + JS für das Frontend
+│   ├── docs/                     Benutzerhandbuch + Entwickler-Doku
+│   ├── readme.txt                WordPress-Standard-Readme
+│   └── LICENSE
+│
+├── build-plugin-zip.sh           Plugin-ZIP für WP-Upload bauen
+├── sync-schemas.py               Sync zwischen Konzept/schemas und action/schemas (lokal)
+└── README.md                     Dieses Dokument
 ```
 
-Output landet auf einem separaten Branch:
+Nicht im Repo (lokal-only):
 
-```text
-data branch
-├── tracker.json                   Vom WP-Plugin gelesene Datei
-└── last-run.md                    Mensch-lesbarer Bericht je Lauf
+- `Konzept/` — Konzept-Doku, Architektur-Diskussion, Issue-Vorlagen. Bleibt lokal
+  beim Maintainer.
+- `training-translation-tracker.zip` — wird bei jedem Build neu erzeugt.
+- `.venv/`, `.pytest_cache/`, `.ruff_cache/` — Python-Werkzeug-Caches.
+
+---
+
+## Drei-Komponenten-Pipeline
+
+```
+┌──────────────────────────┐    ┌──────────────────────────┐    ┌──────────────────────────┐
+│  GitHub Issues (DACH)    │    │  GitHub Action (Python)  │    │  WordPress-Plugin (PHP)  │
+│  Project V2 #104         │───►│  build tracker.json auf  │───►│  liest tracker.json,     │
+│  Locale=German           │    │  data-Branch alle 12h    │    │  rendert Shortcode       │
+└──────────────────────────┘    └──────────────────────────┘    └──────────────────────────┘
+       Pflege durch                  Aggregation +                    Anzeige im
+       Übersetzer                    Schema-Validierung               Frontend
 ```
 
-## Erst-Einrichtung durch den Maintainer
+Das Plugin macht **keine** eigenen API-Calls gegen GitHub oder learn.wordpress.org.
+Alles ist auf der Action vorgerechnet, das Plugin ist ein dünner Renderer mit Cache.
 
-1. Repo auf GitHub anlegen (öffentlich): `<owner>/Training-Translation-Tracker-Inventory-Plugin`.
-2. Default-Branch `main` (wird beim Push automatisch erzeugt).
-3. Zweiten Branch `data` anlegen — leer reicht, wird vom Workflow überschrieben:
+---
 
-   ```bash
-   git checkout --orphan data
-   git rm -rf .
-   echo "# Translation Tracker Output" > README.md
-   git add README.md
-   git commit -m "Initial data branch"
-   git push origin data
-   git checkout main
-   ```
+## Schnellstart
 
-4. Secret `GH_PAT_PROJECT_READ` setzen:
-   - Token unter <https://github.com/settings/tokens> erstellen.
-   - Scopes: `read:org`, `project`.
-   - Im Repo unter Settings → Secrets and variables → Actions als Repository Secret hinterlegen.
-5. Workflow manuell auslösen unter Actions → „Build tracker.json" → Run workflow.
-
-## Inventar-Cache
-
-Die Action ruft `learn.wordpress.org` **nicht** mehr live an — die
-GitHub-Runner-IPs werden vom WP-CDN aggressiv ratelimitet, in der Praxis
-kommt fast keine Anfrage durch. Stattdessen lebt das Inventar als
-vorberechnete Datei `inventory-cache.json` im Repo. Die Action liest diese
-Datei und macht damit die Pathway-Gruppierung.
-
-Wenn sich `scope.yml` ändert oder Inhalte auf learn.wordpress.org
-umstrukturiert werden, frischt der Maintainer den Cache **lokal** auf
-(Heim-/Büro-IPs sind nicht ratelimitet) und committet die neue Datei:
+### Action lokal testen
 
 ```bash
-python -m src.build --refresh-cache
-git diff inventory-cache.json     # Review der Änderungen
-git add inventory-cache.json
-git commit -m "Refresh inventory cache"
+cd action
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+python -m src.build --skip-issues  # baut tracker.json ohne GitHub-Token
+```
+
+### Plugin-ZIP bauen
+
+```bash
+./build-plugin-zip.sh
+# → ~/Desktop/training-translation-tracker.zip
+```
+
+Im WordPress-Admin via "Plugin hochladen" installieren.
+
+### Inventory-Cache nachziehen (wenn neue scope.yml-URLs)
+
+```bash
+cd action
+python -m src.build --refresh-cache    # holt nur die noch fehlenden URLs
+git add scope.yml inventory-cache.json
+git commit -m "Scope: neue URLs"
 git push
 ```
 
-`--refresh-cache` fetcht jede URL aus `scope.yml` (mit 1.5s-Throttle,
-default-mäßig) und schreibt die InventoryItems in `inventory-cache.json`.
-Es macht **keinen** Issue-Fetch und schreibt **kein** `tracker.json`.
+Die Action triggert dann automatisch und baut tracker.json neu.
 
-URLs, die beim Refresh nicht erreichbar sind, bleiben einfach nicht im
-Cache — beim nächsten lokalen Lauf erneut versuchen. Issues zu diesen
-URLs landen dann eben (vorübergehend) im Orphan-Bucket.
+---
 
-## Lokale Entwicklung
+## Phasen-Stand
 
-```bash
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
+| Phase | Inhalt | Stand |
+|---|---|---|
+| 0 | JSON-Schemata + Issue-Vorlage | abgeschlossen |
+| 1 | GitHub Action baut tracker.json | abgeschlossen |
+| 2 | WP-Plugin mit Karten, Filter, Suche, Collapse, Popover, Project-Status | abgeschlossen — v2.3.0 |
+| 3 | Handbook-Modul + erweiterte Scope | abgeschlossen |
+| 4 | Cutover vom alten Plugin, GitHub-Updater-Plugin-Distribution | ausstehend |
 
-# Tests laufen lassen:
-pytest
+Details: Konzept-Doku (lokal beim Maintainer, nicht im Repo).
 
-# Lokaler Voll-Build (braucht Token, liest aus Cache):
-export GH_PAT_PROJECT_READ=<your token>
-python -m src.build
-
-# Cache aufbauen / aktualisieren:
-python -m src.build --refresh-cache
-```
+---
 
 ## Lizenz
 
-GPL-2.0-or-later — siehe `LICENSE`.
+GPL v2 oder später — siehe `action/LICENSE` und `wp-plugin/LICENSE`.

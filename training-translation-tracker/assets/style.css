@@ -1,0 +1,361 @@
+/*
+ * Training Translation Tracker — Frontend-Styling (Karten-Layout, Phase 2.3.1)
+ *
+ * Aufbau pro Item:
+ *   .ttt-card
+ *     .ttt-card-cols            (grid 2 spalten)
+ *       .ttt-card-col-en        (Original)
+ *         .ttt-card-label       ("Original")
+ *         .ttt-card-title       (Titel + Link)
+ *         .ttt-card-media       (WP.tv, YouTube)
+ *       .ttt-card-col-de        (Translation)
+ *         ... analog
+ *     .ttt-card-footer
+ *       .ttt-card-footer-left   (#issue, state, marker)
+ *       .ttt-card-footer-right  (Komponenten-Icons)
+ */
+
+/* ============================================================
+ * Container und Header
+ * ============================================================ */
+
+.ttt-tracker {
+	font-family: inherit;
+	line-height: 1.5;
+	margin: 1.5rem 0;
+	color: #222;
+}
+
+.ttt-header {
+	margin-bottom: 1.5rem;
+	padding-bottom: 0.75rem;
+	border-bottom: 1px solid #e5e5e5;
+}
+
+.ttt-stats {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem 0.75rem;
+	font-size: 0.95rem;
+}
+
+.ttt-stat {
+	display: inline-block;
+	padding: 0.25rem 0.6rem;
+	border-radius: 999px;
+	background: #f1f3f5;
+	color: #333;
+	font-weight: 600;
+}
+
+.ttt-stat-done   { background: #d4edda; color: #155724; }
+.ttt-stat-review { background: #fff3cd; color: #856404; }
+.ttt-stat-wip    { background: #cce5ff; color: #004085; }
+.ttt-stat-open   { background: #f8f9fa; color: #495057; }
+.ttt-stat-na     { background: #e9ecef; color: #6c757d; }
+.ttt-stat-total  { background: #343a40; color: #fff; }
+
+.ttt-generated {
+	margin-top: 0.5rem;
+	color: #6c757d;
+	font-size: 0.85rem;
+}
+
+.ttt-warn { color: #d63638; }
+
+/* ============================================================
+ * Gruppen-Hierarchie
+ * ============================================================ */
+
+.ttt-group {
+	margin: 2rem 0;
+}
+
+.ttt-group-title {
+	margin: 0 0 1rem;
+	font-size: 1.4rem;
+	border-bottom: 2px solid #2271b1;
+	padding-bottom: 0.25rem;
+}
+
+.ttt-course {
+	margin: 1.5rem 0;
+}
+
+.ttt-course-title {
+	font-size: 1.2rem;
+	margin: 0 0 0.75rem;
+	color: #2271b1;
+}
+
+.ttt-section {
+	margin: 1rem 0;
+}
+
+.ttt-section-title {
+	font-size: 1.05rem;
+	margin: 0 0 0.6rem;
+	color: #495057;
+	font-weight: 600;
+}
+
+/* ============================================================
+ * Karten — eine pro Item
+ * ============================================================ */
+
+.ttt-cards {
+	display: flex;
+	flex-direction: column;
+	gap: 0.6rem;
+}
+
+.ttt-tracker .ttt-card {
+	background: #fff;
+	border: 1px solid #e5e5e5;
+	border-left: 4px solid #adb5bd; /* Status-Farbe, siehe .ttt-overall-* */
+	border-radius: 6px;
+	padding: 0.75rem 0.9rem 0.6rem;
+}
+
+.ttt-overall-done   { border-left-color: #28a745; }
+.ttt-overall-review { border-left-color: #ffc107; }
+.ttt-overall-wip    { border-left-color: #007bff; }
+.ttt-overall-open   { border-left-color: #adb5bd; }
+.ttt-overall-na     { border-left-color: #e9ecef; }
+
+/* ---------- Zwei-Spalten-Bereich ----------
+ * `!important` + `.ttt-tracker`-Prefix, damit Theme-Regeln wie
+ * `div { display: block }` oder Wide-Block-Layouts das Grid nicht killen.
+ */
+
+.ttt-tracker .ttt-card-cols {
+	display: grid !important;
+	grid-template-columns: 1fr 1fr !important;
+	gap: 1.5rem;
+	width: 100%;
+}
+
+.ttt-tracker .ttt-card-col-en,
+.ttt-tracker .ttt-card-col-de {
+	min-width: 0; /* damit lange Titel die Grid-Spalte nicht aufdrücken */
+	display: block;
+}
+
+.ttt-card-label {
+	font-size: 0.7rem;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	color: #868e96;
+	margin-bottom: 0.15rem;
+}
+
+.ttt-card-title {
+	font-size: 0.95rem;
+	font-weight: 600;
+	color: #212529;
+	line-height: 1.3;
+}
+
+.ttt-card-title a {
+	color: inherit;
+	text-decoration: none;
+}
+
+.ttt-card-title a:hover {
+	color: #2271b1;
+	text-decoration: underline;
+}
+
+/* Placeholder-Spalte (DE-Titel fehlt → EN-Titel wird grau dargestellt). */
+.ttt-card-col-placeholder .ttt-card-title {
+	color: #adb5bd;
+	font-style: italic;
+}
+
+/* ---------- Media-Zeile innerhalb einer Spalte ---------- */
+
+.ttt-card-media {
+	margin-top: 0.25rem;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.4rem;
+}
+
+.ttt-card-media-link {
+	display: inline-block;
+	font-size: 0.78rem;
+	color: #2271b1;
+	text-decoration: none;
+}
+
+.ttt-card-media-link:hover {
+	text-decoration: underline;
+}
+
+.ttt-card-media-link::before {
+	content: "•";
+	color: #ced4da;
+	margin-right: 0.4rem;
+}
+
+.ttt-card-media-link:first-child::before {
+	content: "";
+	margin-right: 0;
+}
+
+.ttt-card-media-youtube {
+	color: #c92a2a;
+}
+
+/* ============================================================
+ * Footer-Zeile: Issue + Komponenten-Icons
+ * ============================================================ */
+
+.ttt-tracker .ttt-card-footer {
+	display: flex !important;
+	flex-direction: row;
+	justify-content: space-between;
+	align-items: center;
+	gap: 0.5rem;
+	margin-top: 0.7rem;
+	padding-top: 0.5rem;
+	border-top: 1px dashed #e9ecef;
+}
+
+.ttt-card-footer-left {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.4rem;
+	align-items: center;
+	font-size: 0.85rem;
+}
+
+.ttt-issue-number {
+	color: #2271b1;
+	text-decoration: none;
+	font-weight: 600;
+}
+
+.ttt-issue-number:hover {
+	text-decoration: underline;
+}
+
+.ttt-issue-state {
+	display: inline-block;
+	padding: 0.05rem 0.45rem;
+	border-radius: 999px;
+	font-size: 0.7rem;
+	background: #e9ecef;
+	color: #495057;
+}
+
+.ttt-issue-state-open   { background: #d4edda; color: #155724; }
+.ttt-issue-state-closed { background: #e9ecef; color: #6c757d; }
+
+/* Marker (Orphan, Parse-Error, Duplikat, …) — kleine farbige Pills */
+
+.ttt-marker {
+	display: inline-block;
+	padding: 0.1rem 0.5rem;
+	border-radius: 999px;
+	font-size: 0.72rem;
+	font-weight: 600;
+	background: #ffe3e3;
+	color: #c92a2a;
+}
+
+.ttt-marker-outside-scope        { background: #f1f3f5; color: #495057; }
+.ttt-marker-missing-in-inventory { background: #fff3bf; color: #806600; }
+.ttt-marker-duplicate            { background: #ffe3e3; color: #c92a2a; }
+.ttt-marker-draft-original       { background: #d3f9d8; color: #2f9e44; }
+.ttt-marker-parse-error          { background: #ffe3e3; color: #c92a2a; }
+
+/* ---------- Komponenten-Icons rechts ----------
+ *
+ * Specificity-Boost via `.ttt-tracker`-Prefix, damit Theme-Regeln wie
+ * `svg { max-width: 100% }` oder `img, svg { display: block; width: 100% }`
+ * die Icons nicht zu Block-Elementen aufblähen. Inline-Styles auf dem
+ * <svg> dienen als zusätzliche Absicherung.
+ */
+
+.ttt-tracker .ttt-card-footer-right {
+	display: flex !important;
+	flex-direction: row !important;
+	flex-wrap: nowrap !important;
+	gap: 0.25rem;
+	align-items: center;
+	flex-shrink: 0;
+}
+
+.ttt-tracker .ttt-card-footer-right .ttt-comp-icon {
+	width: 22px !important;
+	height: 22px !important;
+	min-width: 22px !important;
+	max-width: 22px !important;
+	display: inline-flex !important;
+	align-items: center;
+	justify-content: center;
+	cursor: help;
+	flex-shrink: 0;
+	line-height: 1;
+	margin: 0;
+	padding: 0;
+}
+
+.ttt-tracker .ttt-card-footer-right .ttt-comp-icon svg {
+	width: 18px !important;
+	height: 18px !important;
+	max-width: 18px !important;
+	max-height: 18px !important;
+	min-width: 0 !important;
+	fill: currentColor;
+	display: block !important;
+	flex-shrink: 0;
+	margin: 0;
+	padding: 0;
+}
+
+.ttt-tracker .ttt-comp-icon svg path {
+	fill: currentColor;
+}
+
+.ttt-tracker .ttt-comp-icon.ttt-comp-done   { color: #28a745; }
+.ttt-tracker .ttt-comp-icon.ttt-comp-review { color: #d4a017; }
+.ttt-tracker .ttt-comp-icon.ttt-comp-wip    { color: #1c7ed6; }
+.ttt-tracker .ttt-comp-icon.ttt-comp-open   { color: #adb5bd; opacity: 0.65; }
+.ttt-tracker .ttt-comp-icon.ttt-comp-na     { color: #ced4da; opacity: 0.45; }
+
+/* ============================================================
+ * Empty-States, Mobile
+ * ============================================================ */
+
+.ttt-empty,
+.ttt-empty-section {
+	color: #6c757d;
+	font-style: italic;
+}
+
+.ttt-empty-detail {
+	font-size: 0.85rem;
+	color: #c92a2a;
+}
+
+/* Mobile-Breakpoint: nur bei wirklich schmalen Geräten (Phone), nicht im
+ * narrow Content-Column-Bereich eines Themes. */
+@media (max-width: 480px) {
+	.ttt-tracker .ttt-card-cols {
+		grid-template-columns: 1fr !important;
+		gap: 0.6rem;
+	}
+	.ttt-tracker .ttt-card-col-de {
+		padding-top: 0.4rem;
+		border-top: 1px dashed #e9ecef;
+	}
+	.ttt-tracker .ttt-card-footer {
+		flex-direction: column;
+		align-items: flex-start;
+	}
+	.ttt-tracker .ttt-stats {
+		font-size: 0.85rem;
+	}
+}
