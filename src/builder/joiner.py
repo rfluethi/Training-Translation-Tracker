@@ -123,7 +123,7 @@ def build_groups(
     if orphan_items:
         groups.append({
             "type": "orphan",
-            "label": "Sonstige (außerhalb Scope)",
+            "label": "Sonstige",
             "items": orphan_items,
         })
 
@@ -313,6 +313,8 @@ def _item_to_dict(
 
     if primary.parsed.url_translated:
         item["url_de"] = primary.parsed.url_translated
+    if primary.parsed.title_de:
+        item["title_de"] = primary.parsed.title_de
     # Video-URLs: getrennt nach EN/DE; Alias-Felder fürs alte Konsumenten-API.
     if primary.parsed.url_wptv_en:
         item["url_wptv_en"] = primary.parsed.url_wptv_en

@@ -52,6 +52,11 @@ class IssueBody:
 
     url_original: str = ""
     url_translated: str = ""
+    # Deutscher Titel aus dem Issue-Body. Erkennt mehrere Schreibweisen:
+    # "German title:", "German lesson name:", "Deutscher Titel:", "Translation title:".
+    # Leer, wenn keiner gefunden — Plugin fällt dann auf einen humanisierten
+    # Slug aus url_translated zurück.
+    title_de: str = ""
     # Recording URLs: getrennt für englische Originale und deutsche Übersetzungen.
     # `url_wptv` / `url_youtube` sind Backwards-Compat-Aliasse:
     # alte Bodies mit nur "Link to WordPress.tv recording" landen in `url_wptv_de`,
@@ -94,6 +99,7 @@ def parse_issue_body(body: str) -> IssueBody:
     return IssueBody(
         url_original=_extract_url(body, _ORIGINAL_PATTERNS),
         url_translated=_extract_url(body, _TRANSLATED_PATTERNS),
+        title_de=_extract_text(body, _TITLE_DE_PATTERNS),
         url_wptv_en=wptv_en,
         url_wptv_de=wptv_de,
         url_youtube_en=youtube_en,
@@ -204,12 +210,59 @@ _YOUTUBE_GENERIC_PATTERNS = [
 _AUTO_WPTV = re.compile(r"(https?://wordpress\.tv/[^\s\n<]+)", re.IGNORECASE)
 _AUTO_YT = re.compile(r"(https?://(?:www\.)?(?:youtube\.com|youtu\.be)/[^\s\n<]+)", re.IGNORECASE)
 
+# Deutscher Titel — mehrere Schreibweisen erkennen, alle case-insensitive.
+# Erkannte Labels:
+#   - "German title:" (kanonisch)
+#   - "German lesson name:" (Praxis-Variante in vielen alten Issues)
+#   - "Deutscher Titel:" / "Übersetzungstitel:" / "Translation title:" /
+#     "Translated title:"
+# Erkannte Formatierungen am Zeilenanfang:
+#   - "**German title:** Wert"  (Bold-Label, DACH-Stil)
+#   - "- German title: Wert"     (Bullet-Liste, offizieller WordPress/Learn-Stil)
+#   - "* German title: Wert"     (Bullet mit Asterisk)
+#   - "German title: Wert"       (ohne Präfix)
+_TITLE_DE_PATTERNS = [
+    (
+        re.compile(
+            # Zeilenanfang + optionaler Listen-Marker (- oder *) + optionale Whitespaces
+            r"(?:^|\n)[ \t]*[-*]?[ \t]*"
+            # Optionaler Bold-Marker
+            r"(?:\*\*[ \t]*)?"
+            # Label (mehrere Schreibweisen)
+            r"(?:german title|german lesson name|deutscher titel|"
+            r"übersetzungstitel|translation title|translated title)"
+            # Bold-Marker schließen ggf. + Doppelpunkt
+            r"[ \t]*(?:\*\*)?[ \t]*:[ \t]*(?:\*\*[ \t]*)?"
+            # Eigentlicher Titel (non-greedy bis Zeilen-/Markdown-Ende)
+            r"([^\n*<]+?)"
+            r"[ \t]*(?:\*\*)?[ \t]*(?:\n|$)",
+            re.IGNORECASE,
+        ),
+        1,
+    ),
+]
+
 
 def _extract_url(body: str, patterns: list[tuple[re.Pattern[str], int]]) -> str:
     for pattern, group in patterns:
         match = pattern.search(body)
         if match:
             return match.group(group).strip().rstrip(").,;")
+    return ""
+
+
+def _extract_text(body: str, patterns: list[tuple[re.Pattern[str], int]]) -> str:
+    """Wie _extract_url, aber für Freitext-Felder. Trimmt Whitespace und
+    typische Markdown-Reste (Sternchen, Backticks).
+    """
+    for pattern, group in patterns:
+        match = pattern.search(body)
+        if match:
+            value = match.group(group).strip()
+            # Eventuell verbleibende Markdown-Reste am Ende abschneiden.
+            value = value.strip("*` ").strip()
+            if value:
+                return value
     return ""
 
 
