@@ -29,6 +29,10 @@ class RawIssue:
     body: str
     repository: str
     assignees: list[str]
+    # Wert des Project-V2-Status-Felds, z. B. 'Awaiting Triage',
+    # 'Translation in Progress', 'Ready for Review', 'Preparing to Publish',
+    # 'Published or Closed', 'Looking for Translator'. Leer wenn unset.
+    project_status: str = ""
 
 
 @dataclass
@@ -64,6 +68,8 @@ class ParsedIssue:
         }
         if self.raw.assignees:
             out["assignees"] = list(self.raw.assignees)
+        if self.raw.project_status:
+            out["project_status"] = self.raw.project_status
         return out
 
 
@@ -101,6 +107,10 @@ class IssueFetcher:
                     continue
 
             raw_issue = _coerce_raw_issue(content)
+            # Project-V2-Status-Field (z. B. 'Translation in Progress'). Leer
+            # wenn das Issue dem Projekt noch nicht hinzugefügt wurde oder
+            # kein Status gesetzt ist.
+            raw_issue.project_status = get_field_value(raw_item, "status") or ""
             parsed = parse_issue_body(raw_issue.body or "")
 
             normalized_original = ""

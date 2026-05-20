@@ -101,6 +101,10 @@
         "assignees": {
           "type": "array",
           "items": { "type": "string" }
+        },
+        "project_status": {
+          "description": "Wert des Project-V2-Status-Felds, z. B. 'Translation in Progress'. Frei vom Project-Admin gesetzt.",
+          "type": "string"
         }
       }
     },
