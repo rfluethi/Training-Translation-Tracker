@@ -1,16 +1,13 @@
 <?php
 /**
  * Plugin Name:       Training Translation Tracker
- * Plugin URI:        https://github.com/rfluethi/training-translation-tracker
- * Description:       Dashboard für den Übersetzungsfortschritt der WordPress
- *                    learn.wordpress.org-Inhalte. Liest eine statische
- *                    tracker.json, die von einer separaten GitHub Action
- *                    erzeugt wird (Repo "Training-Translation-Tracker-Inventory-Plugin").
- * Version:           2.3.0
+ * Plugin URI:        https://github.com/rfluethi/learn-wp-dach-sitzungen
+ * Description:       Dashboard für den Übersetzungsfortschritt des Learn WP DACH Teams.
+ * Version:           0.2.3
  * Requires at least: 6.0
  * Requires PHP:      8.0
- * Author:            Rico F. Lüthi
- * Author URI:        https://rfluethi.com
+ * Author:            Learn WP DACH Team
+ * Author URI:        https://github.com/rfluethi/learn-wp-dach-team
  * License:           GPL v2 or later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain:       training-translation-tracker
@@ -25,7 +22,7 @@ defined( 'ABSPATH' ) || exit;
 // Konstanten
 // -----------------------------------------------------------------------------
 
-define( 'TTT_VERSION', '2.3.0' );
+define( 'TTT_VERSION', '0.2.3' );
 define( 'TTT_PLUGIN_FILE', __FILE__ );
 define( 'TTT_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'TTT_PLUGIN_URL', plugin_dir_url( __FILE__ ) );

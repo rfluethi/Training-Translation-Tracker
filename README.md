@@ -1,4 +1,4 @@
-# Training Translation Tracker (DACH)
+# Training Translation Tracker Inventory
 
 Mono-Repo für das inventar-getriebene Übersetzungs-Dashboard des
 WordPress-DACH-Teams. Zwei Komponenten, ein Repo:
@@ -42,8 +42,6 @@ Training-Translation-Tracker-Inventory-Plugin/
 
 Nicht im Repo (lokal-only):
 
-- `Konzept/` — Konzept-Doku, Architektur-Diskussion, Issue-Vorlagen. Bleibt lokal
-  beim Maintainer.
 - `training-translation-tracker.zip` — wird bei jedem Build neu erzeugt.
 - `.venv/`, `.pytest_cache/`, `.ruff_cache/` — Python-Werkzeug-Caches.
 
@@ -98,20 +96,6 @@ git push
 ```
 
 Die Action triggert dann automatisch und baut tracker.json neu.
-
----
-
-## Phasen-Stand
-
-| Phase | Inhalt | Stand |
-|---|---|---|
-| 0 | JSON-Schemata + Issue-Vorlage | abgeschlossen |
-| 1 | GitHub Action baut tracker.json | abgeschlossen |
-| 2 | WP-Plugin mit Karten, Filter, Suche, Collapse, Popover, Project-Status | abgeschlossen — v2.3.0 |
-| 3 | Handbook-Modul + erweiterte Scope | abgeschlossen |
-| 4 | Cutover vom alten Plugin, GitHub-Updater-Plugin-Distribution | ausstehend |
-
-Details: Konzept-Doku (lokal beim Maintainer, nicht im Repo).
 
 ---
 

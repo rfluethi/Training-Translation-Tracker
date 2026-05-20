@@ -17,38 +17,23 @@ Eine GitHub Action läuft alle 12 Stunden und:
 
 Das resultierende `tracker.json` ist anschließend statisch unter `https://raw.githubusercontent.com/<owner>/Training-Translation-Tracker-Inventory-Plugin/data/tracker.json` abrufbar und wird vom WordPress-Plugin gelesen.
 
-## Konzept und Entscheidungen
+## Architektur-Übersicht
 
-Architektur, Entscheidungen und Phase-0-Deliverables liegen lokal beim Maintainer
-unter `../Konzept/` (NICHT Teil dieses Repos):
+Siehe [Top-Level-README](../README.md) für die Drei-Komponenten-Pipeline
+(Issues → Action → Plugin) und das komplette Repo-Layout.
 
-- `Konzept.md` — Gesamtarchitektur
-- `Arbeitsplan.md` — verbindliche Entscheidungen und AI-ausführbare Aufgabenliste
-- `API-Befunde.md` — REST-Endpoint-Liste
-- `Issue-Vorlage-DACH.md` — Vorlage für neue DACH-Übersetzungs-Issues
-- `schemas/` — JSON Schemata (authoritative Spec)
-
-Die JSON-Schemata in `schemas/` dieses Ordners sind eine Laufzeit-Kopie und
-müssen synchron mit `../Konzept/schemas/` bleiben. Das Top-Level-Skript
-`../sync-schemas.py` hält beide Stände abgleichbar:
-
-```bash
-# Im Repo-Root:
-python sync-schemas.py            # prüft, Exit 1 bei Drift
-python sync-schemas.py --apply    # Konzept/schemas/ → action/schemas/
-```
-
-Vor jedem Push empfehlenswert.
+Format und Pflege der DACH-Übersetzungs-Issues sind im Benutzerhandbuch des
+Plugins beschrieben:
+[wp-plugin/docs/Benutzerhandbuch.md → Issues für neue Übersetzungen anlegen](../wp-plugin/docs/Benutzerhandbuch.md#issues-für-neue-übersetzungen-anlegen).
 
 ## Repository-Struktur
 
 ```text
-.
-├── .github/workflows/build.yml   Workflow: cron / dispatch / push
+action/
 ├── scope.yml                      Locale + Hierarchie + URLs (Single Source of Truth)
 ├── component-templates.yml        Default-Komponenten pro Item-Typ
 ├── inventory-cache.json           Vorberechnete Inventar-Daten (lokal aktualisiert)
-├── schemas/                       Phase-0-Schemata (Kopie aus dem Konzept-Ordner)
+├── schemas/                       JSON-Schemata für tracker.json, scope.yml, component-templates.yml
 ├── src/
 │   ├── inventory/                 REST-Module pro Item-Typ + URL-Normalizer
 │   ├── github/                    GraphQL-Client + Issue-Parser
@@ -57,8 +42,11 @@ Vor jedem Push empfehlenswert.
 ├── tests/                         Unit-Tests (mit gemockter API)
 ├── requirements.txt
 ├── LICENSE                        GPL-2.0-or-later
-└── README.md
+└── README.md                      Dieses Dokument
 ```
+
+Der Workflow `../.github/workflows/build.yml` liegt auf Repo-Top-Level
+(GitHub-Convention) und nutzt `working-directory: action` für die Befehle.
 
 Output landet auf einem separaten Branch:
 

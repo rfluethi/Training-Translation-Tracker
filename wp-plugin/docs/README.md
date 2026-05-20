@@ -8,17 +8,17 @@ Dokumentation zum WordPress-Plugin **Training Translation Tracker**.
 |---|---|
 | das Plugin installieren oder Shortcodes auf einer Seite einbauen willst | [Benutzerhandbuch.md](Benutzerhandbuch.md) |
 | das Plugin warten, debuggen oder erweitern willst | [Entwickler-Dokumentation.md](Entwickler-Dokumentation.md) |
-| die ursprüngliche Konzeption nachvollziehen willst | [../../Konzept/Konzept.md](../../Konzept/Konzept.md) |
-| den aktuellen Projekt-Stand und offene Aufgaben einsehen willst | [../../Konzept/Arbeitsplan.md](../../Konzept/Arbeitsplan.md) |
+| die Mono-Repo-Übersicht haben willst | [../../README.md](../../README.md) |
+| die Action-Pipeline verstehen willst | [../../action/README.md](../../action/README.md) |
 
 ## Über das Plugin
 
 Das Plugin liest eine vorbereitete `tracker.json` (gebaut von einer
-GitHub Action alle 12 Stunden) und rendert daraus ein
-Übersetzungs-Dashboard für die DACH-Inhalte auf `learn.wordpress.org`.
-Es macht keine eigenen API-Calls und ist daher schlank und performant.
+GitHub Action alle 12 Stunden) und rendert daraus ein Übersetzungs-Dashboard
+des Learn WP DACH Teams. Es macht keine eigenen API-Calls und ist daher
+schlank und performant.
 
-Aktuelle Version: **2.1.1** (Mai 2026 — Alpha-Phase).
+Aktuelle Version: **0.2.3 Beta**.
 
 ## Schnellstart
 

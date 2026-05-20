@@ -89,7 +89,7 @@ Format der Status-Tabelle:
 <!-- TRANSLATION-STATUS-END -->
 ```
 
-Genaues Format siehe [`Issue-Vorlage-DACH.md`](../../Konzept/Issue-Vorlage-DACH.md).
+Genaues Format siehe [Benutzerhandbuch — Issues für neue Übersetzungen anlegen](Benutzerhandbuch.md#issues-für-neue-übersetzungen-anlegen).
 
 ### 2. Action baut `tracker.json`
 
@@ -148,42 +148,36 @@ Beim Aufruf des Shortcodes (oder bei einem expliziten „Cache leeren"):
 ## Repository-Struktur
 
 ```
-Training-Translation-Tracker-Inventory-Plugin/
-├── Konzept/                            # Architektur-Doku, Schemata, Issue-Vorlagen
-│   ├── Konzept.md                      # Ursprüngliche Konzeption
-│   ├── Arbeitsplan.md                  # Aufgaben + aktueller Stand
-│   ├── API-Befunde.md                  # WP-REST-API Befunde
-│   ├── Issue-Vorlage-DACH.md           # Issue-Template
-│   ├── Validierung-Phase-1.md          # Validierung der Action
-│   ├── _attachments/                   # Screenshots, Layout-Mockups
-│   └── schemas/                        # JSON-Schemata (Konzept-Original)
-├── github/                             # GitHub Action (Python)
-│   ├── src/                            # Source: inventory.py, parser.py, builder.py, …
-│   ├── tests/                          # pytest-Tests
-│   ├── schemas/                        # JSON-Schemata (Action-Kopie, synced mit Konzept/)
-│   ├── scope.yml                       # Welche URLs gehören zum DACH-Scope
-│   ├── inventory-cache.json            # Committed Inventory-Snapshot
-│   ├── component-templates.yml         # Welche Komponenten gibt es pro Item-Typ
-│   ├── build.py                        # Entry-Point der Action
-│   └── .github/workflows/build.yml     # Workflow-Definition
-├── wp-plugin/                          # WordPress-Plugin (PHP)
+Training-Translation-Tracker-Inventory-Plugin/    # Mono-Repo
+├── .github/workflows/                      # GitHub-Actions-Workflows
+│   ├── build.yml                           # Baut tracker.json auf data-Branch
+│   └── release-plugin.yml                  # Plugin-ZIP-Release bei Tag-Push
+├── action/                                 # GitHub Action (Python)
+│   ├── src/                                # inventory.py, parser.py, builder.py, …
+│   ├── tests/                              # pytest-Tests
+│   ├── schemas/                            # JSON-Schemata
+│   ├── scope.yml                           # Welche URLs gehören zum DACH-Scope
+│   ├── inventory-cache.json                # Committed Inventory-Snapshot
+│   ├── component-templates.yml             # Welche Komponenten gibt es pro Item-Typ
+│   └── requirements.txt
+├── wp-plugin/                              # WordPress-Plugin (PHP)
 │   ├── training-translation-tracker.php   # Bootstrap, Konstanten, Activator
 │   ├── uninstall.php                       # Cleanup beim Plugin-Löschen
 │   ├── includes/
-│   │   ├── class-settings.php          # Settings-Seite + Clear-Cache-AJAX
-│   │   ├── class-fetcher.php           # wp_remote_get + Transient-Cache
-│   │   └── class-renderer.php          # Shortcode + HTML-Output
+│   │   ├── class-settings.php              # Settings-Seite + Clear-Cache-AJAX
+│   │   ├── class-fetcher.php               # wp_remote_get + Transient-Cache
+│   │   └── class-renderer.php              # Shortcode + HTML-Output
 │   ├── assets/
-│   │   ├── style.css                   # Externe CSS (Backup zu Inline)
-│   │   ├── tracker.js                  # Frontend-JS (Filter/Suche/Collapse)
-│   │   └── admin.js                    # Settings-Seite-JS
-│   ├── languages/                      # .pot/.po/.mo (geplant)
-│   ├── docs/                           # Diese Dokumentation
-│   ├── readme.txt                      # WordPress-Standard-Readme
-│   ├── README.md                       # Repo-Übersicht
+│   │   ├── style.css                       # Externe CSS (Backup zu Inline)
+│   │   ├── tracker.js                      # Frontend-JS (Filter/Suche/Collapse)
+│   │   └── admin.js                        # Settings-Seite-JS
+│   ├── languages/                          # .pot/.po/.mo (geplant)
+│   ├── docs/                               # Plugin-Dokumentation
+│   ├── readme.txt                          # WordPress-Standard-Readme
 │   └── LICENSE
-├── build-plugin-zip.sh                 # Plugin-Build-Skript
-└── README.md                           # Projekt-Readme
+├── build-plugin-zip.sh                     # Plugin-Build-Skript (lokal)
+├── sync-schemas.py                         # Schema-Sync-Tool (lokal beim Maintainer)
+└── README.md                               # Mono-Repo-Readme
 ```
 
 ---
@@ -305,7 +299,7 @@ Größte Klasse. Verantwortlich für die HTML-Erzeugung.
 
 ## Datenmodell `tracker.json`
 
-Vollständiges JSON-Schema: [`schemas/tracker.schema.json`](../../Konzept/schemas/tracker.schema.json).
+Vollständiges JSON-Schema: [`action/schemas/tracker.schema.json`](../../action/schemas/tracker.schema.json).
 
 ### Top-Level
 
@@ -895,12 +889,6 @@ Plugin komplett konfigurations-getrieben.
 ## Weiterführende Dokumente
 
 - [Benutzerhandbuch](Benutzerhandbuch.md) — Sicht der End-User.
-- [Konzept.md](../../Konzept/Konzept.md) — Ursprungskonzeption des
-  Gesamtsystems.
-- [Arbeitsplan.md](../../Konzept/Arbeitsplan.md) — aktueller Stand,
-  offene Bugs, nächste Schritte.
-- [API-Befunde.md](../../Konzept/API-Befunde.md) — wie die WP-REST-API
-  von learn.wordpress.org funktioniert.
-- [Validierung-Phase-1.md](../../Konzept/Validierung-Phase-1.md) —
-  Abnahme der Action-Implementierung.
-- [JSON-Schema `tracker.schema.json`](../../Konzept/schemas/tracker.schema.json).
+- [Top-Level-README](../../README.md) — Mono-Repo-Übersicht.
+- [Action-README](../../action/README.md) — Setup und Workflow der Python-Action.
+- [JSON-Schema `tracker.schema.json`](../../action/schemas/tracker.schema.json).

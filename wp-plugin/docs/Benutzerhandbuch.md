@@ -355,8 +355,8 @@ data" über die GitHub-Web-Oberfläche manuell auslösen. Danach:
 > Die Action liest **englische Bezeichner** und die **Status-Tabelle**. Deutsche
 > Kommentare und Freitexte sind nur für Menschen.
 >
-> **Kanonische Version** dieser Doku: [Konzept/Issue-Vorlage-DACH.md](../../Konzept/Issue-Vorlage-DACH.md)
-> (gleicher Inhalt — bei Änderungen beide synchron halten).
+> Diese Anleitung ist die Quelle für alle DACH-Team-Mitglieder, die ein
+> Übersetzungs-Issue im `WordPress/Learn`-Repo anlegen.
 
 ### Ausgangspunkt: offizielle WordPress/Learn-Vorlage
 
@@ -502,7 +502,7 @@ Die Komponenten-Tabelle braucht nur die Zeilen, die für den Item-Typ Sinn ergeb
 | `handbook_text` | text |
 | `handbook_video` | thumbnails, text, subtitles, video |
 
-Für Handbook-Übersetzungen gibt es eine eigene Vorlage: [Konzept/Issue-Vorlage-Handbook-DACH.md](../../Konzept/Issue-Vorlage-Handbook-DACH.md).
+Für Handbook-Inhalte (auf `make.wordpress.org/training/handbook/`) gilt die obige Vorlage analog — die Komponenten-Tabelle wird kürzer, weil Handbook-Seiten kein Video/Quiz/Exercise/Audio haben (siehe Item-Typen-Tabelle oben: `handbook_text` bzw. `handbook_video`).
 
 ### Felder, die *nicht* mehr ins Issue gehören
 
@@ -655,6 +655,4 @@ Oder direkt per E-Mail an den Maintainer (siehe Plugin-Header).
 
 - [Entwickler-Dokumentation](Entwickler-Dokumentation.md) — Architektur,
   Datenmodell, Code-Struktur.
-- [Konzept.md](../../Konzept/Konzept.md) — die ursprüngliche Konzeption.
-- [Arbeitsplan.md](../../Konzept/Arbeitsplan.md) — aktueller Stand und
-  noch offene Aufgaben.
+- [Top-Level-README](../../README.md) — Mono-Repo-Übersicht mit Action und Plugin.

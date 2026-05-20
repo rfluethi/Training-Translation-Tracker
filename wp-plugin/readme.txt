@@ -1,25 +1,25 @@
 === Training Translation Tracker ===
-Contributors: rfluethi
+Contributors: learnwpdach, rfluethi
 Tags: translation, learn-wordpress, tracker, dashboard
 Requires at least: 6.0
 Tested up to: 6.6
 Requires PHP: 8.0
-Stable tag: 2.3.0
+Stable tag: 0.2.3
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Übersetzungs-Dashboard für learn.wordpress.org-Inhalte. Liest eine statische
-tracker.json (von einer GitHub Action erzeugt) und zeigt den Fortschritt
-pro Pathway → Course → Section → Item, mit Karten-Layout, Filter, Suche
-und einklappbaren Sections.
+Dashboard für den Übersetzungsfortschritt des Learn WP DACH Teams.
 
 == Description ==
 
-Dieses Plugin ist die schlanke v2-Version des wp-translation-tracker.
-Es macht keinerlei eigene API-Calls gegen WordPress/Learn — stattdessen
-liest es eine vorgerechnete JSON-Datei, die separat als GitHub-Action
-gebaut wird. Dadurch ist die Webseite schnell, die Pflege gering und
-das Plugin trotzdem aussagekräftig.
+Dashboard für den Übersetzungsfortschritt des Learn WP DACH Teams. Zeigt den
+Fortschritt pro Pathway → Course → Section → Item mit Karten-Layout, Filter,
+Suche und einklappbaren Sections.
+
+Das Plugin macht keinerlei eigene API-Calls gegen WordPress/Learn — stattdessen
+liest es eine vorgerechnete JSON-Datei (`tracker.json`), die separat als
+GitHub-Action gebaut wird. Dadurch ist die Webseite schnell, die Pflege gering
+und das Plugin trotzdem aussagekräftig.
 
 == Installation ==
 
@@ -31,6 +31,23 @@ das Plugin trotzdem aussagekräftig.
 4. Shortcode `[translation_tracker]` auf einer beliebigen Seite einbauen.
 
 == Changelog ==
+
+= 0.2.3 =
+* Erstes Beta-Release mit komplettem Feature-Set.
+* Karten-Layout: zwei Spalten Original/Translation, farbiger Status-Balken,
+  7 Komponenten-Icons mit Status-Farben.
+* Komponenten-Popover bei Hover/Klick mit GitHub-Avataren und Profil-Links
+  für Creator und Reviewer.
+* Stats-Pillen oben (klickbar als Status-Filter) — Counts werden live
+  aktualisiert basierend auf Suche und Filtern.
+* Live-Suche im Header (Titel EN/DE, Issue-Nummer, Project-Status).
+* Project-V2-Status-Pill in der Karte plus Dropdown-Filter in der Filter-Bar.
+* Section-Collapse mit localStorage-Persistierung über Reloads.
+* "Alle einklappen / ausklappen"-Toggle-Button.
+* Shortcode-Attribute: pathway, show_pathways, show_orphans, show_handbook,
+  show_stats für flexible Filterung pro Seite.
+* Smart-Defaults: pathway="..." blendet Orphan/Handbook automatisch aus.
+* Robuste Inline-Styles-Strategie gegen Theme-Konflikte und Page-Builder.
 
 = 2.1.5 =
 * Bugfix: Leerer Collapse-Alle-Button beim ersten Seitenaufruf — JS-Labels

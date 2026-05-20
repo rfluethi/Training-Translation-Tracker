@@ -1,0 +1,81 @@
+name: Bug-Report
+description: Etwas funktioniert nicht wie erwartet — sei es im WordPress-Plugin oder in der Action
+title: "[Bug] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Danke fürs Melden! Bitte fülle so viel aus wie möglich — je präziser, desto schneller fixierbar.
+
+  - type: dropdown
+    id: component
+    attributes:
+      label: Welcher Teil betrifft den Bug?
+      options:
+        - WordPress-Plugin (wp-plugin/)
+        - GitHub Action (action/)
+        - Beides / nicht sicher
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Plugin-Version
+      description: Steht im WP-Admin unter Plugins → Training Translation Tracker, oder in der `training-translation-tracker.php`. Bei Action-Bugs den Commit-SHA angeben.
+      placeholder: "z. B. 0.2.3"
+    validations:
+      required: false
+
+  - type: textarea
+    id: what-happens
+    attributes:
+      label: Was passiert?
+      description: Was beobachtest du? Welche Fehlermeldung erscheint, falls vorhanden?
+      placeholder: "Beim Klick auf … erscheint …"
+    validations:
+      required: true
+
+  - type: textarea
+    id: what-expected
+    attributes:
+      label: Was hattest du erwartet?
+      placeholder: "Eigentlich sollte …"
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Schritte zur Reproduktion
+      description: Wenn möglich, schreibe die Schritte 1, 2, 3 auf, mit denen man den Bug auslösen kann.
+      placeholder: |
+        1. Plugin in WP installieren
+        2. Shortcode `[translation_tracker]` auf eine Seite setzen
+        3. Auf … klicken
+        4. Fehler erscheint
+    validations:
+      required: false
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Umgebung (Plugin-Bugs)
+      description: WordPress-Version, PHP-Version, Theme/Page-Builder, Browser. Nur bei Plugin-Bugs nötig.
+      placeholder: |
+        WordPress: 6.6
+        PHP: 8.2
+        Theme: Twenty Twenty-Four
+        Browser: Firefox 125
+    validations:
+      required: false
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs / Browser-Konsole / Screenshots
+      description: Bei JS-Problemen die Browser-Konsole-Ausgabe (F12 → Console). Bei Action-Fehlern den Action-Log-Auszug. Bei Layout-Problemen einen Screenshot anhängen.
+      render: shell
+    validations:
+      required: false

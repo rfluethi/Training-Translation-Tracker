@@ -1,0 +1,55 @@
+name: Feature-Request
+description: Eine Idee, die das Plugin oder die Action besser machen würde
+title: "[Feature] "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Danke für deine Idee! Beschreibe möglichst konkret, was du dir wünschst und warum.
+
+  - type: dropdown
+    id: component
+    attributes:
+      label: Welcher Teil betrifft die Idee?
+      options:
+        - WordPress-Plugin (wp-plugin/)
+        - GitHub Action (action/)
+        - Dokumentation
+        - Etwas anderes
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Welches Problem löst das?
+      description: Was ist heute mühsam oder nicht möglich?
+      placeholder: "Aktuell muss ich für jede Section …"
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Vorgeschlagene Lösung
+      description: Wie könnte das Feature aussehen? Skizze, Mockup, Beispiel-Konfiguration — alles erlaubt.
+      placeholder: "Es könnte einen neuen Shortcode-Parameter `…` geben, der …"
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternativen / bereits versucht
+      description: Gibt es Workarounds? Was hast du bisher gemacht?
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Zusätzlicher Kontext
+      description: Screenshots, Links auf ähnliche Implementierungen anderswo, Use-Case-Beispiele.
+    validations:
+      required: false
