@@ -159,8 +159,11 @@ def _build_tracker(repo_root: Path, output_dir: Path | None, skip_issues: bool) 
     )
     scope_urls = _extract_scope_urls(scope)
     LOG.info(
-        "scope.yml: locale=%s, %d pathway(s), %d URL(s)",
-        scope["locale"], len(scope.get("pathways") or []), len(scope_urls),
+        "scope.yml: locale=%s, %d pathway(s), %d handbook URL(s), %d URL(s) total",
+        scope["locale"],
+        len(scope.get("pathways") or []),
+        len(scope.get("handbook") or []),
+        len(scope_urls),
     )
 
     # ----------------------------------------------------------------- step 2
@@ -270,7 +273,10 @@ def _load_and_validate_yaml(yaml_path: Path, schema_path: Path):
 
 
 def _extract_scope_urls(scope: dict) -> list[str]:
-    """Walk scope.yml's pathways tree and return all leaf-item URLs in order."""
+    """Walk scope.yml's pathways tree + handbook list and return all
+    leaf-item URLs in order. Duplicates across pathways and the handbook
+    block are de-dup'd; the first occurrence wins for ordering.
+    """
     out: list[str] = []
     seen: set[str] = set()
     for pathway in scope.get("pathways") or []:
@@ -280,6 +286,10 @@ def _extract_scope_urls(scope: dict) -> list[str]:
                     if url not in seen:
                         seen.add(url)
                         out.append(url)
+    for url in scope.get("handbook") or []:
+        if url not in seen:
+            seen.add(url)
+            out.append(url)
     return out
 
 

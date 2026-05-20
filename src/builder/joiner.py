@@ -256,11 +256,21 @@ def _walk_inventory(
 
 
 def _bucket_handbook_items(items: list[dict[str, Any]]) -> list[dict[str, Any]]:
-    """Group handbook items by their top-most section in parent_path."""
+    """Group handbook items by their top-most section in parent_path.
+
+    Pages mit leerem parent_path (= Top-Level-Pages wie "/handbook/about/")
+    werden als ihre eigene Section behandelt — ihr Slug wird zum Section-Slug.
+    Eine Kind-Seite wie "/handbook/about/team-values/" hat parent_path=["about"]
+    und landet in derselben Section "about". So entstehen aus dem flachen
+    handbook:-Block in scope.yml saubere Section-Gruppen.
+    """
     sections: dict[str, list[dict[str, Any]]] = defaultdict(list)
     for entry in items:
         section_path = entry.pop("_section_path")
-        section_slug = section_path[0] if section_path else "ohne-section"
+        if section_path:
+            section_slug = section_path[0]
+        else:
+            section_slug = entry.get("slug") or "handbook"
         sections[section_slug].append(entry)
 
     return [

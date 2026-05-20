@@ -103,3 +103,20 @@ pathways:
             items:
               - https://learn.wordpress.org/lesson-plan/setting-a-static-page-as-your-homepage/
               - https://learn.wordpress.org/lesson-plan/how-to-find-theme-specific-documentation/
+
+# ------------------------------------------------------------
+# Training Handbook
+#
+# Flache URL-Liste — die Section-Hierarchie ergibt sich aus dem parent_path,
+# den die make.wordpress.org/training/handbook-API zurückliefert. Im
+# Tracker erscheinen die Seiten unter "Training Handbook", gruppiert nach
+# ihrem Top-Level-Section-Slug ("about", "getting-started", "lessons", ...).
+#
+# Erweiterungen einfach hier anhängen — die Action holt sich die Hierarchie
+# beim nächsten --refresh-cache automatisch.
+# ------------------------------------------------------------
+handbook:
+  - https://make.wordpress.org/training/handbook/about/
+  - https://make.wordpress.org/training/handbook/about/history-of-the-training-team/
+  - https://make.wordpress.org/training/handbook/about/team-values/
+  - https://make.wordpress.org/training/handbook/getting-started/
