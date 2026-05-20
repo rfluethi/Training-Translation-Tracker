@@ -123,7 +123,7 @@ def build_groups(
     if orphan_items:
         groups.append({
             "type": "orphan",
-            "label": "Sonstige (außerhalb Scope / verwaist)",
+            "label": "Sonstige (außerhalb Scope)",
             "items": orphan_items,
         })
 
