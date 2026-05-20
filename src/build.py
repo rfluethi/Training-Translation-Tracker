@@ -69,9 +69,15 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument(
         "--refresh-cache",
         action="store_true",
-        help="Call learn.wordpress.org for every scope URL and write "
-             "inventory-cache.json. Skips issue fetch and tracker.json output. "
-             "Run this locally — it's too rate-limited for CI.",
+        help="Call learn.wordpress.org for scope URLs that are NOT yet in "
+             "inventory-cache.json, and append them. Skips issue fetch and "
+             "tracker.json output. Run locally — too rate-limited for CI.",
+    )
+    parser.add_argument(
+        "--force",
+        action="store_true",
+        help="When used with --refresh-cache: re-fetch every scope URL, "
+             "even if already in the cache. Slow because of rate-limits.",
     )
     parser.add_argument(
         "--skip-issues",
@@ -92,7 +98,7 @@ def main(argv: list[str] | None = None) -> int:
     repo_root: Path = args.repo_root
 
     if args.refresh_cache:
-        return _refresh_cache(repo_root)
+        return _refresh_cache(repo_root, force=args.force)
 
     return _build_tracker(repo_root, args.output_dir, args.skip_issues)
 
@@ -101,15 +107,41 @@ def main(argv: list[str] | None = None) -> int:
 # Mode A: refresh the inventory cache (run this locally)
 # ---------------------------------------------------------------------------
 
-def _refresh_cache(repo_root: Path) -> int:
-    LOG.info("Refreshing inventory cache. This calls learn.wordpress.org.")
+def _refresh_cache(repo_root: Path, force: bool = False) -> int:
+    """Append missing scope URLs to inventory-cache.json.
 
+    Default: only fetch URLs that aren't already cached. Saves significant
+    time and avoids burning through wordpress.org rate-limits — every URL
+    that's already cached is left untouched.
+
+    With --force: re-fetch ALL scope URLs, overwriting cached entries.
+    Use this when you suspect the cache is stale or you've changed the
+    inventory parsing logic.
+    """
     scope = _load_and_validate_yaml(
         repo_root / "scope.yml",
         repo_root / "schemas" / "scope.schema.json",
     )
     scope_urls = _extract_scope_urls(scope)
-    LOG.info("Refreshing %d URLs from scope.yml", len(scope_urls))
+
+    cache_path = repo_root / CACHE_FILENAME
+    cached_items = {} if force else load_cache(cache_path)
+    already = set(cached_items.keys())
+    to_fetch = [u for u in scope_urls if force or u not in already]
+
+    LOG.info(
+        "scope.yml: %d URLs total, %d already cached, %d to fetch%s",
+        len(scope_urls),
+        len(scope_urls) - len(to_fetch) if not force else 0,
+        len(to_fetch),
+        " (--force: re-fetching all)" if force else "",
+    )
+    if not to_fetch:
+        LOG.info(
+            "Nothing to do — cache is fully populated for the current scope.yml. "
+            "Use --force to re-fetch all entries anyway."
+        )
+        return 0
 
     # Higher throttle for local refresh — we have all the time in the world,
     # and we want to be polite to wordpress.org.
@@ -117,9 +149,9 @@ def _refresh_cache(repo_root: Path) -> int:
     LOG.info("Throttle: %.2fs between fetches", throttle_s)
     dispatcher = Dispatcher(throttle_s=throttle_s)
 
-    out: dict = {}
+    out: dict = dict(cached_items)
     failed: list[tuple[str, str]] = []
-    for url in scope_urls:
+    for url in to_fetch:
         try:
             item = dispatcher.fetch(url)
         except Exception as exc:  # noqa: BLE001 — log and continue
@@ -129,10 +161,12 @@ def _refresh_cache(repo_root: Path) -> int:
         out[item.url_en] = item
         LOG.info("Cached %s (parent_path=%s)", item.url_en, item.parent_path)
 
-    cache_path = repo_root / CACHE_FILENAME
     save_cache(cache_path, out)
 
-    LOG.info("Wrote %d cache entries to %s", len(out), cache_path)
+    LOG.info(
+        "Wrote %d cache entries to %s (added/updated %d)",
+        len(out), cache_path, len(to_fetch) - len(failed),
+    )
     if failed:
         LOG.warning(
             "%d URLs could not be fetched (likely rate-limited). "
