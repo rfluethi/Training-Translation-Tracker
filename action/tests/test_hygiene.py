@@ -1,4 +1,4 @@
-"""Hygiene-Modul: erkennt pflegerelevante Beobachtungen aus dem Build."""
+"""Hygiene module: detects maintenance-relevant observations from the build."""
 
 from src.builder.hygiene import collect_hygiene, render_hygiene_markdown
 from src.github.issues import ParsedIssue, RawIssue
@@ -94,13 +94,13 @@ def test_render_markdown_contains_all_sections():
     report = collect_hygiene([issue], [], set(), {})
     md = render_hygiene_markdown(report)
     # Headings for every category must be present
-    assert "# Datenhygiene-Bericht" in md
-    assert "## Issues ohne neue Marker-Tabelle" in md
-    assert "## Issues mit Parse-Error" in md
-    assert "## Mehrfach-Issues" in md
-    assert "## Issues ohne extrahierbare Original-URL" in md
-    assert "## Creator/Reviewer mit verdächtigen Zeichen" in md
-    assert "## Scope-Items ohne Issue" in md
+    assert "# Data-Hygiene Report" in md
+    assert "## Issues without new marker table" in md
+    assert "## Issues with parse error" in md
+    assert "## Multiple issues" in md
+    assert "## Issues without an extractable original URL" in md
+    assert "## Creator/Reviewer with suspicious characters" in md
+    assert "## Scope items without an issue" in md
     # The one finding should be listed
     assert "#99" in md
 
@@ -108,5 +108,5 @@ def test_render_markdown_contains_all_sections():
 def test_render_markdown_when_no_issues():
     report = collect_hygiene([], [], set(), {})
     md = render_hygiene_markdown(report)
-    # Each category should report "Keine"
-    assert md.count("_Keine") >= 4
+    # Each category should report "None"
+    assert md.count("_None") >= 4

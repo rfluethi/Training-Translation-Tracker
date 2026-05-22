@@ -1,7 +1,7 @@
 /* global jQuery, tttAdmin */
 /**
- * Admin-JS für die Settings-Seite.
- * Genau eine Funktion: den „Cache jetzt leeren"-Knopf per AJAX an admin-ajax.php.
+ * Admin JS for the settings page.
+ * Exactly one function: the "Clear cache now" button via AJAX to admin-ajax.php.
  */
 (function ($) {
 	'use strict';

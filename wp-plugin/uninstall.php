@@ -1,12 +1,12 @@
 <?php
 /**
- * Wird ausgeführt, wenn das Plugin per WordPress-Admin entfernt wird.
- * Räumt Options und Transients auf.
+ * Runs when the plugin is removed via the WordPress admin.
+ * Cleans up options and transients.
  *
  * @package training-translation-tracker
  */
 
-// Sicherheitsabbruch: nur über WordPress aufrufen.
+// Safety guard: only execute when invoked by WordPress.
 if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 	exit;
 }

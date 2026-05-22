@@ -1,25 +1,20 @@
-# Top-Level .gitignore — Mono-Repo (Action + Plugin)
-#
-# Maintainer-Konvention: Beim Maintainer liegt dieser Repo-Ordner in einem
-# Wrapper namens `GitHub/`, daneben liegt `../Konzept/` (lokale
-# Arbeitsfläche). Dadurch ist Konzept gar nicht Teil dieses Verzeichnis-
-# Baums und braucht keinen Ignore-Eintrag. Siehe README.md.
+# Top-level .gitignore for the mono-repo (action + plugin).
 
 # ----------------------------------------------------------
-# macOS / OS-Metadata (Sicherheitsnetz)
+# macOS / OS metadata (safety net)
 # ----------------------------------------------------------
 .DS_Store
 Thumbs.db
 
 # ----------------------------------------------------------
-# Build-Outputs (das ZIP wird bei jedem Build neu erzeugt — Source liegt
-# unter wp-plugin/, das ZIP ist nur Distribution-Artefakt)
+# Build outputs (the ZIP is regenerated on every build, the source
+# lives under wp-plugin/, the ZIP is only a distribution artifact).
 # ----------------------------------------------------------
 training-translation-tracker.zip
 *.zip
 
 # ----------------------------------------------------------
-# Python (action/-Ordner)
+# Python (action/ folder)
 # ----------------------------------------------------------
 __pycache__/
 *.py[cod]
@@ -35,7 +30,7 @@ venv/
 env/
 pytest-cache-files-*/
 
-# Lokale Build-Outputs der Action (live auf data-Branch, nicht auf main)
+# Local build outputs of the action (live on the data branch, not on main).
 /action/tracker.json
 /action/last-run.md
 /action/data-hygiene.md

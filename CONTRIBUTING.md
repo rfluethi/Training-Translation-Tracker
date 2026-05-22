@@ -1,53 +1,53 @@
 # Contributing
 
-Schön, dass du mitwirken willst! Dieses Repo enthält zwei Komponenten, eine
-GitHub Action in Python und ein WordPress-Plugin in PHP. Je nach dem, was du
-ändern willst, ist der Workflow leicht unterschiedlich.
+Glad you want to contribute. This repo contains two components, a GitHub
+Action written in Python and a WordPress plugin in PHP. Depending on what
+you want to change, the workflow is slightly different.
 
-## Inhaltsverzeichnis
+## Table of contents
 
-1. [Was du beitragen kannst](#was-du-beitragen-kannst)
-2. [Repo-Setup](#repo-setup)
-3. [Action entwickeln (Python)](#action-entwickeln-python)
-4. [Plugin entwickeln (PHP)](#plugin-entwickeln-php)
-5. [Dokumentation](#dokumentation)
-6. [Pull-Request-Prozess](#pull-request-prozess)
-7. [Andere Locales adaptieren](#andere-locales-adaptieren)
-8. [Verhaltenskodex](#verhaltenskodex)
+1. [What you can contribute](#what-you-can-contribute)
+2. [Repository setup](#repository-setup)
+3. [Action development (Python)](#action-development-python)
+4. [Plugin development (PHP)](#plugin-development-php)
+5. [Documentation](#documentation)
+6. [Pull request process](#pull-request-process)
+7. [Adapting for other locales](#adapting-for-other-locales)
+8. [Code of conduct](#code-of-conduct)
 
-## Was du beitragen kannst
+## What you can contribute
 
-| Art | Wie | Beispiele |
+| Type | How | Examples |
 |---|---|---|
-| Bug-Report | Issue mit Bug-Template anlegen | Plugin zeigt falsches Layout, Action wirft Fehler |
-| Feature-Request | Issue mit Feature-Template | „Filter nach Issue-Assignee", neuer Shortcode-Parameter |
-| Code-Beitrag | Pull-Request | Bugfix, kleine Verbesserung, neue Inventory-Source |
-| Übersetzung | Pull-Request mit `.po`-Datei | `de_DE`, `de_CH`, `en_US` für UI-Strings |
-| Doku | Pull-Request mit README- oder docs-Änderungen | Tippfehler, Klarstellung, Beispiele |
+| Bug report | Open an issue with the bug template | Plugin shows wrong layout, action throws an error |
+| Feature request | Open an issue with the feature template | "Filter by issue assignee", new shortcode parameter |
+| Code change | Pull request | Bug fix, small improvement, new inventory source |
+| Translation | Pull request with a `.po` file | `de_DE`, `de_CH`, `en_US` for UI strings |
+| Documentation | Pull request with README or docs changes | Typo fixes, clearer explanations, examples |
 
-## Repo-Setup
+## Repository setup
 
 ```bash
 git clone https://github.com/rfluethi/Training-Translation-Tracker-Inventory-Plugin.git
 cd Training-Translation-Tracker-Inventory-Plugin
 ```
 
-Das Repo enthält:
+The repository contains:
 
-- `action/`, Python-Code für die GitHub Action
-- `wp-plugin/`, WordPress-Plugin
-- `.github/workflows/`, Build- und Release-Workflows
-- `build-plugin-zip.sh`, Plugin-ZIP bauen (lokal)
+- `action/`, Python code for the GitHub Action
+- `wp-plugin/`, WordPress plugin
+- `.github/workflows/`, build and release workflows
+- `build-plugin-zip.sh`, builds the plugin ZIP locally
 
-Doku-Suite (komponentenübergreifend):
+Documentation suite (covers both components):
 
-- [docs/Architektur.md](docs/Architektur.md), System-Architektur und Designentscheidungen
-- [docs/Developer.md](docs/Developer.md), Code-Setup, Tests, Erweiterungen
-- [docs/Operations.md](docs/Operations.md), Releases, Token-Pflege, Failure-Recovery
-- [docs/User-Guide.md](docs/User-Guide.md), Plugin-Bedienung und Issue-Pflege
-- [action/README.md](action/README.md), kurze Action-spezifische Notizen
+- [docs/Architecture.md](docs/Architecture.md), system architecture and design decisions
+- [docs/Developer.md](docs/Developer.md), code setup, tests, extensions
+- [docs/Operations.md](docs/Operations.md), releases, token maintenance, failure recovery
+- [docs/User-Guide.md](docs/User-Guide.md), plugin usage and issue maintenance
+- [action/README.md](action/README.md), short action-specific notes
 
-## Action entwickeln (Python)
+## Action development (Python)
 
 ### Setup
 
@@ -58,130 +58,132 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-### Tests laufen lassen
+### Run tests
 
 ```bash
 cd action
 python -m pytest tests/ -v
 ```
 
-Tests sollten **immer grün** sein vor jedem Commit.
+Tests should **always be green** before every commit.
 
-### Action lokal testen ohne GitHub-Token
+### Test the action locally without a GitHub token
 
 ```bash
 cd action
-python -m src.build --skip-issues   # baut tracker.json aus inventory-cache.json, ohne Issues
+python -m src.build --skip-issues   # builds tracker.json from inventory-cache.json, no issues
 ```
 
-Das produziert `tracker.json`, `last-run.md` und `data-hygiene.md` lokal, alle drei Files liegen unter `.gitignore` und werden nie committed.
+This produces `tracker.json`, `last-run.md`, and `data-hygiene.md` locally. All three files are in `.gitignore` and are never committed.
 
-### Inventory-Cache nachziehen
+### Refresh the inventory cache
 
-Wenn du neue URLs in `scope.yml` einträgst, musst du den Inventory-Cache lokal aktualisieren (die Action selbst macht das nicht, wäre zu rate-limited auf den GitHub-Runner-IPs):
+When you add new URLs to `scope.yml`, you must refresh the inventory cache locally (the action itself does not, since GitHub runner IPs are rate-limited too aggressively):
 
 ```bash
 cd action
-python -m src.build --refresh-cache   # holt nur fehlende URLs
+python -m src.build --refresh-cache   # only fetches missing URLs
 git add scope.yml inventory-cache.json
-git commit -m "Scope: neue URLs"
+git commit -m "Scope: new URLs"
 ```
 
-### Code-Style
+### Code style
 
 - Python 3.10+
-- Ruff für Linting (`ruff check src tests`)
-- Type-Hints überall möglichst verwenden
-- Tests parallel zum Code anlegen (`tests/test_<modul>.py`)
+- Ruff for linting (`ruff check src tests`)
+- Use type hints wherever possible
+- Place tests next to the code (`tests/test_<module>.py`)
 
-## Plugin entwickeln (PHP)
+## Plugin development (PHP)
 
 ### Setup
 
 ```bash
-# Symlink ins WordPress-Plugin-Verzeichnis (für lokale WP-Installation)
+# Symlink into the WordPress plugin directory (for a local WP installation)
 ln -s "$(pwd)/wp-plugin" /path/to/wp-content/plugins/training-translation-tracker
 ```
 
-Oder bei jedem Test ein ZIP bauen:
+Or build a ZIP for every test:
 
 ```bash
 ./build-plugin-zip.sh
 # → ~/Desktop/training-translation-tracker.zip
 ```
 
-### Code-Style
+### Code style
 
-- WordPress Coding Standards (siehe [WordPress.org Handbook](https://developer.wordpress.org/coding-standards/wordpress-coding-standards/))
-- Alle User-sichtbaren Strings via `__()`/`_e()`/`esc_html__()` für i18n
-- Inline-Kommentare auf Deutsch oder Englisch (konsistent in einer Datei)
-- Vendor-Code (z. B. JS-Bibliotheken) immer mit Klarem Hinweis auf Herkunft
+- WordPress Coding Standards (see the [WordPress.org Handbook](https://developer.wordpress.org/coding-standards/wordpress-coding-standards/))
+- All user-visible strings via `__()`, `_e()`, or `esc_html__()` for i18n
+- Inline comments in English, consistent across files
+- Vendor code (e.g. JS libraries) always with a clear note on origin
 
-### Versionierung
+### Versioning
 
-Bei jeder Änderung, die ein Release rechtfertigt, drei Stellen synchron updaten:
+For every change that justifies a release, keep three places in sync:
 
-1. `wp-plugin/training-translation-tracker.php`, `Version:` im Header
-2. `wp-plugin/training-translation-tracker.php`, `TTT_VERSION`-Konstante
+1. `wp-plugin/training-translation-tracker.php`, `Version:` in the header
+2. `wp-plugin/training-translation-tracker.php`, `TTT_VERSION` constant
 3. `wp-plugin/readme.txt`, `Stable tag:`
 
-Plus Eintrag im Changelog (`wp-plugin/readme.txt`).
+Plus an entry in the changelog (`wp-plugin/readme.txt`).
 
 ### Release
 
 ```bash
-git tag v0.2.4        # Beta: 0.x.y
+git tag v0.4.2        # beta scheme: 0.x.y
 git push --tags
 ```
 
-Der Release-Workflow baut automatisch das ZIP und veröffentlicht es als
-GitHub-Release.
+The release workflow automatically builds the ZIP and publishes a GitHub
+release.
 
-## Dokumentation
+## Documentation
 
-Die Dokumentation liegt auf Top-Level unter `docs/`:
+The documentation lives at the top level under `docs/`:
 
-- `Architektur.md`, System-Architektur, Datenmodell, Entscheidungen
-- `Developer.md`, Code-Setup, Module, Tests, Erweiterungspunkte
-- `Operations.md`, Releases, Token, Failure-Recovery
-- `User-Guide.md`, Plugin-Settings, Shortcodes, Frontend-Bedienung, Issue-Pflege
-- `Issue-Vorlagen-DACH.md`, Vorlagen fürs Anlegen von Übersetzungs-Issues (Lesson, Handbook-Text, Handbook-Video)
+- `Architecture.md`, system architecture, data model, decisions
+- `Developer.md`, code setup, modules, tests, extension points
+- `Operations.md`, releases, token, failure recovery
+- `User-Guide.md`, plugin settings, shortcodes, frontend usage, issue maintenance
+- `Issue-Templates-DACH.md`, templates for creating translation issues (lesson, handbook text, handbook video)
 
-Doku-Beiträge sind willkommen, Tippfehler-Fixes, klarere Erklärungen, Beispiele.
+Documentation contributions are welcome: typo fixes, clearer explanations, examples.
 
-## Pull-Request-Prozess
+## Pull request process
 
-1. **Fork** des Repos auf GitHub
-2. **Branch** vom `main` aus erstellen mit beschreibendem Namen:
+1. **Fork** the repo on GitHub.
+2. **Branch** off `main` with a descriptive name:
    - `fix/popover-positioning`
    - `feat/csv-export`
    - `docs/contributing-guide`
-3. **Commits** mit klaren Nachrichten, Imperativ, kurz:
-   - „Fix: Popover wird abgeschnitten am rechten Bildschirmrand"
-   - „Add: CSV-Export für Tracker-Items"
-4. **Tests** laufen lassen (Action: `pytest`, Plugin: manueller Smoke-Test)
-5. **Pull-Request** auf `main` öffnen mit Beschreibung:
-   - Was wird geändert?
-   - Warum?
-   - Wie getestet?
-6. Bei Review-Feedback iterieren, keine Force-Pushes auf den PR-Branch wenn schon Review begonnen wurde.
+3. **Commits** with clear, short, imperative messages:
+   - "Fix: popover gets clipped at the right viewport edge"
+   - "Add: CSV export for tracker items"
+4. **Run tests** (action: `pytest`, plugin: manual smoke test).
+5. **Open a pull request** against `main` with a description covering:
+   - What changes?
+   - Why?
+   - How was it tested?
+6. Iterate on review feedback. No force pushes on the PR branch once review has started.
 
-## Andere Locales adaptieren
+## Adapting for other locales
 
-Andere Sprachräume können diesen Tracker für ihre eigene Locale nutzen:
+Other language teams can use this tracker for their own locale:
 
-1. **Fork** des Repos
-2. `action/scope.yml`: `locale: French` (oder die jeweilige Project-V2-Locale)
-3. `action/scope.yml`: deine Pathway- und URL-Liste eintragen
-4. `inventory-cache.json` lokal mit `--refresh-cache` befüllen
-5. GitHub-Secret `GH_PAT_PROJECT_READ` mit eigenem PAT setzen (Project-V2-Read-Scope)
-6. Plugin-Header in `wp-plugin/training-translation-tracker.php` anpassen
-   (eigener Plugin-Name, Author, Project-URI)
-7. Texte in `docs/` und alle Locale-Bezugs-Strings übersetzen
-8. Plugin-ZIP bauen und in der eigenen Site installieren
+1. **Fork** the repository.
+2. `action/scope.yml`: set `locale: French` (or whichever Project V2 locale applies).
+3. `action/scope.yml`: enter your pathway and URL list.
+4. Populate `inventory-cache.json` locally with `--refresh-cache`.
+5. Set the GitHub secret `GH_PAT_PROJECT_READ` to your own PAT (Project V2 read scope).
+6. Update the plugin header in `wp-plugin/training-translation-tracker.php`
+   (your plugin name, author, project URI).
+7. Translate text in `docs/` and all locale-specific strings.
+8. Build the plugin ZIP and install it on your own site.
 
-Pull-Requests, die generische Verbesserungen zurückgeben (z. B. neue Inventory-Sources, neue Shortcode-Optionen), sind willkommen, Locale-spezifische Änderungen aber bitte im eigenen Fork lassen.
+Pull requests that contribute generic improvements back upstream (e.g. new
+inventory sources, new shortcode options) are welcome. Please keep
+locale-specific changes in your fork.
 
-## Verhaltenskodex
+## Code of conduct
 
-Wir folgen dem [WordPress Community Code of Conduct](https://make.wordpress.org/community/handbook/community-code-of-conduct/). Kurzform: respektvoll, hilfsbereit, konstruktiv. Wer beleidigt, ausschließt oder Hassrede verbreitet, wird ausgeschlossen.
+We follow the [WordPress Community Code of Conduct](https://make.wordpress.org/community/handbook/community-code-of-conduct/). Short version: respectful, helpful, constructive. Anyone who insults, excludes, or spreads hate speech will be excluded.

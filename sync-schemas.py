@@ -8,10 +8,9 @@ The JSON Schemata live in two physical places:
 
 Konzept/ is workspace-local and lives ONE LEVEL ABOVE the cloned repo
 (maintainer convention: the repo sits in a ``GitHub/`` sub-folder, and
-``Konzept/`` is its sibling — see README "Maintainer-Arbeitsordner").
-Contributors who clone the repo standalone will not have a Konzept/
-folder and don't need this script — they edit ``action/schemas/``
-directly.
+``Konzept/`` is its sibling). Contributors who clone the repo standalone
+will not have a Konzept/ folder and don't need this script, they edit
+``action/schemas/`` directly.
 
 The runtime copy must match the spec byte-for-byte. This script
 enforces that invariant.

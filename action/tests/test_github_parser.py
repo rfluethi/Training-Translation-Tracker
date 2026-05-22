@@ -148,7 +148,7 @@ There is a recording at https://wordpress.tv/2024/07/bar/ somewhere in the body.
 
 
 def test_separate_en_and_de_media_urls():
-    """Neue Issue-Vorlage trennt Original- und Übersetzungs-Recording explizit."""
+    """New issue template separates original and translation recordings explicitly."""
     body = """\
 **Link to original content:** https://learn.wordpress.org/lesson/foo/
 **Link to translated content:** https://learn.wordpress.org/lesson/foo-de/
@@ -162,13 +162,13 @@ def test_separate_en_and_de_media_urls():
     assert parsed.url_wptv_de == "https://wordpress.tv/2024/01/foo-de/"
     assert parsed.url_youtube_en == "https://www.youtube.com/watch?v=foo-en"
     assert parsed.url_youtube_de == "https://www.youtube.com/watch?v=foo-de"
-    # Aliasse stehen weiterhin (mapping auf _de)
+    # Aliases still apply (mapped to _de)
     assert parsed.url_wptv == parsed.url_wptv_de
     assert parsed.url_youtube == parsed.url_youtube_de
 
 
 def test_legacy_generic_label_maps_to_de_slot():
-    """Alte Issues mit "Link to WordPress.tv recording" (ohne original/translated)."""
+    """Old issues with "Link to WordPress.tv recording" (without original/translated)."""
     body = """\
 **Link to original content:** https://learn.wordpress.org/lesson/foo/
 **Link to WordPress.tv recording:** https://wordpress.tv/2024/01/foo-de/

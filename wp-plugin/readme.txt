@@ -4,7 +4,7 @@ Tags: translation, learn-wordpress, tracker, dashboard
 Requires at least: 6.0
 Tested up to: 7.0
 Requires PHP: 8.0
-Stable tag: 0.4.2
+Stable tag: 0.4.3
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -34,6 +34,29 @@ DACH Team for translating learn.wordpress.org content into German.
 4. Embed the shortcode `[translation_tracker]` on any page.
 
 == Changelog ==
+
+= 0.4.3 =
+* Maintenance release. Full English translation of the entire repository:
+  Markdown documentation (docs/Architecture.md, Developer.md, Operations.md,
+  User-Guide.md, Issue-Templates-DACH.md), README and CONTRIBUTING files,
+  PHP code comments (training-translation-tracker.php, includes/*.php,
+  uninstall.php), JavaScript comments (assets/tracker.js, assets/admin.js),
+  Python code comments and docstrings across action/src and action/tests
+  (76/76 tests still green), GitHub workflow YAMLs, issue templates, the
+  .gitignore and the build-plugin-zip.sh helper.
+* Two documentation files were renamed for consistency: docs/Architektur.md
+  -> docs/Architecture.md, docs/Issue-Vorlagen-DACH.md ->
+  docs/Issue-Templates-DACH.md. German originals kept under the maintainer's
+  local Konzept/docs-de-backup/ folder.
+* Legacy changelog entries (0.2.3 and the 2.x pre-beta series) translated to
+  English to match the rest of readme.txt.
+* WordPress plugin audit: PASS with 0 CRITICAL / HIGH / MEDIUM findings.
+  No code changes were required, the plugin is Plugin-Check clean.
+* GitHub repo audit: no blocking findings. Minor housekeeping items (stale
+  action/.github duplicate, empty Konzept/_archiv-css folder) are not in
+  this release and will be cleaned up on the next pass.
+* Tracker-data, frontend behavior and feature set are unchanged from 0.4.2.
+  No user action required when upgrading.
 
 = 0.4.2 =
 * The auto-update mechanism introduced in 0.4.0 (`plugin-update-checker`
@@ -123,58 +146,58 @@ DACH Team for translating learn.wordpress.org content into German.
   SVG inline size via the new `--ttt-icon-svg` token.
 
 = 0.2.3 =
-* Erstes Beta-Release mit komplettem Feature-Set.
-* Karten-Layout: zwei Spalten Original/Translation, farbiger Status-Balken,
-  7 Komponenten-Icons mit Status-Farben.
-* Komponenten-Popover bei Hover/Klick mit GitHub-Avataren und Profil-Links
-  für Creator und Reviewer.
-* Stats-Pillen oben (klickbar als Status-Filter) — Counts werden live
-  aktualisiert basierend auf Suche und Filtern.
-* Live-Suche im Header (Titel EN/DE, Issue-Nummer, Project-Status).
-* Project-V2-Status-Pill in der Karte plus Dropdown-Filter in der Filter-Bar.
-* Section-Collapse mit localStorage-Persistierung über Reloads.
-* "Alle einklappen / ausklappen"-Toggle-Button.
-* Shortcode-Attribute: pathway, show_pathways, show_orphans, show_handbook,
-  show_stats für flexible Filterung pro Seite.
-* Smart-Defaults: pathway="..." blendet Orphan/Handbook automatisch aus.
-* Robuste Inline-Styles-Strategie gegen Theme-Konflikte und Page-Builder.
+* First beta release with the complete feature set.
+* Card layout: two columns (Original / Translation), colored status bar,
+  seven component icons with status colors.
+* Component popover on hover/click with GitHub avatars and profile links
+  for creator and reviewer.
+* Stats pills at the top (clickable as a status filter), counts update
+  live based on search and filters.
+* Live search in the header (titles EN/DE, issue number, project status).
+* Project V2 status pill on the card plus a dropdown filter in the filter bar.
+* Section collapse with localStorage persistence across reloads.
+* "Collapse all / expand all" toggle button.
+* Shortcode attributes: pathway, show_pathways, show_orphans, show_handbook,
+  show_stats for flexible per-page filtering.
+* Smart defaults: pathway="..." hides orphan / handbook automatically.
+* Robust inline-styles strategy against theme conflicts and page builders.
 
 = Legacy pre-beta releases (internal 2.x numbering, kept for reference) =
 
 = 2.1.5 =
-* Bugfix: Leerer Collapse-Alle-Button beim ersten Seitenaufruf — JS-Labels
-  werden jetzt vor `init()` definiert, nicht danach.
-* Bugfix: Collapse- und Filter-State über Page-Reloads erhalten —
-  tracker_id verwendet jetzt Post-ID + Counter statt UUID, damit
-  localStorage-Keys über Reloads hinweg stabil bleiben.
+* Bugfix: empty "Collapse all" button on first page load, the JS labels
+  are now defined before `init()` rather than after.
+* Bugfix: collapse and filter state preserved across page reloads,
+  tracker_id now uses Post ID + counter instead of UUID, so that
+  localStorage keys stay stable across reloads.
 
 = 2.1.4 =
-* Stand-Datum komplett aus dem Frontend entfernt (Zeitstempel steht
-  weiterhin in den Plugin-Einstellungen).
-* Neuer Toggle-Button "Alle einklappen / Alle ausklappen" in der
-  Filter-Bar — klappt alle Sections gleichzeitig ein bzw. wieder auf.
-* Last-Good-Fallback-Hinweis bleibt für Admins sichtbar (wichtig für
-  Diagnose bei API-Ausfall).
+* "Last updated" date removed from the frontend entirely (the timestamp
+  remains visible in the plugin settings).
+* New toggle button "Collapse all / Expand all" in the filter bar,
+  collapses or expands all sections at once.
+* Last-good fallback hint remains visible to admins (important for
+  diagnosing API outages).
 
 = 2.1.3 =
-* Polish-Release: Debug-Logs aus dem JS entfernt, Stable-Tag-Bump.
+* Polish release: debug logs removed from the JS, stable tag bump.
 
 = 2.1.2 =
-* CSS-Specificity-Fix für JS-Hide-Mechanismus. Status-Filter, Live-Suche
-  und Section-Collapse funktional bestätigt.
+* CSS specificity fix for the JS hide mechanism. Status filter, live
+  search and section collapse confirmed working.
 
 = 2.1.1 =
-* JS auf externe Datei via `<script src>` umgestellt (robust gegen wpautop).
-* Filter-Buttons-Reihe entfernt, Stats-Pillen sind jetzt klickbare Filter.
-* `pathway`-Attribut: case-insensitiv + Label-Slug-Match + smarte Defaults
-  (blendet Orphan/Handbook bei gesetztem Pathway automatisch aus).
-* Datum unter dem Header nur noch für Admins sichtbar.
+* JS moved to an external file via `<script src>` (robust against wpautop).
+* Row of filter buttons removed, stats pills are now clickable filters.
+* `pathway` attribute: case-insensitive + label-slug match + smart defaults
+  (hides orphan / handbook automatically when a pathway is set).
+* "Last updated" date below the header now only visible to admins.
 
 = 2.1.0 =
-* Filter-Bar, Live-Suche, Section-Collapse mit localStorage.
+* Filter bar, live search, section collapse with localStorage.
 
 = 2.0.8 =
-* Karten-Layout final stabil (Inline-CSS-Strategie gegen Theme-Resets).
+* Card layout finally stable (inline-CSS strategy against theme resets).
 
 = 2.0.0 =
-* Erste schlanke Variante: Settings-Seite, Fetch + Cache, simpler Renderer.
+* First lean variant: settings page, fetch + cache, simple renderer.

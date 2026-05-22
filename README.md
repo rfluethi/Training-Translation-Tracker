@@ -1,112 +1,112 @@
 # Training Translation Tracker Inventory
 
-Mono-Repo für das inventar-getriebene Übersetzungs-Dashboard des
-WordPress-DACH-Teams. Zwei Komponenten, ein Repo:
+Mono-repo for the inventory-driven translation dashboard of the
+WordPress DACH team. Two components, one repo:
 
-1. **`action/`**, GitHub Action (Python), die ein `tracker.json`-Snapshot
-   aller DACH-Übersetzungen erzeugt. Läuft alle 12 Stunden und beim Push
-   auf relevante Action-Pfade.
-2. **`wp-plugin/`**, WordPress-Plugin, das `tracker.json` lädt und auf
-   einer WP-Seite als Dashboard rendert (Karten, Filter, Suche, Collapse).
+1. **`action/`**, a GitHub Action (Python) that produces a `tracker.json`
+   snapshot of all DACH translations. Runs every 12 hours and on pushes
+   to relevant action paths.
+2. **`wp-plugin/`**, a WordPress plugin that loads `tracker.json` and
+   renders it on a WP page as a dashboard (cards, filters, search, collapse).
 
-## Dokumentation
+## Documentation
 
-Vier Dokumente, je nach Zielgruppe:
+Five documents, depending on your role:
 
-| Wenn du… | Dann lies… |
+| If you want to… | Then read… |
 |---|---|
-| das System verstehen willst, wie es arbeitet und warum es so gebaut ist | [docs/Architektur.md](docs/Architektur.md) |
-| am Code arbeitest (Action-Python oder Plugin-PHP/JS/CSS) | [docs/Developer.md](docs/Developer.md) |
-| das Tool betreibst (Releases, Token-Pflege, Failure-Recovery) | [docs/Operations.md](docs/Operations.md) |
-| das Plugin auf einer WP-Site einsetzt oder Issues pflegst | [docs/User-Guide.md](docs/User-Guide.md) |
-| ein Übersetzungs-Issue für DACH anlegen willst | [docs/Issue-Vorlagen-DACH.md](docs/Issue-Vorlagen-DACH.md) |
+| understand the system, how it works and why it is built this way | [docs/Architecture.md](docs/Architecture.md) |
+| work on the code (Action-Python or Plugin-PHP/JS/CSS) | [docs/Developer.md](docs/Developer.md) |
+| operate the tool (releases, token maintenance, failure recovery) | [docs/Operations.md](docs/Operations.md) |
+| install the plugin on a WP site or maintain issues | [docs/User-Guide.md](docs/User-Guide.md) |
+| create a DACH translation issue | [docs/Issue-Templates-DACH.md](docs/Issue-Templates-DACH.md) |
 
-## Repo-Layout
+## Repository layout
 
 ```text
 Training-Translation-Tracker-Inventory-Plugin/
-├── .github/workflows/build.yml   Workflow auf Top-Level (GitHub-Convention)
-├── action/                       Python-Action, baut tracker.json auf data-Branch
-│   ├── src/                      Inventar-Sources, Issue-Parser, Joiner, Build-Entry-Point
-│   ├── tests/                    pytest-Tests
-│   ├── schemas/                  JSON-Schemata (Laufzeit-Kopie)
-│   ├── scope.yml                 DACH-Scope: welche URLs werden getrackt
-│   ├── component-templates.yml   Default-Komponenten pro Item-Typ
-│   ├── inventory-cache.json      Committed Inventory-Snapshot
+├── .github/workflows/build.yml   Workflow at top level (GitHub convention)
+├── action/                       Python action, builds tracker.json on the data branch
+│   ├── src/                      Inventory sources, issue parser, joiner, build entry point
+│   ├── tests/                    pytest tests
+│   ├── schemas/                  JSON schemas (runtime copy)
+│   ├── scope.yml                 DACH scope: which URLs are tracked
+│   ├── component-templates.yml   Default components per item type
+│   ├── inventory-cache.json      Committed inventory snapshot
 │   ├── requirements.txt
 │   └── LICENSE
 │
-├── wp-plugin/                    WordPress-Plugin
-│   ├── training-translation-tracker.php   Plugin-Header + Boot
-│   ├── includes/                 Settings, Fetcher, Renderer
-│   ├── assets/                   CSS + JS für das Frontend
-│   ├── readme.txt                WordPress-Standard-Readme
+├── wp-plugin/                    WordPress plugin
+│   ├── training-translation-tracker.php   Plugin header and boot
+│   ├── includes/                 Settings, fetcher, renderer
+│   ├── assets/                   JS for the frontend
+│   ├── readme.txt                WordPress standard readme
 │   └── LICENSE
 │
-├── docs/                         Doku-Suite (Architektur, Developer, Operations, User-Guide, Issue-Vorlagen)
-├── build-plugin-zip.sh           Plugin-ZIP für WP-Upload bauen
-├── sync-schemas.py               Schema-Sync-Tool für die Maintenance
+├── docs/                         Documentation suite (Architecture, Developer, Operations, User Guide, Issue Templates)
+├── build-plugin-zip.sh           Build the plugin ZIP for WP upload
+├── sync-schemas.py               Schema sync tool for maintenance
 ├── CONTRIBUTING.md
-└── README.md                     Dieses Dokument
+└── README.md                     This document
 ```
 
-Nicht im Repo (in `.gitignore`):
+Not in the repo (in `.gitignore`):
 
-- `training-translation-tracker.zip`, wird bei jedem Build neu erzeugt.
-- `.venv/`, `.pytest_cache/`, `.ruff_cache/`, `__pycache__/`, Python-Werkzeug-Caches.
-- `action/tracker.json`, `action/last-run.md`, `action/data-hygiene.md`, lokale Action-Outputs (live auf dem `data`-Branch).
+- `training-translation-tracker.zip`, regenerated on every build.
+- `.venv/`, `.pytest_cache/`, `.ruff_cache/`, `__pycache__/`, Python tooling caches.
+- `action/tracker.json`, `action/last-run.md`, `action/data-hygiene.md`, local action outputs (live on the `data` branch).
 
-## Drei-Komponenten-Pipeline
+## Three-component pipeline
 
 ```
 ┌──────────────────────────┐    ┌──────────────────────────┐    ┌──────────────────────────┐
-│  GitHub Issues (DACH)    │    │  GitHub Action (Python)  │    │  WordPress-Plugin (PHP)  │
-│  Project V2 #104         │───►│  build tracker.json auf  │───►│  liest tracker.json,     │
-│  Locale=German           │    │  data-Branch alle 12h    │    │  rendert Shortcode       │
+│  GitHub Issues (DACH)    │    │  GitHub Action (Python)  │    │  WordPress plugin (PHP)  │
+│  Project V2 #104         │───►│  builds tracker.json on  │───►│  reads tracker.json,     │
+│  Locale=German           │    │  data branch every 12 h  │    │  renders the shortcode   │
 └──────────────────────────┘    └──────────────────────────┘    └──────────────────────────┘
-       Pflege durch                  Aggregation +                    Anzeige im
-       Übersetzer                    Schema-Validierung               Frontend
+       maintained by                  aggregation and                  rendered in
+       translators                    schema validation                the frontend
 ```
 
-Das Plugin macht **keine** eigenen API-Calls gegen GitHub oder learn.wordpress.org.
-Alles ist auf der Action vorgerechnet, das Plugin ist ein dünner Renderer mit Cache.
+The plugin makes **no** API calls to GitHub or learn.wordpress.org itself.
+Everything is precomputed by the action; the plugin is a thin renderer with a cache.
 
-Tieferer Einstieg: [docs/Architektur.md](docs/Architektur.md).
+For a deeper introduction, see [docs/Architecture.md](docs/Architecture.md).
 
-## Schnellstart
+## Quickstart
 
-### Action lokal testen
+### Test the action locally
 
 ```bash
 cd action
 python -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
-python -m src.build --skip-issues  # baut tracker.json ohne GitHub-Token
+python -m src.build --skip-issues  # builds tracker.json without a GitHub token
 ```
 
-### Plugin-ZIP bauen
+### Build the plugin ZIP
 
 ```bash
 ./build-plugin-zip.sh
 # → ~/Desktop/training-translation-tracker.zip
 ```
 
-Im WordPress-Admin via "Plugin hochladen" installieren, Schritt-für-Schritt in
+Install in WordPress admin via "Upload Plugin", step-by-step in
 [docs/User-Guide.md](docs/User-Guide.md).
 
-### Inventory-Cache nachziehen (wenn neue scope.yml-URLs)
+### Refresh the inventory cache (when scope.yml gets new URLs)
 
 ```bash
 cd action
-python -m src.build --refresh-cache    # holt nur die noch fehlenden URLs
+python -m src.build --refresh-cache    # only fetches missing URLs
 git add scope.yml inventory-cache.json
-git commit -m "Scope: neue URLs"
+git commit -m "Scope: new URLs"
 git push
 ```
 
-Die Action triggert dann automatisch und baut tracker.json neu.
+The action then triggers automatically and rebuilds tracker.json.
 
-## Lizenz
+## License
 
-GPL v2 oder später, siehe `action/LICENSE` und `wp-plugin/LICENSE`.
+GPL v2 or later, see `action/LICENSE` and `wp-plugin/LICENSE`.

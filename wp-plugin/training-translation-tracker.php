@@ -1,9 +1,9 @@
 <?php
 /**
  * Plugin Name:       Training Translation Tracker
- * Plugin URI:        https://github.com/rfluethi/learn-wp-dach-sitzungen
+ * Plugin URI:        https://github.com/rfluethi/Training-Translation-Tracker-Inventory-Plugin
  * Description:       Dashboard for the translation progress of the Learn WP DACH Team.
- * Version:           0.4.2
+ * Version:           0.4.3
  * Requires at least: 6.0
  * Requires PHP:      8.0
  * Author:            Learn WP DACH Team
@@ -19,35 +19,35 @@
 defined( 'ABSPATH' ) || exit;
 
 // -----------------------------------------------------------------------------
-// Konstanten
+// Constants
 // -----------------------------------------------------------------------------
 
-define( 'TTT_VERSION', '0.4.2' );
+define( 'TTT_VERSION', '0.4.3' );
 define( 'TTT_PLUGIN_FILE', __FILE__ );
 define( 'TTT_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'TTT_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 
-// Diese Schema-Version muss zu schemas/tracker.schema.json passen. Wenn das
-// tracker.json eine andere `schema_version` trägt, lehnt das Plugin den Inhalt ab.
+// This schema version must match schemas/tracker.schema.json. If the
+// tracker.json carries a different `schema_version`, the plugin rejects it.
 define( 'TTT_TRACKER_SCHEMA_VERSION', 1 );
 
-// Default-Quelle und Cache-Stunden — über die Settings-Seite überschreibbar.
+// Default source and cache hours, overridable via the settings page.
 define(
 	'TTT_DEFAULT_TRACKER_URL',
 	'https://raw.githubusercontent.com/rfluethi/Training-Translation-Tracker-Inventory-Plugin/data/tracker.json'
 );
 define( 'TTT_DEFAULT_CACHE_HOURS', 12 );
 
-// Option-Keys (eine Option, dict-artig — vermeidet wp_options-Wildwuchs).
+// Option keys (one option, dict-style, avoids wp_options sprawl).
 define( 'TTT_OPTION_KEY', 'ttt_settings' );
-// Transient für die geparste tracker.json (gilt für TTT_DEFAULT_CACHE_HOURS Stunden).
+// Transient for the parsed tracker.json (valid for TTT_DEFAULT_CACHE_HOURS hours).
 define( 'TTT_TRANSIENT_KEY', 'ttt_tracker_payload' );
-// Transient für den letzten erfolgreichen Stand (wird *nicht* automatisch invalidiert) —
-// fallback bei API-Fehlern (A.5.3).
+// Transient for the last successful state (NOT auto-invalidated),
+// fallback on API errors (A.5.3).
 define( 'TTT_LAST_GOOD_KEY', 'ttt_last_good_payload' );
 
 // -----------------------------------------------------------------------------
-// Klassen-Loader
+// Class loader
 // -----------------------------------------------------------------------------
 
 require_once TTT_PLUGIN_DIR . 'includes/class-settings.php';
@@ -55,23 +55,23 @@ require_once TTT_PLUGIN_DIR . 'includes/class-fetcher.php';
 require_once TTT_PLUGIN_DIR . 'includes/class-renderer.php';
 
 // -----------------------------------------------------------------------------
-// Initialisierung
+// Initialization
 // -----------------------------------------------------------------------------
 
 /**
- * Lädt die Übersetzungs-Dateien aus dem languages/-Unterordner des Plugins.
+ * Loads translation files from the plugin's languages/ subfolder.
  *
- * Wird für GitHub-Distribution gebraucht: WordPress 4.6+ lädt Translations
- * automatisch nur, wenn das Plugin auf wordpress.org gehostet ist oder die
- * .mo-Dateien unter wp-content/languages/plugins/ liegen. Bei unserem
- * GitHub-only-Vertrieb sitzen die Dateien hingegen unter dem Plugin-Ordner
- * selbst (wp-content/plugins/training-translation-tracker/languages/), und
- * dafür braucht es den expliziten Aufruf.
+ * Required for GitHub distribution: WordPress 4.6+ only auto-loads
+ * translations when the plugin is hosted on wordpress.org or when the
+ * .mo files live under wp-content/languages/plugins/. With our
+ * GitHub-only distribution the files instead live inside the plugin
+ * folder (wp-content/plugins/training-translation-tracker/languages/),
+ * which requires this explicit call.
  *
  * @return void
  */
 function ttt_load_textdomain() {
-	// phpcs:ignore PluginCheck.CodeAnalysis.DiscouragedFunctions.load_plugin_textdomainFound -- GitHub-distributed plugin; auto-load via wp.org-Convention is not applicable here.
+	// phpcs:ignore PluginCheck.CodeAnalysis.DiscouragedFunctions.load_plugin_textdomainFound -- GitHub-distributed plugin; auto-load via the wp.org convention does not apply here.
 	load_plugin_textdomain(
 		'training-translation-tracker',
 		false,
@@ -81,7 +81,7 @@ function ttt_load_textdomain() {
 add_action( 'init', 'ttt_load_textdomain' );
 
 /**
- * Initialisiert die Hauptkomponenten.
+ * Initializes the main components.
  *
  * @return void
  */
@@ -92,12 +92,12 @@ function ttt_init() {
 add_action( 'plugins_loaded', 'ttt_init' );
 
 // -----------------------------------------------------------------------------
-// Aktivierung / Deaktivierung / Uninstall
+// Activation / deactivation / uninstall
 // -----------------------------------------------------------------------------
 
 /**
- * Wird einmalig bei Plugin-Aktivierung aufgerufen.
- * Setzt Default-Werte für die Settings, falls noch keine vorhanden sind.
+ * Runs once on plugin activation.
+ * Seeds default values for the settings if none exist yet.
  *
  * @return void
  */
@@ -116,8 +116,8 @@ function ttt_activate() {
 register_activation_hook( __FILE__, 'ttt_activate' );
 
 /**
- * Wird bei Plugin-Deaktivierung aufgerufen — räumt nur den Cache auf,
- * lässt aber die Settings stehen (für den Fall einer Re-Aktivierung).
+ * Runs on plugin deactivation. Only clears the cache,
+ * the settings are kept (in case of re-activation).
  *
  * @return void
  */

@@ -1,307 +1,302 @@
-# User-Guide, Training Translation Tracker
+# User Guide, Training Translation Tracker
 
-> **Zielgruppe:** WordPress-Site-Admins, die den Tracker auf einer Seite einbinden, sowie Übersetzer:innen, die das Dashboard nutzen.
-> **Voraussetzung:** Keine PHP-Kenntnisse nötig. Du brauchst Schreibrechte am WordPress-Admin und (für Issue-Pflege) einen GitHub-Account.
+> **Audience:** WordPress site admins who embed the tracker on a page, plus translators who use the dashboard.
+> **Prerequisites:** No PHP knowledge required. You need write access to the WordPress admin and (for issue maintenance) a GitHub account.
 
-## 1. Was macht der Tracker?
+## 1. What does the tracker do?
 
-Der Translation Tracker ist ein Dashboard für den Übersetzungsfortschritt der WordPress-Lerninhalte auf `learn.wordpress.org` und im Training-Handbook. Auf einer WordPress-Seite zeigt er, welche Inhalte schon übersetzt sind, welche gerade bearbeitet werden und welche noch offen sind. Pro Inhalt sieht man, in welchem Status die einzelnen Komponenten (Text, Untertitel, Quiz, Video …) sind und wer daran arbeitet.
+The Translation Tracker is a dashboard for the translation progress of the WordPress learning content on `learn.wordpress.org` and in the Training Handbook. On a WordPress page it shows which content is already translated, which is currently being worked on, and which is still open. Per content item you see the status of each component (text, subtitles, quiz, video, etc.) and who is working on it.
 
-Die Daten kommen nicht aus der WordPress-Site selbst, sondern aus einer **GitHub Action**, die alle 12 Stunden eine JSON-Datei aktualisiert. Das Plugin liest diese Datei pro Cache-Zyklus und rendert daraus die Übersicht. Diese Trennung hält die Site schnell und das Plugin schlank.
+The data does not come from the WordPress site itself but from a **GitHub Action** that refreshes a JSON file every 12 hours. The plugin reads this file once per cache cycle and renders the overview from it. This separation keeps the site fast and the plugin lean.
 
-**Drei Bestandteile des Gesamtsystems:**
+**Three parts of the overall system:**
 
-| Komponente | Wo? | Was? |
+| Component | Where? | What? |
 |---|---|---|
-| GitHub-Issues | `WordPress/Learn`-Repo, DACH-Projekt-Board | Übersetzer:innen pflegen Status pro Inhalt |
-| GitHub Action | `Training-Translation-Tracker-Inventory-Plugin` | Baut `tracker.json` alle 12 h |
-| WordPress-Plugin | Diese Site | Liest JSON, zeigt Dashboard |
+| GitHub issues | `WordPress/Learn` repo, DACH project board | Translators maintain the status per item |
+| GitHub Action | `Training-Translation-Tracker-Inventory-Plugin` | Builds `tracker.json` every 12 h |
+| WordPress plugin | This site | Reads the JSON, renders the dashboard |
 
-Du arbeitest hauptsächlich mit den GitHub-Issues (Status pflegen) und siehst das Ergebnis im Dashboard.
+You mostly work with the GitHub issues (maintaining status) and see the result in the dashboard.
 
 ## 2. Installation
 
-### Voraussetzungen
+### Requirements
 
 | | |
 | --- | --- |
-| WordPress | 6.0 oder höher |
-| PHP | 8.0 oder höher |
-| Internet-Zugriff | Die Site muss `raw.githubusercontent.com` erreichen können |
+| WordPress | 6.0 or higher |
+| PHP | 8.0 or higher |
+| Internet access | The site must be able to reach `raw.githubusercontent.com` |
 
-### Installations-Schritte
+### Installation steps
 
-1. **ZIP herunterladen**, aktuelles `training-translation-tracker.zip` aus dem [Release-Tab des GitHub-Repos](https://github.com/rfluethi/Training-Translation-Tracker-Inventory-Plugin/releases) holen.
-2. Im WP-Admin **Plugins → Installieren** klicken.
-3. Oben auf **Plugin hochladen**, dann die ZIP-Datei auswählen.
-4. **Jetzt installieren** klicken.
-5. Nach erfolgreichem Upload auf **Plugin aktivieren**.
+1. **Download the ZIP**, get the current `training-translation-tracker.zip` from the [Releases tab of the GitHub repo](https://github.com/rfluethi/Training-Translation-Tracker-Inventory-Plugin/releases).
+2. In the WP admin, click **Plugins → Add New**.
+3. Click **Upload Plugin** at the top, then pick the ZIP file.
+4. Click **Install Now**.
+5. After a successful upload, click **Activate Plugin**.
 
-Falls bereits eine ältere Version installiert ist, **zuerst die alte Version deaktivieren und löschen** (rote „Löschen"-Aktion in der Plugin-Liste). Erst dann die neue ZIP hochladen. Einstellungen und Cache bleiben dabei erhalten.
+If an older version is already installed, **first deactivate and delete the old version** (red "Delete" action in the plugin list). Only then upload the new ZIP. Settings and cache are preserved.
 
-### Verifikation
+### Verification
 
-Nach der Installation steht in der Plugin-Liste ein Eintrag „**Training Translation Tracker**" mit Versionsnummer. Im Menü **Einstellungen** gibt es einen neuen Unterpunkt „**Translation Tracker**".
+After installation, the plugin list contains an entry "**Training Translation Tracker**" with a version number. In the **Settings** menu there is a new submenu "**Translation Tracker**".
 
-## 3. Plugin-Einstellungen
+## 3. Plugin settings
 
-Erreichbar unter **WP-Admin → Einstellungen → Translation Tracker**.
+Available at **WP Admin → Settings → Translation Tracker**.
 
-### URL der `tracker.json`
+### URL of `tracker.json`
 
-Die Adresse, von der das Plugin die JSON-Datei lädt. Default zeigt auf den `data`-Branch des Inventory-Plugin-Repos:
+The address from which the plugin loads the JSON file. By default it points at the `data` branch of the inventory plugin repo:
 
 ```text
 https://raw.githubusercontent.com/rfluethi/Training-Translation-Tracker-Inventory-Plugin/data/tracker.json
 ```
 
-Diese URL nur ändern, wenn das Action-Repo umzieht oder eine andere Datenquelle verwendet werden soll. Für 99 % der Fälle bleibt sie wie voreingestellt.
+Only change this URL if the action repo moves or if a different data source should be used. In 99 % of cases it stays at the default.
 
-### Cache-Dauer (Stunden)
+### Cache duration (hours)
 
-Wie lange die geladene JSON im WordPress-Transient-Cache liegt, bevor neu geladen wird. Default ist 12 Stunden, passend zum 12-h-Rhythmus der Action.
+How long the loaded JSON sits in the WordPress transient cache before it is reloaded. Default is 12 hours, matching the 12 h cadence of the action.
 
-- **Kürzer setzen** (z. B. 1 Stunde) während Test-Phasen oder wenn schnelle Updates gebraucht werden.
-- **Länger setzen** (z. B. 24 Stunden) wenn die Datenquelle stabil ist und der HTTP-Traffic minimiert werden soll.
+Set it shorter (e.g. 1 hour) during test phases or when fast updates are needed. Set it longer (e.g. 24 hours) when the data source is stable and HTTP traffic should be minimized.
 
-Erlaubter Bereich: 1 bis 168 Stunden (also bis zu eine Woche).
+Allowed range: 1 to 168 hours (up to one week).
 
-### Knopf „Cache jetzt leeren"
+### Button "Clear cache now"
 
-Erzwingt einen frischen Fetch beim nächsten Seitenaufruf. Nützlich, wenn gerade eine Aktualisierung auf GitHub gemacht wurde und du sie sofort sehen willst, ohne den Cache-Ablauf abzuwarten.
+Forces a fresh fetch on the next page load. Useful when an update has just been pushed on GitHub and you want to see it immediately without waiting for the cache to expire.
 
-### Anzeige „Stand: …"
+### "Generated at:" display
 
-Zeigt den `generated_at`-Zeitstempel aus dem aktuellen Cache. Daran sieht man, wann die Action den jetzt gecachten Datenstand zuletzt gebaut hat. Steht dort ein älteres Datum als erwartet, ist der Cache veraltet, entweder „Cache leeren" drücken oder die Action manuell triggern (siehe Abschnitt 6).
+Shows the `generated_at` timestamp from the current cache. From this you see when the action last built the currently cached state. If the date is older than expected, the cache is stale, either press "Clear cache" or trigger the action manually (see section 6).
 
-### Shortcode-Beispiele
+### Shortcode examples
 
-Direkt unter den Settings-Feldern listet das Plugin Shortcode-Beispiele mit „Kopieren"-Buttons. Damit kann man sich häufig benutzte Varianten direkt mitnehmen, ohne sie aus diesem Dokument abzutippen.
+Directly below the settings fields the plugin lists shortcode examples with "Copy" buttons. This lets you grab common variants without retyping them from this document.
 
-## 4. Den Tracker auf einer Seite einbauen
+## 4. Embedding the tracker on a page
 
-Im WordPress-Editor (Gutenberg, Classic oder Page-Builder):
+In the WordPress editor (Gutenberg, Classic or Page Builder):
 
-1. Eine **Seite** öffnen oder neu anlegen, auf der das Dashboard erscheinen soll. Üblich ist eine Seite mit dem Titel „Translation Tracker".
-2. **Shortcode-Block** einfügen (in Gutenberg: „/" → „Shortcode").
-3. In den Block-Inhalt schreiben:
+1. Open or create a **page** where the dashboard should appear. Usual title: "Translation Tracker".
+2. Insert a **Shortcode block** (in Gutenberg: "/" → "Shortcode").
+3. Write into the block content:
 
    ```text
    [translation_tracker]
    ```
 
-4. Seite **speichern und veröffentlichen**.
-5. **Seite öffnen** (Vorschau oder Live-URL). Das Dashboard erscheint an der Stelle, wo der Shortcode steht.
+4. **Save and publish** the page.
+5. **Open the page** (preview or live URL). The dashboard appears where the shortcode sits.
 
-In Page-Buildern (Elementor, Divi …) gibt es ebenfalls einen Shortcode-Block oder ein Text-Widget, das Shortcodes ausführt. Dort `[translation_tracker]` einfügen.
+Page builders (Elementor, Divi, etc.) also have a shortcode block or a text widget that runs shortcodes. Insert `[translation_tracker]` there.
 
-### Shortcode-Attribute
+### Shortcode attributes
 
-Über Attribute steuert man, was das Dashboard zeigt. Mehrere können kombiniert werden:
+Attributes control what the dashboard shows. Several can be combined:
 
-| Attribut | Werte | Wirkung |
+| Attribute | Values | Effect |
 |---|---|---|
-| `pathway` | Slug einer Pathway, mehrere durch Komma getrennt | Zeigt nur die genannten Lernpfade |
-| `show_pathways` | `yes`/`no` | Alle Pathway-Gruppen zeigen oder verstecken (Default `yes`) |
-| `show_orphans` | `yes`/`no` | „Sonstige (außerhalb Scope)" zeigen oder verstecken |
-| `show_handbook` | `yes`/`no` | Training-Handbook-Gruppe zeigen oder verstecken |
-| `show_stats` | `yes`/`no` | Stats-Header oben mit den Pillen zeigen oder verstecken |
+| `pathway` | Slug of a pathway, multiple separated by comma | Shows only the named learning paths |
+| `show_pathways` | `yes`/`no` | Show or hide all pathway groups (default `yes`) |
+| `show_orphans` | `yes`/`no` | Show or hide "Other (outside scope)" |
+| `show_handbook` | `yes`/`no` | Show or hide the Training Handbook group |
+| `show_stats` | `yes`/`no` | Show or hide the stats header at the top |
 
-### Smart-Defaults
+### Smart defaults
 
-- Wenn `pathway` gesetzt ist, blendet das Plugin **automatisch** Orphan- und Handbook-Gruppen aus (vermutete Intention: „ich will nur diese Pathway-Übersicht"). Wer sie trotzdem will, gibt explizit `show_orphans="yes"` an.
-- Wenn `pathway` **nicht** gesetzt ist, werden Orphan und Handbook standardmäßig mitgezeigt.
+When `pathway` is set, the plugin **automatically** hides orphan and handbook groups (assumed intent: "I only want this pathway overview"). If you still want them, explicitly add `show_orphans="yes"`.
 
-### Pathway-Slug-Matching
+When `pathway` is **not** set, orphan and handbook groups are shown by default.
 
-Das `pathway`-Attribut akzeptiert mehrere Schreibweisen für denselben Pathway:
+### Pathway slug matching
 
-- Kurz-Slug: `pathway="user"`
-- Voller Label-Slug: `pathway="beginner-wordpress-user"`
-- Original-Label: `pathway="Beginner WordPress User"`
+The `pathway` attribute accepts several spellings for the same pathway:
 
-Alle drei matchen dieselbe Pathway-Gruppe. Groß-/Kleinschreibung ist egal.
+- Short slug: `pathway="user"`
+- Full label slug: `pathway="beginner-wordpress-user"`
+- Original label: `pathway="Beginner WordPress User"`
 
-### Beispiele
+All three match the same pathway group. Case is ignored.
 
-**Komplette Übersicht:**
+### Examples
+
+**Complete overview:**
 
 ```text
 [translation_tracker]
 ```
 
-**Eine Seite pro Pathway:**
+**One page per pathway:**
 
 ```text
 [translation_tracker pathway="user"]
 [translation_tracker pathway="lesson-plans"]
 ```
 
-**Mehrere Pathways:**
+**Multiple pathways:**
 
 ```text
 [translation_tracker pathway="user, contributor"]
 ```
 
-**Stats verstecken (eigener Header):**
+**Hide stats (you have your own header):**
 
 ```text
 [translation_tracker show_stats="no"]
 ```
 
-**Nur das Training-Handbook:**
+**Only the Training Handbook:**
 
 ```text
 [translation_tracker show_pathways="no" show_orphans="no"]
 ```
 
-**Pathway plus Handbook, ohne Orphans:**
+**A pathway plus handbook, no orphans:**
 
 ```text
 [translation_tracker pathway="user" show_handbook="yes" show_orphans="no"]
 ```
 
-Das explizite `show_handbook="yes"` überschreibt das Smart-Default-Verhalten.
+The explicit `show_handbook="yes"` overrides the smart default.
 
-## 5. Den Tracker im Frontend bedienen
+## 5. Using the tracker in the frontend
 
-### Stats-Pillen oben
+### Stats pills at the top
 
-Zeigen die Gesamtzahlen pro Status:
+Show the totals per status:
 
-- **Items**, alle Items zusammen
-- **fertig** (grün), `overall_status = done`
-- **Review** (gelb), `overall_status = review`
-- **in Arbeit** (blau), `overall_status = wip`
-- **offen** (grau), `overall_status = open`
-- **n/a** (hellgrau), `overall_status = na`
+- **Items**, all items combined
+- **done** (green), `overall_status = done`
+- **review** (yellow), `overall_status = review`
+- **in progress** (blue), `overall_status = wip`
+- **open** (gray), `overall_status = open`
+- **n/a** (light gray), `overall_status = na`
 
-Klick auf eine Pille filtert die Karten auf diesen Status. Erneuter Klick auf „Items" setzt den Filter zurück.
+Clicking a pill filters the cards to that status. Clicking "Items" resets the filter.
 
-### Die Karten
+### The cards
 
-Jede Karte zeigt einen Inhalt:
+Each card shows one content item:
 
-- **Status-Balken links** in der Farbe des `overall_status`.
-- **Original-Spalte** (links): Titel und Link auf den englischen Inhalt. Wenn es eine WordPress.tv-Aufnahme oder ein YouTube-Video gibt, erscheinen sie als kleine Links unter dem Titel.
-- **Translation-Spalte** (rechts): Analog für die deutsche Übersetzung. Steht dort der englische Titel in Grau-Kursiv, gibt es noch keine deutsche Übersetzung.
-- **Footer-Zeile:**
-  - Links: Issue-Nummer (z. B. `#2952`) verlinkt auf das GitHub-Issue, daneben der Issue-Status `open`/`closed` und ggf. Marker („Verwaist", „Doppelt", „Original Entwurf", „Außerhalb Scope").
-  - Rechts: bis zu sieben kleine farbige Icons für die Komponenten (Thumbnails, Text, Subtitles, Exercise, Quiz, Audio, Video). Hover über ein Icon öffnet ein Popover mit Status, Creator + Avatar und Reviewer + Avatar.
+**Status bar on the left** in the color of `overall_status`.
 
-### Suchfeld
+**Original column** (left): title and link to the English content. If there is a WordPress.tv recording or a YouTube video, they appear as small links below the title.
 
-Live-Suche im Header. Tippen filtert die Karten, deren Titel (deutsch oder englisch) oder Issue-Nummer den eingegebenen Text enthalten.
+**Translation column** (right): same for the German translation. If the English title is shown there in gray italics, the German translation does not exist yet.
 
-### Sections ein-/ausklappen
+**Footer row:** left side shows the issue number (e.g. `#2952`) linked to the GitHub issue, next to it the issue status `open`/`closed` and possibly markers ("Orphan", "Duplicate", "Original draft", "Out of scope"). Right side shows up to seven small colored icons for the components (thumbnails, text, subtitles, exercise, quiz, audio, video). Hovering over an icon opens a popover with status, creator + avatar and reviewer + avatar.
 
-Klick auf den Titel einer Section (z. B. „Get Started With WordPress") klappt die Karten darunter zu. Der ▾-Pfeil wird zu ▸. Erneuter Klick klappt sie wieder auf. Der Zustand wird im Browser gespeichert, beim nächsten Seitenaufruf bleiben sie wie zuletzt.
+### Search field
 
-## 6. Daten aktualisieren
+Live search in the header. Typing filters the cards whose title (German or English) or issue number contains the entered text.
 
-Drei Wege:
+### Collapsing / expanding sections
 
-### 1. Automatisch alle 12 Stunden
+Click the title of a section (e.g. "Get Started With WordPress") to collapse the cards below it. The arrow turns from ▾ to ▸. Click again to expand. The state is stored in the browser, so on the next page load it stays as last left.
 
-Die GitHub Action läuft per Cron und veröffentlicht eine neue `tracker.json`. Das Plugin lädt sie spätestens nach Ablauf der Cache-Dauer (Default 12 h).
+## 6. Refreshing the data
 
-### 2. „Cache jetzt leeren" im Plugin
+Three ways:
 
-In den Plugin-Einstellungen den Knopf drücken. Beim nächsten Seitenaufruf holt das Plugin frische Daten, sofern die Action zwischenzeitlich neu gebaut hat.
+### 1. Automatically every 12 hours
 
-### 3. Action manuell triggern
+The GitHub Action runs on a cron schedule and publishes a new `tracker.json`. The plugin reloads it at the latest when the cache duration has expired (default 12 h).
 
-Wer Schreibrechte am Action-Repo hat, kann den Workflow „Build tracker.json" über die GitHub-Web-Oberfläche manuell auslösen. Danach:
+### 2. "Clear cache now" in the plugin
 
-1. Etwa 2 Minuten warten, bis die Action durchgelaufen ist.
-2. Im Plugin „Cache jetzt leeren" drücken.
-3. Seite neu laden.
+In the plugin settings, press the button. On the next page load the plugin fetches fresh data, provided the action has rebuilt in the meantime.
 
-## 7. Issues für neue Übersetzungen anlegen
+### 3. Trigger the action manually
 
-Die vollständige Vorlage steht in [Issue-Vorlagen-DACH.md](Issue-Vorlagen-DACH.md). Hier nur die wichtigsten Punkte:
+Whoever has write access to the action repo can trigger the workflow "Build tracker.json" manually via the GitHub web UI. After that:
 
-### Wo anlegen
+1. Wait about 2 minutes until the action has finished.
+2. Press "Clear cache now" in the plugin.
+3. Reload the page.
 
-Im Repo **`WordPress/Learn`**, nicht im Inventory-Plugin-Repo. Das Issue muss im DACH-Projekt-Board mit Custom-Field `Locale = German` markiert sein.
+## 7. Creating issues for new translations
 
-### Drei Pflicht-Punkte
+The full template is in [Issue-Templates-DACH.md](Issue-Templates-DACH.md). The key points here:
 
-1. **Original-URL kanonisch**, `https://`, lowercase, Trailing-Slash, ohne Query/Fragment, ohne `www.`.
+### Where to create them
 
-   Korrekt: `https://learn.wordpress.org/lesson/wordpress-essentials-domains-and-hosting/`
+In the **`WordPress/Learn`** repo, not in the inventory plugin repo. The issue must be on the DACH project board with the custom field `Locale = German`.
 
-   Falsch: `http://learn.wordpress.org/lesson/WordPress-Essentials` oder `…?ref=email`
+### Three mandatory points
 
-2. **Locale-Markierung** im DACH-Projekt-Board (`Locale = German`).
+1. **Canonical original URL**, `https://`, lowercase, trailing slash, no query/fragment, no `www.`.
 
-3. **Status-Tabelle mit HTML-Markern**, Markdown-Tabelle zwischen `<!-- TRANSLATION-STATUS-START -->` und `<!-- TRANSLATION-STATUS-END -->`. 1:1 aus der Vorlage übernehmen.
+   Correct: `https://learn.wordpress.org/lesson/wordpress-essentials-domains-and-hosting/`
 
-### Statuswerte
+   Incorrect: `http://learn.wordpress.org/lesson/WordPress-Essentials` or `…?ref=email`
+
+2. **Locale marking** on the DACH project board (`Locale = German`).
+
+3. **Status table with HTML markers**, a Markdown table between `<!-- TRANSLATION-STATUS-START -->` and `<!-- TRANSLATION-STATUS-END -->`. Copy the template verbatim.
+
+### Status values
 
 `open` · `wip` · `review` · `done` · `na`
 
-### Creator / Reviewer
+### Creator / reviewer
 
-GitHub-Benutzername **ohne** `@`-Präfix (also `rfluethi`, nicht `@rfluethi`). Mehrere durch Komma trennen. Leer lassen, wenn noch niemand fest zugewiesen ist.
+GitHub username **without** the `@` prefix (so `rfluethi`, not `@rfluethi`). Separate multiple with a comma. Leave empty if nobody is assigned yet.
 
-### Pro Inhalt und Sprache nur ein Issue
+### One issue per content item and language
 
-Wenn aus Versehen zwei Issues zur gleichen URL angelegt werden, zeigt der Tracker beide mit einem Warnsymbol „mehrfaches Issue". Bereinigung manuell, eines schließen oder umwidmen.
+If two issues are created for the same URL by mistake, the tracker shows both with a warning icon "multiple issues". Cleanup is manual, close one or repurpose it.
 
-## 8. Häufige Probleme
+## 8. Common problems
 
-### Das Dashboard ist leer / zeigt „Tracker-Daten werden vorbereitet"
+### The dashboard is empty / shows "Tracker data is being prepared"
 
-Ursachen:
+Causes: the JSON file has never been loaded successfully, which happens the very first time, before the first action run. Or the JSON URL in the settings is wrong or unreachable. Or the site has no internet access to `raw.githubusercontent.com`.
 
-- Die JSON-Datei wurde noch nie erfolgreich geladen, passiert beim allerersten Mal, bevor die erste Action durchgelaufen ist.
-- Die JSON-URL in den Settings ist falsch oder nicht erreichbar.
-- Die Site hat keinen Internet-Zugriff auf `raw.githubusercontent.com`.
+**Fix:** check the URL in the plugin settings and press "Clear cache". If still empty, ask a site admin to check the action repo.
 
-**Lösung:** in den Plugin-Einstellungen die URL prüfen und „Cache leeren" drücken. Falls trotzdem leer, einen Site-Admin bitten, das Action-Repo zu prüfen.
+### "Generated at:" shows an older date
 
-### Es steht ein älteres Datum unter „Stand: …"
+The cache has not expired yet. Either wait or press "Clear cache".
 
-Der Cache ist noch nicht abgelaufen. Entweder warten oder „Cache leeren" drücken.
+### A translation is missing from the dashboard
 
-### Eine Übersetzung fehlt im Dashboard
+Check the issue number on the DACH GitHub project, does the issue exist at all? The issue must have the label `Locale=German`. The original URL in the issue must match the inventory URL exactly (lowercase, with trailing slash, without query parameters). If all of that is correct, the next action run picks it up and the item appears on the next cache update.
 
-- Issue-Nummer im DACH-GitHub-Projekt prüfen, gibt es das Issue überhaupt?
-- Issue muss das Label `Locale=German` haben.
-- Der Original-URL im Issue muss exakt der Inventory-URL entsprechen (lowercase, mit Trailing-Slash, ohne Query-Parameter).
-- Falls alles passt, läuft die nächste Action und das Item erscheint beim nächsten Cache-Update.
+### A card shows "Orphan" or "Out of scope"
 
-### Eine Karte zeigt „Verwaist" oder „Außerhalb Scope"
+**Orphan:** the issue points to a URL that no longer exists in the inventory (learn.wordpress.org) (renamed, deleted).
 
-- **Verwaist:** das Issue verweist auf eine URL, die im Inventory (learn.wordpress.org) nicht mehr existiert (umbenannt, gelöscht).
-- **Außerhalb Scope:** das Issue ist zwar gültig, aber die URL steht nicht in der `scope.yml` der Action, bewusste Auswahl, welche Inhalte ins Dashboard kommen.
+**Out of scope:** the issue is valid, but the URL is not in the action's `scope.yml`, a deliberate choice of which content lands on the dashboard.
 
-In beiden Fällen ist Handlungsbedarf entweder am Issue (URL korrigieren) oder am Scope (Item in `scope.yml` aufnehmen, siehe Developer-Doku).
+In both cases action is needed either on the issue (fix the URL) or on the scope (add the item to `scope.yml`, see developer docs).
 
-### Status-Filter und Suche reagieren nicht
+### Status filter and search do not respond
 
-In bestimmten Theme/Page-Builder-Kombinationen lädt das JavaScript für die Interaktion nicht zuverlässig. **Workaround:** statt Filter zu klicken, einen Shortcode mit `pathway=`-Attribut auf einer eigenen Seite verwenden, das filtert serverseitig und funktioniert immer.
+In certain theme / page builder combinations the interaction JavaScript does not load reliably. **Workaround:** instead of clicking filters, use a shortcode with a `pathway=` attribute on its own page, that filters server-side and always works.
 
-Diagnose: Browser-Konsole öffnen (F12 → Console + Network) und prüfen, ob `tracker.js` mit HTTP 200 geladen wird. Wenn nicht, hat der Page-Builder den `<script src>`-Tag aus dem Output entfernt.
+Diagnosis: open the browser console (F12 → Console + Network) and check whether `tracker.js` loaded with HTTP 200. If not, the page builder stripped the `<script src>` tag out of the output.
 
-## 9. Einen Bug melden
+## 9. Reporting a bug
 
-Bevor du einen Bug meldest, bitte folgendes notieren:
+Before you report a bug, please note down:
 
-1. **Plugin-Version** (steht in der Plugin-Liste und in den Einstellungen).
-2. **WordPress-Version** und ggf. **Page-Builder / Theme**.
-3. **Welcher Shortcode** auf der Seite verwendet wurde.
-4. **Was du erwartet hast** und **was tatsächlich passiert ist**.
-5. **Screenshot** der Seite, am besten Browser-Vollbild.
-6. **Browser-Konsole** (F12 → Console-Tab), alle roten Fehler kopieren.
+1. **Plugin version** (shown in the plugin list and in the settings).
+2. **WordPress version** and, if relevant, **page builder / theme**.
+3. **Which shortcode** the page uses.
+4. **What you expected** and **what actually happened**.
+5. **Screenshot** of the page, preferably full browser window.
+6. **Browser console** (F12 → Console tab), copy all red errors.
 
-Issue im Action-Repo öffnen: <https://github.com/rfluethi/Training-Translation-Tracker-Inventory-Plugin/issues>
+Open an issue in the action repo: <https://github.com/rfluethi/Training-Translation-Tracker-Inventory-Plugin/issues>
 
-Oder direkt per E-Mail an den Maintainer (siehe Plugin-Header).
+Or contact the maintainer directly by email (see the plugin header).
 
-## Weiterführende Dokumente
+## Further reading
 
-- System-Architektur: [Architektur.md](Architektur.md)
-- Betrieb (Releases, Token, Recovery): [Operations.md](Operations.md)
-- Code & Erweiterungen: [Developer.md](Developer.md)
+- System architecture: [Architecture.md](Architecture.md)
+- Operations (releases, token, recovery): [Operations.md](Operations.md)
+- Code & extensions: [Developer.md](Developer.md)

@@ -29,9 +29,9 @@ class RawIssue:
     body: str
     repository: str
     assignees: list[str]
-    # Wert des Project-V2-Status-Felds, z. B. 'Awaiting Triage',
+    # Value of the Project V2 status field, e.g. 'Awaiting Triage',
     # 'Translation in Progress', 'Ready for Review', 'Preparing to Publish',
-    # 'Published or Closed', 'Looking for Translator'. Leer wenn unset.
+    # 'Published or Closed', 'Looking for Translator'. Empty when unset.
     project_status: str = ""
 
 
@@ -107,9 +107,9 @@ class IssueFetcher:
                     continue
 
             raw_issue = _coerce_raw_issue(content)
-            # Project-V2-Status-Field (z. B. 'Translation in Progress'). Leer
-            # wenn das Issue dem Projekt noch nicht hinzugefügt wurde oder
-            # kein Status gesetzt ist.
+            # Project V2 status field (e.g. 'Translation in Progress'). Empty
+            # when the issue has not yet been added to the project, or no
+            # status has been set.
             raw_issue.project_status = get_field_value(raw_item, "status") or ""
             parsed = parse_issue_body(raw_issue.body or "")
 
@@ -147,7 +147,7 @@ class IssueFetcher:
     def group_by_original_url(issues: list[ParsedIssue]) -> dict[str, list[ParsedIssue]]:
         """Bucket parsed issues by their normalized original URL.
 
-        Used by the builder to detect duplicates (Arbeitsplan §A.1.4):
+        Used by the builder to detect duplicates (work plan, section A.1.4):
         more than one issue per URL → all are kept; the most recently updated
         is the primary, the rest go into `duplicate_issues`. Issues without
         an original URL are skipped here — they end up in the orphan bucket

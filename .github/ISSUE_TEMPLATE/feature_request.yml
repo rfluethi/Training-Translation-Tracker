@@ -1,55 +1,55 @@
-name: Feature-Request
-description: Eine Idee, die das Plugin oder die Action besser machen würde
+name: Feature request
+description: An idea that would make the plugin or the action better.
 title: "[Feature] "
 labels: ["enhancement"]
 body:
   - type: markdown
     attributes:
       value: |
-        Danke für deine Idee! Beschreibe möglichst konkret, was du dir wünschst und warum.
+        Thanks for the idea! Please describe as concretely as possible what you want and why.
 
   - type: dropdown
     id: component
     attributes:
-      label: Welcher Teil betrifft die Idee?
+      label: Which part is affected?
       options:
-        - WordPress-Plugin (wp-plugin/)
+        - WordPress plugin (wp-plugin/)
         - GitHub Action (action/)
-        - Dokumentation
-        - Etwas anderes
+        - Documentation
+        - Something else
     validations:
       required: true
 
   - type: textarea
     id: problem
     attributes:
-      label: Welches Problem löst das?
-      description: Was ist heute mühsam oder nicht möglich?
-      placeholder: "Aktuell muss ich für jede Section …"
+      label: Which problem does this solve?
+      description: What is cumbersome or not possible today?
+      placeholder: "Today I have to do ... for every section ..."
     validations:
       required: true
 
   - type: textarea
     id: solution
     attributes:
-      label: Vorgeschlagene Lösung
-      description: Wie könnte das Feature aussehen? Skizze, Mockup, Beispiel-Konfiguration — alles erlaubt.
-      placeholder: "Es könnte einen neuen Shortcode-Parameter `…` geben, der …"
+      label: Proposed solution
+      description: What could the feature look like? A sketch, mockup or example config are all fine.
+      placeholder: "A new shortcode parameter `...` could ..."
     validations:
       required: true
 
   - type: textarea
     id: alternatives
     attributes:
-      label: Alternativen / bereits versucht
-      description: Gibt es Workarounds? Was hast du bisher gemacht?
+      label: Alternatives / already tried
+      description: Are there workarounds? What have you done so far?
     validations:
       required: false
 
   - type: textarea
     id: additional
     attributes:
-      label: Zusätzlicher Kontext
-      description: Screenshots, Links auf ähnliche Implementierungen anderswo, Use-Case-Beispiele.
+      label: Additional context
+      description: Screenshots, links to similar implementations elsewhere, use-case examples.
     validations:
       required: false

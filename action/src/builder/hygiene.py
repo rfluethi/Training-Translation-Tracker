@@ -1,20 +1,20 @@
-"""Datenhygiene-Bericht.
+"""Data-hygiene report.
 
-Sammelt während des Builds Beobachtungen über die Qualität der Eingabedaten,
-die zwar den Action-Lauf nicht stoppen, aber pflegbedürftig sind. Das Ergebnis
-wird als Markdown-Datei (`data-hygiene.md`) geschrieben und auf den
-`data`-Branch committet.
+Collects observations during the build about the quality of the input data
+that do not stop the action run but still need attention. The result is
+written as a Markdown file (`data-hygiene.md`) and committed to the
+`data` branch.
 
-Kategorien:
+Categories:
 
-  1. Issues, deren Body keine HTML-Marker-Tabelle hat
-     (=> Komponenten erscheinen als „alle open", Migration empfohlen)
-  2. Issues mit parse_error (Marker vorhanden, Tabelle unparseable)
-  3. Mehrfach-Issues für dieselbe Original-URL
-  4. Issues ohne extrahierbare Original-URL (landen als Orphans)
-  5. Creator/Reviewer mit verdächtigen Zeichen
-     (trailing punctuation, übrig gebliebene @-Präfixe, doppelte Spaces)
-  6. Items im Scope ohne (passendes) Issue (= „noch zu tun")
+  1. Issues whose body has no HTML marker table
+     (=> components appear as "all open"; migration recommended)
+  2. Issues with parse_error (markers present but table is unparseable)
+  3. Multiple issues for the same original URL
+  4. Issues without an extractable original URL (end up as orphans)
+  5. Creators/reviewers with suspicious characters
+     (trailing punctuation, leftover @ prefixes, double spaces)
+  6. Items in scope without a (matching) issue (i.e. "still to do")
 """
 
 from __future__ import annotations
@@ -27,31 +27,31 @@ from ..github.issues import ParsedIssue
 from ..inventory.base import InventoryItem
 
 
-# Verdächtige Zeichen am Anfang/Ende eines Usernames
+# Suspicious characters at the start/end of a username
 _SUSPICIOUS_USER_RE = re.compile(r"^[@\s]|[\s.,;:!?]$")
 
 
 @dataclass
 class HygieneReport:
-    """Eine Sammlung pflegerelevanter Beobachtungen aus dem letzten Build."""
+    """A collection of maintenance-relevant observations from the last build."""
 
     issues_without_markers: list[tuple[int, str]] = field(default_factory=list)
-    """(issue_number, title) — Issues, deren Body keine TRANSLATION-STATUS-Marker hat."""
+    """(issue_number, title): issues whose body has no TRANSLATION-STATUS markers."""
 
     issues_with_parse_errors: list[tuple[int, str]] = field(default_factory=list)
-    """(issue_number, title) — Marker vorhanden, Tabelle aber unparseable."""
+    """(issue_number, title): markers present, but the table is unparseable."""
 
     duplicate_url_clusters: list[tuple[str, list[int]]] = field(default_factory=list)
-    """(url, [issue_numbers]) — mehr als ein Issue zeigt auf dieselbe URL."""
+    """(url, [issue_numbers]): more than one issue points to the same URL."""
 
     issues_without_original_url: list[tuple[int, str]] = field(default_factory=list)
-    """(issue_number, title) — Body enthält keinen parsbaren Link-to-original-content."""
+    """(issue_number, title): body contains no parseable link-to-original-content."""
 
     suspicious_users: list[tuple[int, str, str, str]] = field(default_factory=list)
-    """(issue_number, component, role, value) — Username mit verdächtigem Zeichen."""
+    """(issue_number, component, role, value): username with a suspicious character."""
 
     inventory_items_without_issue: list[tuple[str, str]] = field(default_factory=list)
-    """(url, title) — In scope.yml, aber kein DACH-Issue dazu (= "noch zu tun")."""
+    """(url, title): in scope.yml, but no DACH issue for it yet (i.e. "still to do")."""
 
 
 def collect_hygiene(
@@ -60,38 +60,38 @@ def collect_hygiene(
     matched_inventory_urls: set[str],
     issue_index: dict[str, list[ParsedIssue]],
 ) -> HygieneReport:
-    """Berechnet den Hygiene-Bericht aus Joiner-Zwischenständen."""
+    """Compute the hygiene report from joiner intermediate state."""
 
     report = HygieneReport()
 
-    # 1+2: Body-Format-Probleme + 5: verdächtige Usernames
+    # 1+2: body-format problems + 5: suspicious usernames
     for issue in parsed_issues:
         body = issue.parsed
-        # Marker check: parser setzt components=None, wenn keine Marker da sind.
-        # parse_error wird gesetzt, wenn Marker da sind, aber die Tabelle leer/kaputt ist.
+        # Marker check: parser sets components=None when no markers are present.
+        # parse_error is set when markers are present but the table is empty/broken.
         if body.parse_error:
             report.issues_with_parse_errors.append((issue.number, issue.raw.title))
         elif body.components is None:
             report.issues_without_markers.append((issue.number, issue.raw.title))
 
-        # Verdächtige Usernames in Komponenten
+        # Suspicious usernames in components
         for comp in issue.components:
             for role, value in (("Creator", comp.creator), ("Reviewer", comp.reviewer)):
                 if value and _SUSPICIOUS_USER_RE.search(value):
                     report.suspicious_users.append((issue.number, comp.name, role, value))
 
-    # 3: Duplikate
+    # 3: duplicates
     for url, issues in issue_index.items():
         if len(issues) > 1:
             numbers = sorted(i.number for i in issues)
             report.duplicate_url_clusters.append((url, numbers))
 
-    # 4: Issues ohne Original-URL
+    # 4: issues without an original URL
     for issue in parsed_issues:
         if not issue.normalized_original:
             report.issues_without_original_url.append((issue.number, issue.raw.title))
 
-    # 6: Scope-Items ohne Issue
+    # 6: scope items without an issue
     for item in inventory:
         if item.url_en not in matched_inventory_urls:
             report.inventory_items_without_issue.append((item.url_en, item.title_en))
@@ -104,141 +104,142 @@ def render_hygiene_markdown(
     *,
     generated_at: datetime | None = None,
 ) -> str:
-    """Rendert den Bericht als Markdown."""
+    """Render the report as Markdown."""
 
     generated = (generated_at or datetime.now(timezone.utc)).astimezone(timezone.utc)
     ts = generated.strftime("%Y-%m-%dT%H:%M:%SZ")
 
     sections: list[str] = []
-    sections.append("# Datenhygiene-Bericht")
+    sections.append("# Data-Hygiene Report")
     sections.append("")
-    sections.append(f"Stand: `{ts}`")
+    sections.append(f"As of: `{ts}`")
     sections.append("")
     sections.append(
-        "Beobachtungen aus dem letzten Build, die Pflege brauchen. Nichts davon "
-        "stoppt den Build — alles ist als nice-to-fix zu verstehen."
+        "Observations from the latest build that need attention. None of these "
+        "stops the build; everything is meant as nice-to-fix."
     )
     sections.append("")
 
-    # 1. Issues ohne Marker-Tabelle
+    # 1. Issues without marker table
     sections.append(
-        "## Issues ohne neue Marker-Tabelle "
+        "## Issues without new marker table "
         f"({len(report.issues_without_markers)})"
     )
     sections.append("")
     if report.issues_without_markers:
         sections.append(
-            "Der Body enthält keinen `<!-- TRANSLATION-STATUS-START -->`-Block. "
-            "Komponenten erscheinen aktuell als alle `open` (aus den Default-Templates). "
-            "Migration auf das Format aus `Issue-Vorlage-DACH.md` empfohlen."
+            "The body contains no `<!-- TRANSLATION-STATUS-START -->` block. "
+            "Components currently appear as all `open` (from the default templates). "
+            "Migration to the format from `Issue-Vorlage-DACH.md` is recommended."
         )
         sections.append("")
         for number, title in report.issues_without_markers:
-            sections.append(f"- [#{number}](https://github.com/WordPress/Learn/issues/{number}) — {title}")
+            sections.append(f"- [#{number}](https://github.com/WordPress/Learn/issues/{number}): {title}")
         sections.append("")
     else:
-        sections.append("_Keine — alle gematchten Issues nutzen das neue Format._")
+        sections.append("_None: all matched issues use the new format._")
         sections.append("")
 
-    # 2. Parse-Errors
+    # 2. Parse errors
     sections.append(
-        "## Issues mit Parse-Error in der Tabelle "
+        "## Issues with parse error in the table "
         f"({len(report.issues_with_parse_errors)})"
     )
     sections.append("")
     if report.issues_with_parse_errors:
         sections.append(
-            "Marker sind vorhanden, aber zwischen ihnen steht keine erkennbare Tabelle "
-            "(Zeilen fangen nicht mit `|` an, Header fehlt, etc.). Body korrigieren."
+            "Markers are present, but between them there is no recognisable table "
+            "(rows do not start with `|`, header missing, etc.). Fix the body."
         )
         sections.append("")
         for number, title in report.issues_with_parse_errors:
-            sections.append(f"- [#{number}](https://github.com/WordPress/Learn/issues/{number}) — {title}")
+            sections.append(f"- [#{number}](https://github.com/WordPress/Learn/issues/{number}): {title}")
         sections.append("")
     else:
-        sections.append("_Keine._")
+        sections.append("_None._")
         sections.append("")
 
-    # 3. Duplikate
+    # 3. Duplicates
     sections.append(
-        f"## Mehrfach-Issues für dieselbe URL ({len(report.duplicate_url_clusters)})"
+        f"## Multiple issues for the same URL ({len(report.duplicate_url_clusters)})"
     )
     sections.append("")
     if report.duplicate_url_clusters:
         sections.append(
-            "Mehrere Issues zeigen auf dieselbe Original-URL. Im Tracker wird das "
-            "niedrigste Issue als Primary genutzt, die anderen erscheinen als "
-            "`duplicate_issues`. Bitte aufräumen: ein Issue pro Original-URL."
+            "Several issues point to the same original URL. In the tracker, the "
+            "lowest-numbered issue is used as the primary; the others appear as "
+            "`duplicate_issues`. Please clean up: one issue per original URL."
         )
         sections.append("")
         for url, numbers in report.duplicate_url_clusters:
             primary = numbers[0]
             others = ", ".join(f"#{n}" for n in numbers[1:])
-            sections.append(f"- `{url}` — Primary: #{primary}, Duplikate: {others}")
+            sections.append(f"- `{url}`: primary #{primary}, duplicates: {others}")
         sections.append("")
     else:
-        sections.append("_Keine._")
+        sections.append("_None._")
         sections.append("")
 
-    # 4. Issues ohne Original-URL
+    # 4. Issues without original URL
     sections.append(
-        "## Issues ohne extrahierbare Original-URL "
+        "## Issues without an extractable original URL "
         f"({len(report.issues_without_original_url)})"
     )
     sections.append("")
     if report.issues_without_original_url:
         sections.append(
-            "Im Body fehlt ein Feld `Link to original content: <URL>`. Diese Issues "
-            "landen im Orphan-Bucket des Trackers. Body ergänzen oder Issue schließen."
+            "The body is missing a `Link to original content: <URL>` field. These "
+            "issues end up in the tracker's orphan bucket. Update the body or "
+            "close the issue."
         )
         sections.append("")
         for number, title in report.issues_without_original_url:
-            sections.append(f"- [#{number}](https://github.com/WordPress/Learn/issues/{number}) — {title}")
+            sections.append(f"- [#{number}](https://github.com/WordPress/Learn/issues/{number}): {title}")
         sections.append("")
     else:
-        sections.append("_Keine._")
+        sections.append("_None._")
         sections.append("")
 
-    # 5. Verdächtige Usernames
+    # 5. Suspicious usernames
     sections.append(
-        "## Creator/Reviewer mit verdächtigen Zeichen "
+        "## Creator/Reviewer with suspicious characters "
         f"({len(report.suspicious_users)})"
     )
     sections.append("")
     if report.suspicious_users:
         sections.append(
-            "Username beginnt/endet mit Sonderzeichen (Punkt, `@`, Leerzeichen, …). "
-            "Vermutlich Tippfehler im Issue-Body."
+            "Username starts or ends with a special character (period, `@`, "
+            "whitespace, ...). Likely a typo in the issue body."
         )
         sections.append("")
         for number, component, role, value in report.suspicious_users:
             sections.append(
                 f"- [#{number}](https://github.com/WordPress/Learn/issues/{number}) "
-                f"Komponente `{component}` · {role}: `{value}`"
+                f"component `{component}` * {role}: `{value}`"
             )
         sections.append("")
     else:
-        sections.append("_Keine._")
+        sections.append("_None._")
         sections.append("")
 
-    # 6. Items ohne Issue
+    # 6. Items without an issue
     sections.append(
-        "## Scope-Items ohne Issue "
+        "## Scope items without an issue "
         f"({len(report.inventory_items_without_issue)})"
     )
     sections.append("")
     if report.inventory_items_without_issue:
         sections.append(
-            "In scope.yml gelistet, aber noch kein DACH-Übersetzungs-Issue dafür "
-            "vorhanden. Im Tracker erscheinen sie mit allen Komponenten als `open` — "
-            "die ehrliche `noch-zu-tun`-Liste."
+            "Listed in scope.yml, but no DACH translation issue exists for it yet. "
+            "In the tracker they appear with all components as `open`: the honest "
+            "`still-to-do` list."
         )
         sections.append("")
         for url, title in report.inventory_items_without_issue:
             sections.append(f"- [{title}]({url})")
         sections.append("")
     else:
-        sections.append("_Keine — jedes Scope-Item ist mindestens einmal in Arbeit._")
+        sections.append("_None: every scope item is being worked on at least once._")
         sections.append("")
 
     return "\n".join(sections)

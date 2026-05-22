@@ -1,10 +1,10 @@
 # Developer, Training Translation Tracker
 
-> **Zielgruppe:** Entwickler:innen, die am Code arbeiten, Action (Python) und/oder Plugin (PHP/JS/CSS) warten, erweitern oder für andere Locales adaptieren.
-> **Voraussetzung:** Architektur grob verstanden, siehe [Architektur.md](Architektur.md).
-> **Setup:** Linux/macOS mit Python 3.10+, Node optional für JS-Linting, lokale WordPress-Installation oder WP-Playground für Plugin-Tests.
+> **Audience:** Developers working on the code, maintaining or extending the action (Python) and/or the plugin (PHP/JS/CSS), or adapting either for other locales.
+> **Prerequisite:** A rough understanding of the architecture, see [Architecture.md](Architecture.md).
+> **Setup:** Linux/macOS with Python 3.10+, Node optional for JS linting, a local WordPress installation or WP Playground for plugin tests.
 
-## 1. Lokale Entwicklungs-Umgebung
+## 1. Local development environment
 
 ### Action (Python)
 
@@ -15,80 +15,80 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-Tests laufen lassen:
+Run tests:
 
 ```bash
 pytest
 ```
 
-Lokaler Voll-Build (braucht Token, liest aus Cache):
+Local full build (needs a token, reads from the cache):
 
 ```bash
 export GH_PAT_PROJECT_READ=<your token>
 python -m src.build
 ```
 
-Build ohne Issues (nur Inventory → tracker.json, kein Token nötig):
+Build without issues (inventory → tracker.json only, no token needed):
 
 ```bash
 python -m src.build --skip-issues
 ```
 
-Cache aufbauen / aktualisieren (live gegen learn.wordpress.org):
+Build or refresh the cache (live against learn.wordpress.org):
 
 ```bash
 python -m src.build --refresh-cache
 ```
 
-`--refresh-cache` macht **keinen** Issue-Fetch und schreibt **kein** `tracker.json`, es aktualisiert nur `inventory-cache.json`. Default: nur fehlende URLs werden geholt. Mit `--force` werden alle neu gefetcht.
+`--refresh-cache` does **not** fetch issues and does **not** write `tracker.json`. It only updates `inventory-cache.json`. By default it fetches only missing URLs. With `--force` all URLs are refetched.
 
 ### Plugin (PHP)
 
-Für lokale Entwicklung am elegantesten via Symlink in der WordPress-Installation:
+The most elegant approach for local development is a symlink into a WordPress installation:
 
 ```bash
 cd /path/to/wordpress/wp-content/plugins
 ln -s /path/to/Training-Translation-Tracker-Inventory-Plugin/wp-plugin training-translation-tracker
 ```
 
-Alternativ ein lokales ZIP bauen und über die WP-Admin-UI hochladen:
+Alternatively build a local ZIP and upload via the WP admin UI:
 
 ```bash
 ./build-plugin-zip.sh
 # → ~/Desktop/training-translation-tracker.zip
 ```
 
-PHPUnit-Tests existieren aktuell nicht (Stand 0.3.0). Plugin wird per Sichtprüfung in einer lokalen Instanz oder im [WP-Playground](https://playground.wordpress.net/) verifiziert.
+PHPUnit tests do not exist yet (as of 0.4.2). The plugin is verified by visual inspection in a local instance or in [WP Playground](https://playground.wordpress.net/).
 
-## 2. Action-Code (Python)
+## 2. Action code (Python)
 
-### Modul-Struktur
+### Module structure
 
 ```
 action/src/
-├── build.py                # Einstiegspunkt
-├── inventory/              # REST-Module pro Item-Typ
-│   ├── base.py             # InventorySource-Basis-Interface
+├── build.py                # entry point
+├── inventory/              # REST modules per item type
+│   ├── base.py             # InventorySource base interface
 │   ├── lesson.py
 │   ├── lesson_plan.py
 │   ├── tutorial.py
 │   ├── handbook.py
-│   ├── url_normalizer.py   # kanonische URL-Form
-│   ├── dispatcher.py       # ruft die passende Source pro scope.yml-Eintrag
-│   └── cache.py            # liest/schreibt inventory-cache.json
-├── github/                 # GitHub-API
-│   ├── client.py           # GraphQL-Client mit Pagination + Cost-Logging
-│   ├── parser.py           # extrahiert URL-Felder + Status-Tabelle
+│   ├── url_normalizer.py   # canonical URL form
+│   ├── dispatcher.py       # calls the right source per scope.yml entry
+│   └── cache.py            # reads / writes inventory-cache.json
+├── github/                 # GitHub API
+│   ├── client.py           # GraphQL client with pagination + cost logging
+│   ├── parser.py           # extracts URL fields + status table
 │   └── fetcher.py
-└── builder/                # Aggregation
-    ├── joiner.py           # Inventory ↔ Issues per URL matchen
-    ├── stats.py            # Stats-Aggregation
-    └── writer.py           # tracker.json + last-run.md schreiben
+└── builder/                # aggregation
+    ├── joiner.py           # match inventory and issues by URL
+    ├── stats.py            # stats aggregation
+    └── writer.py           # writes tracker.json + last-run.md
 ```
 
-Jedes Modul hat eine klare Verantwortung, keine Zyklen zwischen den Untermodulen.
+Each module has a clear responsibility, no cycles between sub-modules.
 
-### InventorySource-Schnittstelle
+### InventorySource interface
 
 ```python
 class InventorySource(Protocol):
@@ -96,25 +96,25 @@ class InventorySource(Protocol):
         ...
 ```
 
-`scope_entry` ist ein Eintrag aus `scope.yml`. `InventoryItem` ist ein Dataclass mit `type`, `slug`, `title_en`, `url_en`, `parent_path` etc.
+`scope_entry` is one entry from `scope.yml`. `InventoryItem` is a dataclass with `type`, `slug`, `title_en`, `url_en`, `parent_path`, etc.
 
-Neue Inhaltsquelle anschließen:
+To connect a new content source:
 
-1. Neues Modul in `src/inventory/`, das `InventorySource` implementiert.
-2. Registrierung im Dispatcher.
-3. Item-Typ in `component-templates.yml` aufnehmen.
+1. Add a new module in `src/inventory/` that implements `InventorySource`.
+2. Register it in the dispatcher.
+3. Add the item type to `component-templates.yml`.
 
-### Issue-Parser
+### Issue parser
 
-`src/github/parser.py` ist strikt: er verlangt die HTML-Marker `<!-- TRANSLATION-STATUS-START -->` / `<!-- TRANSLATION-STATUS-END -->`. Issues ohne Marker werden mit Default-Komponenten und ohne `parse_error` aufgenommen, das Markdown-Tabellen-Parsing wird einfach übersprungen.
+`src/github/parser.py` is strict: it requires the HTML markers `<!-- TRANSLATION-STATUS-START -->` and `<!-- TRANSLATION-STATUS-END -->`. Issues without markers are accepted with default components and no `parse_error`; the markdown table parsing is simply skipped.
 
-Akzeptierte URL-Field-Namen (tolerant):
+Accepted URL field names (tolerant):
 
 - `Link to original content`, `Link to original`, `Original`
 - `German title`, `German lesson name`, `Deutscher Titel`, `Translation title`, `Translated title`
-- WP.tv / YouTube: jeweils `Link to original/translated WordPress.tv/YouTube recording`. Ohne `original/translated` → als deutsche Aufnahme interpretiert (Backwards-Compat).
+- WP.tv / YouTube: each one is `Link to original/translated WordPress.tv/YouTube recording`. Without `original/translated`, the value is interpreted as the German recording (backwards compat).
 
-Format-egal: `- Field: value` und `**Field:** value` werden beide erkannt.
+Format-agnostic: `- Field: value` and `**Field:** value` are both recognised.
 
 ### Tests
 
@@ -122,40 +122,40 @@ Format-egal: `- Field: value` und `**Field:** value` werden beide erkannt.
 pytest tests/
 ```
 
-Tests decken ab:
+Tests cover:
 
-- `tests/test_github_parser.py`, 8 Fixtures (sauber, broken, single row, at-prefix, unknown status, …).
-- `tests/test_inventory_*.py`, pro Source-Modul mit gemockter API.
-- `tests/test_builder_joiner.py`, Matching-Logik, Duplicate-Handling, Orphan-Klassifikation.
-- `tests/test_url_normalizer.py`, alle Varianten der URL-Normalisierung.
+- `tests/test_github_parser.py`, 8 fixtures (clean, broken, single row, at-prefix, unknown status, …).
+- `tests/test_inventory_*.py`, per source module with mocked API.
+- `tests/test_builder_joiner.py`, matching logic, duplicate handling, orphan classification.
+- `tests/test_url_normalizer.py`, all URL normalization cases.
 
 Linting via Ruff: `ruff check src/ tests/`.
 
-## 3. Plugin-Code (PHP)
+## 3. Plugin code (PHP)
 
 ### Bootstrap: `training-translation-tracker.php`
 
-Definiert Konstanten, lädt Klassen, registriert Init-Hooks.
+Defines constants, loads classes, registers init hooks.
 
-| Konstante | Zweck |
+| Constant | Purpose |
 |---|---|
-| `TTT_VERSION` | Aktuelle Plugin-Version (URL-Versionierung der Assets) |
-| `TTT_PLUGIN_FILE` / `_DIR` / `_URL` | Pfad-Helfer |
-| `TTT_TRACKER_SCHEMA_VERSION` | Erwartete `schema_version` der `tracker.json` (`1`) |
-| `TTT_DEFAULT_TRACKER_URL` | Default-URL zum `data`-Branch |
-| `TTT_DEFAULT_CACHE_HOURS` | Default-Cache-TTL (`12`) |
-| `TTT_OPTION_KEY` | WP-Option-Key (`ttt_settings`) |
-| `TTT_TRANSIENT_KEY` | Transient-Key für den Live-Cache |
-| `TTT_LAST_GOOD_KEY` | Transient-Key für den Last-Good-Fallback (ohne TTL) |
+| `TTT_VERSION` | Current plugin version (asset URL versioning) |
+| `TTT_PLUGIN_FILE` / `_DIR` / `_URL` | Path helpers |
+| `TTT_TRACKER_SCHEMA_VERSION` | Expected `schema_version` of `tracker.json` (`1`) |
+| `TTT_DEFAULT_TRACKER_URL` | Default URL to the `data` branch |
+| `TTT_DEFAULT_CACHE_HOURS` | Default cache TTL (`12`) |
+| `TTT_OPTION_KEY` | WP option key (`ttt_settings`) |
+| `TTT_TRANSIENT_KEY` | Transient key for the live cache |
+| `TTT_LAST_GOOD_KEY` | Transient key for the last-good fallback (no TTL) |
 
 ### `class-settings.php`
 
-- Settings-Seite unter **Einstellungen → Translation Tracker**.
-- Felder für URL, Cache-Dauer, Clear-Cache-Knopf.
-- AJAX-Endpoint `ttt_clear_cache` mit Nonce + Capability-Check (`manage_options`).
-- Shortcode-Beispiel-Liste mit Copy-Button (via `admin.js`).
+- Settings page under **Settings → Translation Tracker**.
+- Fields for URL, cache duration, "Clear cache" button.
+- AJAX endpoint `ttt_clear_cache` with nonce and capability check (`manage_options`).
+- Shortcode example list with copy buttons (via `admin.js`).
 
-Konfiguration liegt in **einer** WP-Option (`ttt_settings`) als assoziatives Array, vermeidet das Aufblähen der `wp_options`-Tabelle.
+Configuration lives in a **single** WP option (`ttt_settings`) as an associative array. Avoids bloating the `wp_options` table.
 
 ```php
 TTT_Settings::get( 'tracker_url' );
@@ -164,54 +164,54 @@ TTT_Settings::get( 'cache_hours' );
 
 ### `class-fetcher.php`
 
-Statische Klasse. Zentraler API-Punkt:
+Static class. Central API point:
 
 ```php
 $result = TTT_Fetcher::get();
 // [
 //   'payload' => array|null,
 //   'source'  => 'cache'|'fresh'|'last_good'|'none',
-//   'error'   => string,  // Optionale Fehlernotiz (admin-only)
+//   'error'   => string,  // optional error message (admin-only)
 // ]
 ```
 
-Ablauf:
+Flow:
 
 ```
 get()
 ├── Transient hit?           yes → 'cache' return
-├── URL leer?                yes → 'last_good' return mit Fehler
-├── HTTP-Fetch is_wp_error?  yes → 'last_good' return mit Fehler
-├── Schema-Validation fail?  yes → 'last_good' return mit Fehler
+├── URL empty?               yes → 'last_good' return with error
+├── HTTP fetch is_wp_error?  yes → 'last_good' return with error
+├── Schema validation fails? yes → 'last_good' return with error
 └── Store + 'fresh' return
 ```
 
-Schema-Validation prüft nur `schema_version === TTT_TRACKER_SCHEMA_VERSION`. Tiefere Validation übernimmt die Action, Plugin vertraut darauf.
+Schema validation only checks `schema_version === TTT_TRACKER_SCHEMA_VERSION`. Deeper validation is handled by the action; the plugin trusts it.
 
 ### `class-renderer.php`
 
-Größte Klasse. Verantwortlich für die HTML-Erzeugung.
+Largest class. Responsible for HTML generation.
 
-| Methode | Wofür |
+| Method | Purpose |
 |---|---|
-| `render_shortcode( $atts )` | Shortcode-Handler |
-| `render_inline_styles()` | Inline-`<style>`-Block am Anfang |
-| `render_inline_script()` | `<script src=…tracker.js>`-Tag am Ende |
-| `render_payload(…)` | Header + Gruppen-Schleife |
-| `render_stats(…)` | Stats-Pillen mit `data-filter-status` |
-| `render_filter_bar()` | Suchfeld im Header |
-| `render_group/_course/_section/_item_list/_item(…)` | Pathway/Handbook-Hierarchie + Karten |
-| `render_card_media_row(…)` | WP.tv/YouTube-Zeile |
-| `render_component_icon(…)` | SVG-Icon für eine Komponente |
-| `collect_markers(…)` | Orphan/Parse-Error/Duplicate/Draft-Marker |
-| `group_passes_filter(…)` | Shortcode-Attribut-Logik |
+| `render_shortcode( $atts )` | Shortcode handler |
+| `render_inline_styles()` | Inline `<style>` block at the top |
+| `render_inline_script()` | `<script src=…tracker.js>` tag at the bottom |
+| `render_payload(…)` | Header + group loop |
+| `render_stats(…)` | Stats pills with `data-filter-status` |
+| `render_filter_bar()` | Search field in the header |
+| `render_group/_course/_section/_item_list/_item(…)` | Pathway/handbook hierarchy + cards |
+| `render_card_media_row(…)` | WP.tv/YouTube row |
+| `render_component_icon(…)` | SVG icon for a component |
+| `collect_markers(…)` | Orphan/parse-error/duplicate/draft markers |
+| `group_passes_filter(…)` | Shortcode attribute logic |
 
-Konstanten:
+Constants:
 
-- `COMPONENT_ICONS`, Material-Icons-SVG-Paths pro Komponente.
-- `COMPONENT_ORDER`, Reihenfolge der Icons im Footer.
+- `COMPONENT_ICONS`: Material Icons SVG paths per component (default; can be overridden via `tracker.json` `component_icons` or the `ttt_component_icons` filter).
+- `COMPONENT_ORDER`: order of icons in the footer.
 
-### Frontend-HTML-Hierarchie
+### Frontend HTML hierarchy
 
 ```html
 <div class="ttt-tracker" id="ttt-{uuid}" data-tracker-id="ttt-{uuid}">
@@ -228,7 +228,9 @@ Konstanten:
   <section class="ttt-group ttt-group-pathway" data-group-key="pathway-user">
     <div class="ttt-course" data-course-key="…">
       <div class="ttt-section" data-section-key="…">
-        <h4 class="ttt-section-title" role="button" tabindex="0" aria-expanded="true">…</h4>
+        <h4 class="ttt-section-heading">
+          <button type="button" class="ttt-section-title" aria-expanded="true">…</button>
+        </h4>
         <div class="ttt-section-body">
           <div class="ttt-cards">
             <article class="ttt-card ttt-overall-done"
@@ -242,35 +244,35 @@ Konstanten:
     </div>
   </section>
 
-  <div class="ttt-no-results" hidden>Keine Treffer …</div>
+  <div class="ttt-no-results" hidden>No results …</div>
 </div>
 
 <script src="…assets/tracker.js?ver=…" defer></script>
 ```
 
-### CSS-Klassen-Konventionen
+### CSS class conventions
 
-Alle Klassen tragen `.ttt-`-Prefix. Wichtige Status-Modifier:
+All classes use the `.ttt-` prefix. Important status modifiers:
 
-- `.ttt-overall-{status}` auf der `.ttt-card`.
-- `.ttt-comp-{status}` auf dem Komponenten-Icon.
-- `.ttt-stat-{status}` + `.ttt-stat-active` auf der Stats-Pille.
-- `.ttt-marker-{reason}` für Orphan/Parse-Error/Duplicate-Markierungen.
-- `.ttt-section-collapsed` für eingeklappte Section.
+- `.ttt-overall-{status}` on the `.ttt-card`.
+- `.ttt-comp-{status}` on the component icon.
+- `.ttt-stat-{status}` + `.ttt-stat-active` on the stats pill.
+- `.ttt-marker-{reason}` for orphan/parse-error/duplicate markers.
+- `.ttt-section-collapsed` for collapsed sections.
 
-### Data-Attribute (vom JS verwendet)
+### Data attributes (used by JS)
 
-- `.ttt-tracker[data-tracker-id]`, eindeutige Instanz-ID.
-- `.ttt-stat[data-filter-status]`, `all|done|review|wip|open|na`.
-- `.ttt-card[data-status]`, `overall_status` für JS-Filter.
-- `.ttt-card[data-search]`, Lowercase-Suchstring (EN-Titel + DE-Titel + Issue-Nummer).
-- `.ttt-section[data-section-key]`, Schlüssel für localStorage (Collapse-State).
+- `.ttt-tracker[data-tracker-id]`, unique instance ID.
+- `.ttt-stat[data-filter-status]`, one of `all|done|review|wip|open|na`.
+- `.ttt-card[data-status]`, `overall_status` for JS filter.
+- `.ttt-card[data-search]`, lowercase search string (EN title + DE title + issue number).
+- `.ttt-section[data-section-key]`, key for localStorage (collapse state).
 
 ## 4. JavaScript
 
-`assets/tracker.js`, Vanilla ES5+ als IIFE, kein jQuery, ~270 Zeilen.
+`assets/tracker.js`, vanilla ES5+ as an IIFE, no jQuery, around 640 lines.
 
-### Initialisierung
+### Initialization
 
 ```js
 if (window.__tttTrackerInitialized) return;
@@ -288,28 +290,28 @@ if (document.readyState === 'loading') {
 }
 ```
 
-Guard-Variable verhindert Doppel-Init bei mehrfacher Skript-Inklusion.
+The guard variable prevents double initialization on accidental multiple script inclusion.
 
-### Pro Tracker-Container
+### Per tracker container
 
-`setupTracker(root)` bindet:
+`setupTracker(root)` binds:
 
-- Click-Handler auf alle `.ttt-stat[data-filter-status]`-Pillen.
-- Input-Handler (debounced 150 ms) auf `.ttt-search-input`.
-- Click/Keyboard-Handler auf Section-Titel.
+- Click handlers on all `.ttt-stat[data-filter-status]` pills.
+- Input handler (debounced 150 ms) on `.ttt-search-input`.
+- Click/keyboard handler on section titles.
 
 ### State
 
-Pro Tracker-Instanz in `localStorage`:
+Per tracker instance in `localStorage`:
 
 ```
 ttt:<trackerId>:state                 → {"status":"done","query":"wordpress"}
 ttt:<trackerId>:collapse:<sectionKey> → "1" | "0"
 ```
 
-Filter-State und Collapse-Zustand überleben Page-Reload.
+Filter state and collapse state survive a page reload.
 
-### Filter-Logik
+### Filter logic
 
 ```js
 var matchStatus = (state.status === 'all') || (card.dataset.status === state.status);
@@ -318,35 +320,35 @@ var matchQuery  = (state.query === '') || (card.dataset.search.indexOf(state.que
 if (matchStatus && matchQuery) show(card); else hide(card);
 ```
 
-Danach `hideEmptyContainers()`, Sections/Courses/Groups ohne sichtbare Karten werden zugeklappt. Stats-Pillen werden aus den gefilterten Karten live neu berechnet (Stats-Live-Update).
+Afterwards `hideEmptyContainers()` collapses sections, courses, and groups without visible cards. Stats pills are recomputed live from the filtered cards (stats live update).
 
-## 5. CSS-Strategie
+## 5. CSS strategy
 
-### Single Source of Truth (ab 0.3.2)
+### Single source of truth (since 0.3.2)
 
-Das gesamte Frontend-CSS lebt im Inline-`<style id="ttt-inline-critical">`-Block, der von `TTT_Renderer::render_inline_styles()` ausgegeben wird. Es gibt keine externe `assets/style.css` mehr, kein `wp_enqueue_style`, keine Doppelpflege.
+The entire frontend CSS lives in the inline `<style id="ttt-inline-critical">` block emitted by `TTT_Renderer::render_inline_styles()`. There is no external `assets/style.css` anymore, no `wp_enqueue_style`, no dual maintenance.
 
-Grund für Inline statt extern: In WordPress-Umgebungen mit Page-Buildern (Elementor, Divi, Beaver Builder) und/oder Caching-Plugins (WP Rocket, LiteSpeed Cache) lädt eine via `wp_enqueue_style` registrierte externe CSS-Datei nicht zuverlässig. `has_shortcode( $post->post_content, … )` versagt, wenn der Shortcode in einem Builder-eigenen Meta-Feld liegt. Inline-Styles im Shortcode-Output umgehen das vollständig.
+Reason for inline over external: in WordPress environments with page builders (Elementor, Divi, Beaver Builder) and/or caching plugins (WP Rocket, LiteSpeed Cache), an external CSS file registered via `wp_enqueue_style` does not load reliably. `has_shortcode( $post->post_content, … )` fails when the shortcode lives in a builder-specific meta field. Inline styles in the shortcode output sidestep that entirely.
 
-Wegen der bewussten Abweichung von `wp_enqueue_style()` umklammert der `<style>`-Tag einen `phpcs:disable WordPress.WP.EnqueuedResources.NonEnqueuedStylesheet`-Block.
+Because of the deliberate deviation from `wp_enqueue_style()`, the `<style>` tag is wrapped in a `phpcs:disable WordPress.WP.EnqueuedResources.NonEnqueuedStylesheet` block.
 
-### Design-Tokens
+### Design tokens
 
-Farben, Spacings, Schriftgrößen, Borders und Icon-Größen sind als CSS-Custom-Properties am `.ttt-tracker`-Root definiert:
+Colours, spacings, font sizes, borders, and icon sizes are defined as CSS custom properties on the `.ttt-tracker` root:
 
 ```css
 .ttt-tracker {
-    /* Brand-Farben, via theme.json überschreibbar */
+    /* Brand colours, overridable via theme.json */
     --ttt-color-primary: var(--wp--preset--color--primary, #2271b1);
     --ttt-color-text:    var(--wp--preset--color--foreground, #222);
     --ttt-color-bg:      var(--wp--preset--color--base, #fff);
 
-    /* Status-Semantik, Plugin-fix, NICHT überschreibbar */
+    /* Status semantics, plugin-fixed, NOT overridable */
     --ttt-color-done:    #28a745;
     --ttt-color-review:  #d4a017;
     --ttt-color-wip:     #1c7ed6;
 
-    /* Spacing, Typografie, Borders, Icons */
+    /* Spacing, typography, borders, icons */
     --ttt-space-md:      0.6rem;
     --ttt-font-size-sm:  0.85rem;
     --ttt-radius-md:     6px;
@@ -354,90 +356,90 @@ Farben, Spacings, Schriftgrößen, Borders und Icon-Größen sind als CSS-Custom
 }
 ```
 
-**Override am Theme**: eigene Token-Werte am `.ttt-tracker`-Selektor im Child-Theme oder Customizer-CSS setzen. Status-Farben bleiben Plugin-fix (semantische Konsistenz).
+**Theme overrides:** set your own token values on the `.ttt-tracker` selector in a child theme or customizer CSS. Status colours stay plugin-fixed for semantic consistency.
 
 ### Specificity
 
-Alle Plugin-Regeln tragen den `.ttt-tracker`-Parent-Prefix für höhere Specificity gegen Theme-Rules. Wo Themes Standard-`!important`-Regeln haben (z. B. `svg { max-width: 100% !important }`), gewinnt das Plugin mit eigenen `!important`-Rules auf den entscheidenden Properties, z. B. `.ttt-tracker .ttt-card-cols { display: grid !important; }`.
+All plugin rules carry the `.ttt-tracker` parent prefix for higher specificity against theme rules. Where themes have standard `!important` rules (e.g. `svg { max-width: 100% !important }`), the plugin wins with its own `!important` rules on the critical properties, e.g. `.ttt-tracker .ttt-card-cols { display: grid !important; }`.
 
-## 6. Barrierefreiheit (A11y)
+## 6. Accessibility (A11y)
 
-Stand 0.3.0: keine formaler Audit, aber semantische Grundstruktur und alle Quick-Wins umgesetzt.
+As of 0.4.2: no formal audit, but the semantic foundation and all quick wins are in place.
 
-### Was umgesetzt ist
+### What is implemented
 
-- Stats-Filter sind echte `<button>`-Elemente.
-- **Section-Toggles sind echte `<button>` innerhalb eines `<h4>`**, semantisch korrekt, native Tastatur-Bedienung (`Enter`/`Leertaste`), `aria-expanded` reflektiert den Zustand. (Refactor in 0.3.0.)
-- **Komponenten-Icon-Trigger tragen `aria-haspopup="dialog"` + `aria-expanded`**, JS pflegt den Zustand beim Öffnen/Schließen. (Neu in 0.3.0.)
-- Komponenten-Popover ist click/tap-tauglich (zusätzlich zu hover), `Enter`/`Leertaste` öffnet, `Esc` schließt.
-- Such-Input ist semantisch `<input type="search">` mit `aria-label`.
-- SVG-Icons tragen `aria-hidden="true"` + `focusable="false"`; die semantische Info sitzt im Wrapper-`aria-label`.
-- Status wird mehrfach kodiert: Farbe + Icon + Text-Pille.
-- `defer`-Attribut auf dem Tracker-Script.
+- Stats filters are real `<button>` elements.
+- **Section toggles are real `<button>` elements inside an `<h4>`**, semantically correct, natively keyboard-accessible (`Enter`/`Space`), `aria-expanded` reflects state.
+- **Component icon triggers carry `aria-haspopup="dialog"` + `aria-expanded`**; the JS keeps the state in sync on open/close.
+- The component popover is click/tap-capable in addition to hover; `Enter`/`Space` opens, `Esc` closes.
+- The search input is semantically `<input type="search">` with `aria-label`.
+- SVG icons carry `aria-hidden="true"` + `focusable="false"`; the semantic info sits on the wrapper `aria-label`.
+- Status is encoded multiple ways: colour + icon + text pill.
+- `defer` attribute on the tracker script.
 
-### Was noch offen ist
+### What is still open
 
-1. **Kontrast `--ttt-color-review`.** `#d4a017` (amber) auf weiß ergibt ~2.4:1, unter WCAG-AA-Schwelle für Icons (3:1). Brand-Designentscheidung; bei einem formalen Audit nachjustieren (z. B. auf `#b8860b` / DarkGoldenrod → ~3.3:1).
-2. **Audit-Lauf.** Lighthouse-A11y + axe-core auf einer Test-Seite laufen lassen, Findings als Iteration nachziehen. Bislang nur manuelle Sichtprüfung.
+1. **Contrast `--ttt-color-review`.** `#d4a017` (amber) on white gives about 2.4:1, below the WCAG AA threshold for icons (3:1). Brand design decision; on a formal audit, adjust (for example to `#b8860b` / DarkGoldenrod → about 3.3:1).
+2. **Audit run.** Run Lighthouse-A11y and axe-core on a test page, work through the findings. So far only manual visual inspection.
 
-### Test-Anleitung
+### Test guide
 
-Manueller Smoketest:
+Manual smoke test:
 
-- **Tab-Navigation:** Mit `Tab`/`Shift+Tab` durch die Seite. Jedes interaktive Element muss erreichbar sein, mit sichtbarem Focus-Ring.
-- **Keyboard-Bedienung:** Stats-Filter, Section-Collapse, Such-Input, alles mit `Enter`/`Leertaste` bedienbar.
-- **Screenreader-Stichprobe:** VoiceOver (macOS) oder NVDA (Windows) eine Karte vorlesen lassen. Komponenten-Status klar erkennbar?
-- **Browser-Tool:** F12 → Lighthouse-Tab → „Accessibility"-Run.
+- **Tab navigation:** Use `Tab` and `Shift+Tab` through the page. Every interactive element must be reachable, with a visible focus ring.
+- **Keyboard:** Stats filter, section collapse, search input — all operable via `Enter`/`Space`.
+- **Screen reader sample:** Read a card with VoiceOver (macOS) or NVDA (Windows). Are the component statuses clearly recognisable?
+- **Browser tool:** F12 → Lighthouse tab → "Accessibility" run.
 
-## 7. Erweiterungspunkte
+## 7. Extension points
 
-### Komponenten-Icons austauschen (Filter-Hook)
+### Override component icons (filter hook)
 
-Verfügbar seit 0.3.0. In `class-renderer.php` filtern wir die Icon-Tabelle:
+Available since 0.3.0. In `class-renderer.php` the icon table is filtered:
 
 ```php
 $icons = apply_filters( 'ttt_component_icons', self::COMPONENT_ICONS );
 ```
 
-Themes oder ein kleines Companion-Plugin können Icons ohne Plugin-Code-Änderung überschreiben:
+Themes or a small companion plugin can override icons without changing plugin code:
 
 ```php
 add_filter( 'ttt_component_icons', function( $icons ) {
-    $icons['text']  = 'M3 5h18v2H3V5z...'; // eigener SVG path-d
+    $icons['text']  = 'M3 5h18v2H3V5z...'; // your own SVG path-d
     $icons['video'] = 'M8 5v14l11-7L8 5z...';
     return $icons;
 } );
 ```
 
-Was übergeben wird ist das `d`-Attribut des SVG-Pfads (kein vollständiger SVG-Tag), weil das Plugin um die Pfad-Daten den `<svg>`-Wrapper baut (`viewBox="0 0 24 24"`, `fill="currentColor"`, `aria-hidden="true"`).
+What gets passed is the SVG path `d` attribute (not a full SVG tag), because the plugin wraps it in `<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">`.
 
-Mittelfristige Alternative: Icons direkt in `component-templates.yml` definieren und in `tracker.json` mitliefern. Dann ist das Plugin komplett konfigurations-getrieben, sinnvoll erst, wenn mehrere Locales eigene Icon-Sätze brauchen.
+Since 0.3.3, icons can also be defined centrally in `action/component-templates.yml` and shipped via `tracker.json` as a top-level `component_icons` map. The priority order is: hardcoded `COMPONENT_ICONS` (fallback) < `component_icons` from `tracker.json` < `ttt_component_icons` filter (final override).
 
-### Neue Item-Typen / Komponenten
+### New item types or components
 
-1. **Action**, neuen Typ in `component-templates.yml` definieren.
+1. **Action**: define the new type in `component-templates.yml`.
 2. **Plugin** `class-renderer.php`:
-   - In `COMPONENT_ICONS` einen Material-Icons-SVG-Path ergänzen.
-   - In `COMPONENT_ORDER` die Position in der Footer-Zeile festlegen.
-3. **Inline-CSS** in `render_inline_styles()`: Farb-Klasse `.ttt-comp-newtype` ergänzen (falls eigene Farbe gewünscht).
+   - Add a Material Icons SVG path to `COMPONENT_ICONS`.
+   - Add the position to `COMPONENT_ORDER` (footer row).
+3. **Inline CSS** in `render_inline_styles()`: add a colour class `.ttt-comp-newtype` if you want a dedicated colour.
 
-Plugin behandelt unbekannte Komponenten defensiv, funktioniert auch ohne Plugin-Update, nur ohne Icon.
+The plugin treats unknown components defensively; it works even without a plugin update, just without an icon.
 
-### Andere Locales (z. B. `it_IT`, `fr_FR`)
+### Other locales (e.g. `it_IT`, `fr_FR`)
 
-Plugin ist locale-agnostisch. Für neue Locale:
+The plugin is locale-agnostic. For a new locale:
 
-1. Action-Fork des Repos.
-2. `scope.yml` mit Locale-spezifischer URL-Liste füllen.
-3. Workflow: Issue-Filter auf passendes GitHub-Projekt + Label (`Locale=Italian` statt `German`).
-4. Action laufen lassen → neue `tracker.json` auf eigenem `data`-Branch.
-5. Plugin-Settings: URL auf neuen `data`-Branch zeigen lassen.
+1. Fork the action repo.
+2. Fill `scope.yml` with the locale-specific URL list.
+3. In the workflow, point the issue filter at the appropriate GitHub project and label (`Locale=Italian` instead of `German`).
+4. Run the action → new `tracker.json` on a separate `data` branch.
+5. Plugin settings: point the URL at the new `data` branch.
 
-Keine PHP-Änderung nötig.
+No PHP changes required.
 
-### Custom Styling
+### Custom styling
 
-Im Child-Theme oder Customizer-Custom-CSS:
+In a child theme or customizer CSS:
 
 ```css
 .ttt-tracker {
@@ -447,44 +449,42 @@ Im Child-Theme oder Customizer-Custom-CSS:
 }
 ```
 
-Das überschreibt automatisch alle Stellen, die `var(--ttt-color-primary)` etc. lesen, ohne `!important`-Krieg.
+This automatically overrides every spot reading `var(--ttt-color-primary)` etc., without an `!important` war.
 
-Bei Layout-Properties (`display: grid` etc.) muss Custom-CSS mit `!important` arbeiten, weil die Inline-Styles `!important` tragen.
+For layout properties (`display: grid`, etc.) custom CSS must use `!important`, because the inline styles already carry `!important`.
 
-## 8. Versionierung
+## 8. Versioning
 
-Drei Stellen pro Release synchron halten (Beispiel `0.3.0`):
+Keep three places in sync per release (example `0.4.2`):
 
-| Datei | Wert |
+| File | Value |
 |---|---|
-| `wp-plugin/training-translation-tracker.php` Plugin-Header `Version:` | `0.3.0` |
-| `wp-plugin/training-translation-tracker.php` Konstante `TTT_VERSION` | `0.3.0` |
-| `wp-plugin/readme.txt` `Stable tag:` | `0.3.0` |
+| `wp-plugin/training-translation-tracker.php` plugin header `Version:` | `0.4.2` |
+| `wp-plugin/training-translation-tracker.php` constant `TTT_VERSION` | `0.4.2` |
+| `wp-plugin/readme.txt` `Stable tag:` | `0.4.2` |
 
-Der CI-Workflow `release-plugin.yml` verifiziert die Konsistenz beim Tag-Push und bricht ab, wenn sie auseinanderlaufen.
+The CI workflow `release-plugin.yml` verifies this consistency on tag push and aborts if the values diverge.
 
-Beta-Schema `0.x.y`:
+Beta scheme `0.x.y`:
 
-- `0.2.x`, laufende Beta-Iteration, gleiches `schema_version=1`.
-- `0.3.0`, geplanter nächster Minor mit neuen Features.
-- `1.0.0`, erstes stabiles Release, wenn Plugin produktiv-ready ist.
+- `0.2.x`, ongoing beta iteration, same `schema_version=1`.
+- `0.3.0`, next minor with new features.
+- `1.0.0`, first stable release, when the plugin is production-ready.
 
-Schema-Versionierung des Datenmodells: `tracker.json schema_version`-Sprung → Plugin lehnt alte Daten ab.
+Data model schema versioning: a `tracker.json schema_version` bump → the plugin rejects old data.
 
-## 9. Bekannte technische Schulden
+## 9. Known technical debt
 
-| # | Thema | Status |
+| # | Topic | Status |
 |---|---|---|
-| 1 | Keine PHPUnit-Tests fürs Plugin | offen, bei größeren Refactorings nachziehen |
-| 2 | (gelöst in 0.3.2: Inline-Block ist Single Source of Truth, keine externe `style.css` mehr) | erledigt |
-| 3 | Settings-Status-Hinweis nutzt fixe Hex-Werte | konsistenter wäre auch hier Token-System |
-| 4 | A11y nie formal auditiert | Pre-1.0 Lighthouse + axe-core durchlaufen, Findings nachziehen (siehe § 6) |
-| 5 | Komponenten-Icons nur per Filter-Hook überschreibbar | längerfristig: Icons aus `component-templates.yml` in `tracker.json` mitliefern |
+| 1 | No PHPUnit tests for the plugin | open, address before larger refactorings |
+| 2 | Settings status notice uses fixed hex values | consistent token usage here too would be nicer |
+| 3 | A11y never formally audited | run Lighthouse + axe-core pre-1.0, address findings (see § 6) |
+| 4 | Component icons override only via filter hook / tracker.json | longer term: full plugin-side decoupling |
 
+## 10. Sanity check for CSS token consistency
 
-## 10. Sanity-Check für CSS-Token-Konsistenz
-
-Alle verwendeten `var(--ttt-*)`-Tokens müssen im Inline-Block auch definiert sein, sonst rendert das Layout kaputt.
+All `var(--ttt-*)` tokens used in the inline block must also be defined there, otherwise the layout breaks.
 
 ```bash
 python3 - <<'EOF'
@@ -502,12 +502,12 @@ print(f'used={len(used)} defined={len(defined)} '
 EOF
 ```
 
-Erwartet: keine `missing` und keine `unused` Tokens.
+Expected: no `missing` and no `unused` tokens.
 
-## Weiterführende Dokumente
+## Related documents
 
-- System-Architektur: [Architektur.md](Architektur.md)
-- Betrieb (Releases, Token-Pflege, Failure-Recovery): [Operations.md](Operations.md)
-- Benutzersicht: [User-Guide.md](User-Guide.md)
-- JSON-Schemata: [`action/schemas/`](../action/schemas/)
-- Contributing-Leitfaden: [CONTRIBUTING.md](../CONTRIBUTING.md)
+- System architecture: [Architecture.md](Architecture.md)
+- Operations (releases, token maintenance, failure recovery): [Operations.md](Operations.md)
+- User view: [User-Guide.md](User-Guide.md)
+- JSON schemas: [`action/schemas/`](../action/schemas/)
+- Contributing guide: [CONTRIBUTING.md](../CONTRIBUTING.md)

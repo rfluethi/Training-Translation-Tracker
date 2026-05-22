@@ -1,13 +1,13 @@
 name: Release Plugin
 
-# Zwei Trigger:
+# Two triggers:
 #
-#   1. Push eines Version-Tags wie `v0.2.3` → automatisches Release.
+#   1. Push of a version tag like `v0.2.3`, which triggers an automatic release.
 #      Workflow:  git tag v0.2.3 && git push --tags
 #
-#   2. Manueller Klick im GitHub-Actions-UI ("Run workflow"). Erfordert
-#      Eingabe der Version. Erstellt das Tag selbst, falls noch nicht vorhanden.
-#      Praktisch für Beta-Releases ohne lokales Tag-Push.
+#   2. Manual click in the GitHub Actions UI ("Run workflow"). Requires
+#      a version input. Creates the tag itself if it does not exist yet.
+#      Handy for beta releases without a local tag push.
 
 on:
   push:
@@ -16,11 +16,11 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Version-Tag (z. B. "v0.2.3"). Muss mit Plugin-Header-Version übereinstimmen.'
+        description: 'Version tag (e.g. "v0.2.3"). Must match the plugin header version.'
         required: true
         default: "v0.2.3"
 
-# Release-Erstellung braucht Schreibrechte am Repo.
+# Creating a release requires write permissions on the repo.
 permissions:
   contents: write
 
@@ -35,10 +35,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0   # für git-Operationen (Tag erzeugen falls nötig)
+          fetch-depth: 0   # for git operations (create the tag if needed)
 
       # ----------------------------------------------------------
-      # Version ermitteln — je nach Trigger aus Tag oder Input.
+      # Determine the version, from tag or input depending on trigger.
       # ----------------------------------------------------------
       - name: Determine version
         id: version
@@ -48,11 +48,11 @@ jobs:
           else
             VERSION="${{ github.ref_name }}"
           fi
-          # Strip 'v' prefix → "0.2.3"
+          # Strip 'v' prefix, e.g. "v0.2.3" -> "0.2.3"
           BARE="${VERSION#v}"
           echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
           echo "bare=${BARE}" >> "$GITHUB_OUTPUT"
-          # Beta-Erkennung: 0.x.y → prerelease
+          # Beta detection: 0.x.y is treated as a prerelease.
           if [[ "$BARE" =~ ^0\. ]]; then
             echo "prerelease=true" >> "$GITHUB_OUTPUT"
           else
@@ -61,8 +61,8 @@ jobs:
           echo "Building release: ${VERSION} (bare ${BARE})"
 
       # ----------------------------------------------------------
-      # Plugin-Header-Version gegen den Tag prüfen — verhindert
-      # versehentliches Release mit nicht-bumpter Plugin-Version.
+      # Verify the plugin header version against the tag, prevents
+      # accidental releases with a non-bumped plugin version.
       # ----------------------------------------------------------
       - name: Verify plugin version matches tag
         run: |
@@ -77,27 +77,27 @@ jobs:
 
           MISMATCH=0
           if [ "$PLUGIN_VERSION" != "${{ steps.version.outputs.bare }}" ]; then
-            echo "::error::Plugin-Header Version ($PLUGIN_VERSION) ≠ Tag (${{ steps.version.outputs.bare }})"
+            echo "::error::Plugin header version ($PLUGIN_VERSION) != tag (${{ steps.version.outputs.bare }})"
             MISMATCH=1
           fi
           if [ "$TTT_CONST" != "${{ steps.version.outputs.bare }}" ]; then
-            echo "::error::TTT_VERSION constant ($TTT_CONST) ≠ Tag (${{ steps.version.outputs.bare }})"
+            echo "::error::TTT_VERSION constant ($TTT_CONST) != tag (${{ steps.version.outputs.bare }})"
             MISMATCH=1
           fi
           if [ "$STABLE_TAG" != "${{ steps.version.outputs.bare }}" ]; then
-            echo "::error::readme.txt Stable tag ($STABLE_TAG) ≠ Tag (${{ steps.version.outputs.bare }})"
+            echo "::error::readme.txt Stable tag ($STABLE_TAG) != tag (${{ steps.version.outputs.bare }})"
             MISMATCH=1
           fi
           if [ "$MISMATCH" = "1" ]; then
-            echo "::error::Versions-Inkonsistenz. Plugin-Files bump, commit, dann re-tag."
+            echo "::error::Version inconsistency. Bump the plugin files, commit, then re-tag."
             exit 1
           fi
           echo "All three version markers match."
 
       # ----------------------------------------------------------
-      # ZIP bauen — gleiche Excludes wie build-plugin-zip.sh.
-      # Top-Level-Ordner im ZIP heißt "training-translation-tracker"
-      # (= Plugin-Slug, wichtig für WordPress).
+      # Build the ZIP, using the same excludes as build-plugin-zip.sh.
+      # The top-level folder inside the ZIP is named "training-translation-tracker"
+      # (the plugin slug, important for WordPress).
       # ----------------------------------------------------------
       - name: Build plugin ZIP
         id: build
@@ -126,18 +126,18 @@ jobs:
           echo "Built: $(ls -la ${GITHUB_WORKSPACE}/${ZIP_NAME})"
           echo "zip_name=${ZIP_NAME}" >> "$GITHUB_OUTPUT"
 
-          # Sanity check: ZIP-Inhalt prüfen.
-          # set +o pipefail, weil `... | head -N` SIGPIPE auslöst, sobald
-          # head genug Zeilen hat und sich schließt; das upstream-awk wird
-          # dadurch beendet und der Block würde sonst rot.
-          echo "ZIP-Inhalt (Top-Level):"
+          # Sanity check: inspect ZIP contents.
+          # `set +o pipefail` because `... | head -N` raises SIGPIPE as soon
+          # as head has enough lines and closes. That terminates the upstream
+          # `awk` and would otherwise make the step fail.
+          echo "ZIP contents (top level):"
           set +o pipefail
           unzip -l "${GITHUB_WORKSPACE}/${ZIP_NAME}" | awk 'NR>3 && NF>=4 {print "  "$4}' | head -15
           set -o pipefail
 
       # ----------------------------------------------------------
-      # Changelog-Eintrag aus readme.txt extrahieren — wird zur
-      # GitHub-Release-Beschreibung.
+      # Extract the changelog entry from readme.txt, becomes the
+      # GitHub release description.
       # ----------------------------------------------------------
       - name: Extract changelog notes
         id: notes
@@ -151,17 +151,17 @@ jobs:
           ' wp-plugin/readme.txt)
 
           if [ -z "$NOTES" ]; then
-            NOTES="Release ${{ steps.version.outputs.version }} — siehe wp-plugin/readme.txt für Details."
+            NOTES="Release ${{ steps.version.outputs.version }}, see wp-plugin/readme.txt for details."
           fi
 
-          # Multi-Line-Output via Heredoc (GitHub-Actions-Konvention)
+          # Multi-line output via heredoc (GitHub Actions convention).
           {
             echo "body<<RELEASE_NOTES_EOF"
-            echo "## Plugin-ZIP installieren"
+            echo "## Install the plugin ZIP"
             echo ""
-            echo "1. ZIP unten herunterladen"
-            echo "2. WordPress-Admin → Plugins → Plugin hochladen → ZIP wählen"
-            echo "3. Plugin aktivieren"
+            echo "1. Download the ZIP below."
+            echo "2. WordPress admin: Plugins -> Upload Plugin -> choose the ZIP."
+            echo "3. Activate the plugin."
             echo ""
             echo "## Changelog ${{ steps.version.outputs.version }}"
             echo ""
@@ -170,9 +170,9 @@ jobs:
           } >> "$GITHUB_OUTPUT"
 
       # ----------------------------------------------------------
-      # Release erstellen + ZIP anhängen. softprops/action-gh-release
-      # erstellt das Tag, wenn es noch nicht existiert (relevant beim
-      # workflow_dispatch). prerelease=true bei 0.x.y-Versionen.
+      # Create the release and attach the ZIP. softprops/action-gh-release
+      # creates the tag if it does not exist yet (relevant for
+      # workflow_dispatch). prerelease=true for 0.x.y versions.
       # ----------------------------------------------------------
       - name: Create Release
         uses: softprops/action-gh-release@v2

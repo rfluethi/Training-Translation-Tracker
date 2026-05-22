@@ -1,65 +1,63 @@
-# Issue-Vorlagen für DACH-Übersetzungen
+# Issue templates for DACH translations
 
-> Diese Datei enthält alle Vorlagen, die im DACH-Team beim Anlegen eines Übersetzungs-Issues
-> verwendet werden. Es gibt zwei Sorten:
+> This file contains all the templates used by the DACH team when creating a
+> translation issue. There are two kinds:
 >
-> - **Lessons / Lesson-Plans / Tutorials** auf `learn.wordpress.org`
-> - **Handbook-Seiten** (Text oder mit Video) auf `make.wordpress.org/training/handbook/`
+> - **Lessons / Lesson Plans / Tutorials** on `learn.wordpress.org`
+> - **Handbook pages** (text or with video) on `make.wordpress.org/training/handbook/`
 >
-> Die gemeinsamen Regeln stehen oben, die typ-spezifischen Vorlagen unten.
+> The shared rules sit at the top, the type-specific templates below.
 
-## Gemeinsame Regeln (gelten für ALLE Vorlagen)
+## Shared rules (apply to ALL templates)
 
-### Pflicht-Anforderungen
+### Mandatory requirements
 
-Damit ein Issue korrekt im Tracker erscheint, müssen drei Dinge stimmen:
+For an issue to show up correctly in the tracker, three things must be right:
 
-1. **Original-URL in kanonischer Form**, siehe nächster Abschnitt.
-2. **Locale-Markierung im Projekt-Board**, Issue im DACH-Projekt-Board mit `Locale = German` taggen. Sonst sieht die Action das Issue nicht.
-3. **Status-Tabelle mit HTML-Markern**, Markdown-Tabelle zwischen `<!-- TRANSLATION-STATUS-START -->` und `<!-- TRANSLATION-STATUS-END -->`. 1:1 aus der Vorlage übernehmen, sonst kein Status-Parsing.
+1. **Original URL in canonical form**, see next section.
+2. **Locale marking on the project board**, tag the issue on the DACH project board with `Locale = German`. Otherwise the action does not see the issue.
+3. **Status table with HTML markers**, a Markdown table between `<!-- TRANSLATION-STATUS-START -->` and `<!-- TRANSLATION-STATUS-END -->`. Copy from the template verbatim, otherwise no status parsing.
 
-### URL-Form (kanonisch)
+### URL form (canonical)
 
 ```
-https://, lowercase, mit Trailing-Slash, ohne Query (?…), ohne Fragment (#…), kein www.
+https://, lowercase, with a trailing slash, no query (?…), no fragment (#…), no www.
 ```
 
-| Korrekt | Falsch |
+| Correct | Incorrect |
 |---|---|
 | `https://learn.wordpress.org/lesson/wordpress-essentials-domains-and-hosting/` | `http://learn.wordpress.org/lesson/WordPress-Essentials` |
 | `https://make.wordpress.org/training/handbook/about/team-values/` | `https://learn.wordpress.org/lesson/wordpress-essentials?ref=email` |
 
-### Status-Werte
+### Status values
 
 `open` · `wip` · `review` · `done` · `na`
 
-Andere Werte werden vom Parser ignoriert.
+Other values are ignored by the parser.
 
-### Creator / Reviewer
+### Creator / reviewer
 
-- GitHub-Benutzername **ohne** `@`-Präfix (also `rfluethi`, nicht `@rfluethi`).
-- Mehrere Personen durch Komma trennen: `rfluethi, Ursha-wp`.
-- Leer lassen, wenn noch niemand fest zugewiesen ist.
+GitHub username **without** the `@` prefix (so `rfluethi`, not `@rfluethi`). Separate multiple people with a comma: `rfluethi, Ursha-wp`. Leave empty if nobody is assigned yet.
 
-### Ein Issue pro Inhalt und Sprache
+### One issue per content item and language
 
-Pro Original-URL und Sprache existiert nur **ein** Issue. Wenn aus Versehen zwei entstehen, markiert der Tracker beide mit einem Warnsymbol „mehrfaches Issue", die Bereinigung erfolgt manuell durch das Team.
+Per original URL and language only **one** issue should exist. If two end up created by accident, the tracker marks both with a warning icon "multiple issues", cleanup happens manually by the team.
 
-### Felder, die *nicht* mehr ins Issue gehören
+### Fields that *no longer* belong in the issue
 
-Diese Felder kommen heute automatisch aus dem Inventar bzw. dem Project-V2-Board:
+These fields are now pulled automatically from the inventory or the Project V2 board:
 
-- **Original-Titel** (`Original title:`), wird aus learn.wordpress.org / dem Handbook gezogen.
-- **Sortier-Reihenfolge** (`Order:`), ergibt sich aus `scope.yml`.
-- **Pathway / Course / Section**, wird automatisch zugeordnet.
+- **Original title** (`Original title:`), pulled from learn.wordpress.org / the handbook.
+- **Sort order** (`Order:`), derived from `scope.yml`.
+- **Pathway / Course / Section**, mapped automatically.
 
-Wer alte Issues migriert: die Felder dürfen drinbleiben, der Parser ignoriert sie still.
+For old issues being migrated: the fields may stay, the parser silently ignores them.
 
-### Komponenten-Set je Inhalts-Typ
+### Component set per item type
 
-Die Status-Tabelle braucht nur die Zeilen, die für den Typ relevant sind. Definiert in `action/component-templates.yml`:
+The status table only needs the rows that are relevant for the type. Defined in `action/component-templates.yml`:
 
-| Item-Typ | Komponenten (Reihenfolge im Tracker) |
+| Item type | Components (order in the tracker) |
 |---|---|
 | `lesson` | thumbnails, text, subtitles, exercise, quiz, audio, video |
 | `lesson_plan` | thumbnails, text |
@@ -67,13 +65,13 @@ Die Status-Tabelle braucht nur die Zeilen, die für den Typ relevant sind. Defin
 | `handbook_text` | text |
 | `handbook_video` | thumbnails, text, subtitles, video |
 
-Nicht zutreffende Komponenten als `na` markieren oder die Zeile weglassen.
+Mark non-applicable components as `na` or leave the row out.
 
-## Vorlage 1, Lessons / Lesson-Plans / Tutorials
+## Template 1, Lessons / Lesson Plans / Tutorials
 
-Diese Vorlage erweitert die offizielle `WordPress/Learn`-Translation-Vorlage. Der offizielle Block (`# Details`) wird 1:1 übernommen, darunter folgen die DACH-spezifischen Felder.
+This template extends the official `WordPress/Learn` translation template. The official block (`# Details`) is copied verbatim, the DACH-specific fields follow below it.
 
-### Vorlage zum Kopieren
+### Template to copy
 
 ```markdown
 <!--
@@ -117,34 +115,34 @@ Once translated, please link or upload your translated files in a comment on thi
 issue, and request a [translation review](https://make.wordpress.org/training/handbook/content-localization/#translation-review).
 ```
 
-### Was offiziell vs. DACH-Erweiterung ist
+### What is official vs. DACH extension
 
-Vom offiziellen `# Details`-Block nutzt der Tracker nur **ein** Feld: `Link to original content` (Pflicht, Matching gegen `scope.yml`). Der Rest ist Mensch-zu-Mensch-Information.
+Of the official `# Details` block the tracker uses only **one** field: `Link to original content` (mandatory, matches against `scope.yml`). The rest is human-to-human information.
 
-Der `# Translation Details`-Block ist die DACH-Erweiterung. Alle Felder sind optional außer dem Format selbst:
+The `# Translation Details` block is the DACH extension. All fields are optional except the format itself:
 
-| Feld | Wirkung im Tracker |
+| Field | Effect in the tracker |
 |---|---|
-| `German title:` | Übersetzungs-Spalte der Karte. Leer → englischer Titel grau-kursiv als Placeholder. |
-| `Link to translated content:` | Link unter dem deutschen Titel. |
-| `Link to original WordPress.tv recording:` | EN-Aufnahme als Link unter dem englischen Titel. |
-| `Link to translated WordPress.tv recording:` | DE-Aufnahme als Link unter dem deutschen Titel. |
-| `Link to original YouTube recording:` | Analog. |
-| `Link to translated YouTube recording:` | Analog. |
+| `German title:` | Translation column of the card. Empty means the English title is shown in gray italics as a placeholder. |
+| `Link to translated content:` | Link under the German title. |
+| `Link to original WordPress.tv recording:` | EN recording as a link under the English title. |
+| `Link to translated WordPress.tv recording:` | DE recording as a link under the German title. |
+| `Link to original YouTube recording:` | Same. |
+| `Link to translated YouTube recording:` | Same. |
 
-### Tolerante Feld-Erkennung
+### Tolerant field recognition
 
-Der Parser akzeptiert mehrere Schreibvarianten:
+The parser accepts several spelling variants:
 
 - `German title` ↔ `German lesson name` ↔ `Deutscher Titel` ↔ `Translation title` ↔ `Translated title`
-- `Link to WordPress.tv recording:` (ohne *original/translated*) → wird als **deutsche** Aufnahme interpretiert (Backwards-Compat).
-- Format-egal: `- Field: value` (offiziell) **und** `**Field:** value` (DACH-Bold-Stil) werden erkannt.
+- `Link to WordPress.tv recording:` (without *original/translated*) is interpreted as the **German** recording (backwards compatibility).
+- Format is irrelevant: both `- Field: value` (official) **and** `**Field:** value` (DACH bold style) are recognized.
 
-## Vorlage 2, Handbook (`handbook_text`, reine Text-Seite)
+## Template 2, Handbook (`handbook_text`, plain text page)
 
-Für Handbook-Inhalte unter `https://make.wordpress.org/training/handbook/...`, die **keine** Video-Aufnahme haben.
+For handbook content under `https://make.wordpress.org/training/handbook/...` that **does not** have a video recording.
 
-### Vorlage zum Kopieren
+### Template to copy
 
 ```markdown
 **Link to original content:** https://make.wordpress.org/training/handbook/...
@@ -160,13 +158,13 @@ Für Handbook-Inhalte unter `https://make.wordpress.org/training/handbook/...`, 
 <!-- TRANSLATION-STATUS-END -->
 ```
 
-Das ist das Minimum. `Link to translated content` und `German title` dürfen leer bleiben, werden ergänzt, sobald eine deutsche Version steht.
+This is the minimum. `Link to translated content` and `German title` may be left empty, they get filled in once a German version exists.
 
-## Vorlage 3, Handbook (`handbook_video`, mit Video-Aufnahme)
+## Template 3, Handbook (`handbook_video`, with video recording)
 
-Für Handbook-Seiten mit eingebettetem Video.
+For handbook pages with an embedded video.
 
-### Vorlage zum Kopieren
+### Template to copy
 
 ```markdown
 **Link to original content:** https://make.wordpress.org/training/handbook/...
@@ -189,13 +187,15 @@ Für Handbook-Seiten mit eingebettetem Video.
 <!-- TRANSLATION-STATUS-END -->
 ```
 
-## Was bei Handbook anders ist als bei Lessons
+## What is different for Handbook compared to Lessons
 
-- **Keine Pathway/Course-Zuordnung.** Handbook-Items werden automatisch in einer eigenen Top-Level-Gruppe „Training Handbook" angezeigt, unterteilt nach ihrem Top-Level-Section-Slug (`about`, `getting-started`, …). Die Action ermittelt diese Hierarchie selbst über den `parent`-Field der Handbook-REST-API.
-- **Keine `quiz`/`exercise`/`audio`-Komponenten.** Wer doch eines dieser Komponenten-Typen für Handbook braucht, fügt sie einfach in die Tabelle ein, die Action akzeptiert beliebige Komponenten-Namen (das Frontend rendert nur bekannte Icons, unbekannte ignoriert).
-- **Kompakteres Format.** Statt `# Details` / `# Translation Details`-Blöcken reicht `**Field:** value`-Syntax. Der Parser erkennt beide Stile.
+**No pathway / course mapping.** Handbook items are shown automatically in a separate top-level group "Training Handbook", subdivided by their top-level section slug (`about`, `getting-started`, etc.). The action figures out this hierarchy itself via the `parent` field of the handbook REST API.
 
-## Vollständiges Beispiel, gepflegtes Lesson-Issue
+**No `quiz`/`exercise`/`audio` components.** If you do need one of those component types for a handbook page, just add it to the table, the action accepts arbitrary component names (the frontend only renders known icons, unknown ones are ignored).
+
+**More compact format.** Instead of `# Details` / `# Translation Details` blocks, the `**Field:** value` syntax is enough. The parser recognizes both styles.
+
+## Full example, maintained Lesson issue
 
 ```markdown
 <!--
@@ -239,7 +239,7 @@ Once translated, please link or upload your translated files in a comment on thi
 issue, and request a [translation review](https://make.wordpress.org/training/handbook/content-localization/#translation-review).
 ```
 
-## Vollständiges Beispiel, gepflegtes Handbook-Issue
+## Full example, maintained Handbook issue
 
 ```markdown
 **Link to original content:** https://make.wordpress.org/training/handbook/about/team-values/
@@ -255,9 +255,9 @@ issue, and request a [translation review](https://make.wordpress.org/training/ha
 <!-- TRANSLATION-STATUS-END -->
 ```
 
-## Bezug zu anderen Dokumenten
+## Related documents
 
-- Architektur und Entscheidungen: [Architektur.md](Architektur.md)
-- Plugin-Bedienung und Issue-Workflow: [User-Guide.md](User-Guide.md)
-- Komponenten-Templates (Source-of-Truth): `action/component-templates.yml`
-- Scope-Konfiguration: `action/scope.yml`
+- Architecture and decisions: [Architecture.md](Architecture.md)
+- Plugin usage and issue workflow: [User-Guide.md](User-Guide.md)
+- Component templates (source of truth): `action/component-templates.yml`
+- Scope configuration: `action/scope.yml`

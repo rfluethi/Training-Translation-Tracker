@@ -7,7 +7,7 @@ Extracts:
 
 The new DACH issue template (see `Issue-Vorlage-DACH.md`) uses clean
 `Link to <kind> content` field names. Older issues in the wild still use a
-mix of names — both are recognized for backward compatibility.
+mix of names; both are recognized for backward compatibility.
 """
 
 from __future__ import annotations
@@ -52,20 +52,20 @@ class IssueBody:
 
     url_original: str = ""
     url_translated: str = ""
-    # Deutscher Titel aus dem Issue-Body. Erkennt mehrere Schreibweisen:
+    # German title from the issue body. Recognises several spellings:
     # "German title:", "German lesson name:", "Deutscher Titel:", "Translation title:".
-    # Leer, wenn keiner gefunden — Plugin fällt dann auf einen humanisierten
-    # Slug aus url_translated zurück.
+    # Empty if none found; the plugin then falls back to a humanised
+    # slug derived from url_translated.
     title_de: str = ""
-    # Recording URLs: getrennt für englische Originale und deutsche Übersetzungen.
-    # `url_wptv` / `url_youtube` sind Backwards-Compat-Aliasse:
-    # alte Bodies mit nur "Link to WordPress.tv recording" landen in `url_wptv_de`,
-    # weil das die übliche Bedeutung in den bestehenden DACH-Issues ist.
+    # Recording URLs: separate slots for English originals and German translations.
+    # `url_wptv` / `url_youtube` are backward-compat aliases:
+    # old bodies with only "Link to WordPress.tv recording" end up in `url_wptv_de`,
+    # because that is the usual meaning in the existing DACH issues.
     url_wptv_en: str = ""
     url_wptv_de: str = ""
     url_youtube_en: str = ""
     url_youtube_de: str = ""
-    # Deprecated Aliasse — bleibt aus Konsistenz im Output (mapping auf _de).
+    # Deprecated aliases, kept for output consistency (mapped to the _de slot).
     url_wptv: str = ""
     url_youtube: str = ""
     components: list[ComponentStatus] | None = None
@@ -80,9 +80,9 @@ def parse_issue_body(body: str) -> IssueBody:
     """Parse a full issue body into structured data."""
     body = body or ""
 
-    # WP.tv: erst nach den expliziten "original" / "translated"-Labels suchen.
-    # Falls die fehlen, alter Stil "Link to WordPress.tv recording" → DE-Slot.
-    # Falls auch das fehlt, Auto-Detect (irgendein wordpress.tv-Link) → DE-Slot.
+    # WP.tv: first look for the explicit "original" / "translated" labels.
+    # If those are missing, old style "Link to WordPress.tv recording" -> DE slot.
+    # If that is also missing, auto-detect (any wordpress.tv link) -> DE slot.
     wptv_en = _extract_url(body, _WPTV_EN_PATTERNS)
     wptv_de = (
         _extract_url(body, _WPTV_DE_PATTERNS)
@@ -104,7 +104,7 @@ def parse_issue_body(body: str) -> IssueBody:
         url_wptv_de=wptv_de,
         url_youtube_en=youtube_en,
         url_youtube_de=youtube_de,
-        # Alias: bisherige Konsumenten lesen `url_wptv` und `url_youtube`.
+        # Alias: existing consumers read `url_wptv` and `url_youtube`.
         url_wptv=wptv_de,
         url_youtube=youtube_de,
         components=_parse_table_or_none(body),
@@ -122,7 +122,7 @@ def parse_status_table(body: str) -> list[ComponentStatus]:
 # ---------------------------------------------------------------------------
 
 # Each entry is (regex, group_index). The label is matched case-insensitively.
-# The `:.*?` after the label is non-greedy and stays on the same line — that
+# The `:.*?` after the label is non-greedy and stays on the same line; that
 # tolerates wrappers like `**Label:**`, `(English)`, `< >` etc. between the
 # colon and the URL.
 _ORIGINAL_PATTERNS = [
@@ -145,7 +145,7 @@ _TRANSLATED_PATTERNS = [
     ),
 ]
 
-# WP.tv: explizite "original" / "translated"-Labels
+# WP.tv: explicit "original" / "translated" labels
 _WPTV_EN_PATTERNS = [
     (
         re.compile(
@@ -166,7 +166,7 @@ _WPTV_DE_PATTERNS = [
     ),
 ]
 
-# Backwards-Compat: alte Form ohne "original/translated" → mappt auf DE
+# Backward compat: old form without "original/translated" maps to DE
 _WPTV_GENERIC_PATTERNS = [
     (
         re.compile(
@@ -210,30 +210,30 @@ _YOUTUBE_GENERIC_PATTERNS = [
 _AUTO_WPTV = re.compile(r"(https?://wordpress\.tv/[^\s\n<]+)", re.IGNORECASE)
 _AUTO_YT = re.compile(r"(https?://(?:www\.)?(?:youtube\.com|youtu\.be)/[^\s\n<]+)", re.IGNORECASE)
 
-# Deutscher Titel — mehrere Schreibweisen erkennen, alle case-insensitive.
-# Erkannte Labels:
-#   - "German title:" (kanonisch)
-#   - "German lesson name:" (Praxis-Variante in vielen alten Issues)
+# German title: recognise several spellings, all case-insensitive.
+# Recognised labels:
+#   - "German title:" (canonical)
+#   - "German lesson name:" (variant seen in many older issues)
 #   - "Deutscher Titel:" / "Übersetzungstitel:" / "Translation title:" /
 #     "Translated title:"
-# Erkannte Formatierungen am Zeilenanfang:
-#   - "**German title:** Wert"  (Bold-Label, DACH-Stil)
-#   - "- German title: Wert"     (Bullet-Liste, offizieller WordPress/Learn-Stil)
-#   - "* German title: Wert"     (Bullet mit Asterisk)
-#   - "German title: Wert"       (ohne Präfix)
+# Recognised line-start formats:
+#   - "**German title:** value"  (bold label, DACH style)
+#   - "- German title: value"    (bullet list, official WordPress/Learn style)
+#   - "* German title: value"    (bullet with asterisk)
+#   - "German title: value"      (no prefix)
 _TITLE_DE_PATTERNS = [
     (
         re.compile(
-            # Zeilenanfang + optionaler Listen-Marker (- oder *) + optionale Whitespaces
+            # Start of line + optional list marker (- or *) + optional whitespace
             r"(?:^|\n)[ \t]*[-*]?[ \t]*"
-            # Optionaler Bold-Marker
+            # Optional bold marker
             r"(?:\*\*[ \t]*)?"
-            # Label (mehrere Schreibweisen)
+            # Label (multiple spellings)
             r"(?:german title|german lesson name|deutscher titel|"
             r"übersetzungstitel|translation title|translated title)"
-            # Bold-Marker schließen ggf. + Doppelpunkt
+            # Optionally close bold marker + colon
             r"[ \t]*(?:\*\*)?[ \t]*:[ \t]*(?:\*\*[ \t]*)?"
-            # Eigentlicher Titel (non-greedy bis Zeilen-/Markdown-Ende)
+            # Actual title (non-greedy until end of line or markdown end)
             r"([^\n*<]+?)"
             r"[ \t]*(?:\*\*)?[ \t]*(?:\n|$)",
             re.IGNORECASE,
@@ -252,14 +252,14 @@ def _extract_url(body: str, patterns: list[tuple[re.Pattern[str], int]]) -> str:
 
 
 def _extract_text(body: str, patterns: list[tuple[re.Pattern[str], int]]) -> str:
-    """Wie _extract_url, aber für Freitext-Felder. Trimmt Whitespace und
-    typische Markdown-Reste (Sternchen, Backticks).
+    """Like _extract_url, but for free-text fields. Trims whitespace and
+    typical leftover markdown (asterisks, backticks).
     """
     for pattern, group in patterns:
         match = pattern.search(body)
         if match:
             value = match.group(group).strip()
-            # Eventuell verbleibende Markdown-Reste am Ende abschneiden.
+            # Strip any leftover markdown at the end of the value.
             value = value.strip("*` ").strip()
             if value:
                 return value

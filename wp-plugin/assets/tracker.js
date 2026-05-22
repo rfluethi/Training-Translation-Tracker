@@ -1,30 +1,30 @@
 /**
- * Training Translation Tracker — Frontend-Interaktivität.
+ * Training Translation Tracker - frontend interactivity.
  *
- * Bindet pro `.ttt-tracker`-Container:
- *   - Status-Filter-Buttons (data-filter-status="all|done|review|wip|open")
- *   - Stats-Pills (haben dieselben data-filter-status-Werte)
- *   - Suchfeld (.ttt-search-input) → Live-Search über data-search auf jeder Karte
- *   - Collapse-Toggle pro Section (Klick auf .ttt-section-title)
+ * For each `.ttt-tracker` container, it binds:
+ *   - Status filter buttons (data-filter-status="all|done|review|wip|open")
+ *   - Stats pills (which share the same data-filter-status values)
+ *   - Search field (.ttt-search-input) -> live search across data-search on each card
+ *   - Collapse toggle per section (click on .ttt-section-title)
  *
- * State pro Tracker-Instanz wird in localStorage gespeichert.
+ * State per tracker instance is persisted to localStorage.
  *
- * Vanilla-JS, kein jQuery, läuft auf allen modernen Browsern (ES2015+).
+ * Vanilla JS, no jQuery, runs on all modern browsers (ES2015+).
  */
 
 (function () {
 	'use strict';
 
-	// Doppel-Init verhindern, falls das Skript versehentlich mehrfach geladen wird.
+	// Prevent double init in case the script is loaded more than once by mistake.
 	if (window.__tttTrackerInitialized) {
 		return;
 	}
 	window.__tttTrackerInitialized = true;
 
-	// i18n-Bundle aus PHP via window.tttI18n. Fallbacks für den Fall, dass
-	// das Bundle aus irgendeinem Grund fehlt (z.B. Caching-Plugin entfernt
-	// Inline-Scripts). Die Fallbacks sind die englischen Original-Strings,
-	// damit auch ohne Translation-Bundle nichts kaputt aussieht.
+	// i18n bundle from PHP via window.tttI18n. Fallbacks are in place for cases
+	// where the bundle is missing for some reason (e.g. a caching plugin strips
+	// inline scripts). The fallbacks are the original English strings, so that
+	// nothing looks broken even without the translation bundle.
 	var I18N = (window.tttI18n && typeof window.tttI18n === 'object') ? window.tttI18n : {};
 	var LABEL_COLLAPSE_ALL = I18N.collapseAll || 'Collapse all';
 	var LABEL_EXPAND_ALL = I18N.expandAll || 'Expand all';
@@ -34,9 +34,9 @@
 		return (I18N[key] != null && I18N[key] !== '') ? I18N[key] : fallback;
 	}
 
-	// Eine globale Initialisierung beim DOMContentLoaded — bindet alle Tracker auf
-	// der Seite. Falls der Shortcode mehrfach vorkommt (z.B. einmal pro Pathway),
-	// werden alle separat gehandhabt.
+	// One global initialization on DOMContentLoaded, which binds every tracker
+	// on the page. If the shortcode appears multiple times (e.g. once per
+	// pathway), each instance is handled separately.
 	function init() {
 		var trackers = document.querySelectorAll('.ttt-tracker');
 		for (var i = 0; i < trackers.length; i++) {
@@ -47,12 +47,12 @@
 	if (document.readyState === 'loading') {
 		document.addEventListener('DOMContentLoaded', init);
 	} else {
-		// Script lief mit `defer`, DOM ist schon parsed — direkt initialisieren.
+		// Script ran with `defer`, the DOM is already parsed, so initialize directly.
 		init();
 	}
 
 	// ------------------------------------------------------------------
-	// Setup pro Tracker-Container
+	// Setup per tracker container
 	// ------------------------------------------------------------------
 
 	function setupTracker(root) {
@@ -60,17 +60,17 @@
 		var state = {
 			status: 'all',
 			query: '',
-			projectStatus: '', // leer = alle Project-Status
+			projectStatus: '', // empty = all project statuses
 		};
 
-		// Stats-Pills sind die einzige Filter-UI (Pillen sind <button>, klickbar).
+		// Stats pills are the only filter UI (the pills are <button>, clickable).
 		var statButtons = root.querySelectorAll('.ttt-stat[data-filter-status]');
-		// Search-Input
+		// Search input
 		var searchInput = root.querySelector('.ttt-search-input');
-		// Project-Status-Dropdown (optional — nur wenn Items mit project_status existieren)
+		// Project status dropdown (optional, only if items with project_status exist)
 		var projectStatusSelect = root.querySelector('.ttt-project-status-select');
 
-		// State aus localStorage wiederherstellen, falls vorhanden.
+		// Restore state from localStorage if available.
 		var saved = loadState(trackerId);
 		if (saved) {
 			state.status = saved.status || 'all';
@@ -84,10 +84,10 @@
 			}
 		}
 
-		// Initiale Active-Pille synchronisieren
+		// Sync the initially active pill
 		setActiveStatus(root, state.status);
 
-		// Click-Handler: Stats-Pillen sind die Filter
+		// Click handler: stats pills are the filters
 		for (var j = 0; j < statButtons.length; j++) {
 			statButtons[j].addEventListener('click', function (e) {
 				state.status = e.currentTarget.getAttribute('data-filter-status') || 'all';
@@ -97,7 +97,7 @@
 			});
 		}
 
-		// Search-Input: live, debounced (150ms)
+		// Search input: live, debounced (150ms)
 		if (searchInput) {
 			var debounceTimer = null;
 			searchInput.addEventListener('input', function (e) {
@@ -110,7 +110,7 @@
 			});
 		}
 
-		// Project-Status-Dropdown: Change-Event
+		// Project status dropdown: change event
 		if (projectStatusSelect) {
 			projectStatusSelect.addEventListener('change', function (e) {
 				state.projectStatus = e.target.value || '';
@@ -119,34 +119,34 @@
 			});
 		}
 
-		// Komponenten-Popover (Avatar + Profil-Link) bei Hover/Klick
+		// Component popover (avatar + profile link) on hover/click
 		setupCompPopover(root);
 
-		// Collapse-Toggles pro Section (Group-Titel bleiben feste Anker)
+		// Collapse toggles per section (group titles remain fixed anchors)
 		setupCollapse(root, trackerId);
 
-		// "Alle einklappen / ausklappen"-Button
+		// "Collapse all / expand all" button
 		setupCollapseAll(root, trackerId);
 
-		// Erste Anwendung der Filter (für den Fall, dass aus localStorage was kam)
+		// First application of filters (in case something came from localStorage)
 		applyFilters(root, state);
 	}
 
 	// ------------------------------------------------------------------
-	// "Alle einklappen / ausklappen"-Toggle
+	// "Collapse all / expand all" toggle
 	//
-	// LABEL_COLLAPSE_ALL / LABEL_EXPAND_ALL sind oben in der IIFE definiert.
+	// LABEL_COLLAPSE_ALL / LABEL_EXPAND_ALL are defined above in the IIFE.
 	// ------------------------------------------------------------------
 
 	function setupCollapseAll(root, trackerId) {
 		var btn = root.querySelector('.ttt-collapse-all-btn');
 		if (!btn) return;
 
-		// Initialen Button-Zustand basierend auf den Sections setzen.
+		// Set the initial button state based on the sections.
 		refreshCollapseAllLabel(root, btn);
 
 		btn.addEventListener('click', function () {
-			// Welche Aktion macht der Button gerade? "expanded" → einklappen; alles andere → ausklappen.
+			// Which action is the button currently performing? "expanded" -> collapse; anything else -> expand.
 			var current = btn.getAttribute('data-collapse-all-state') || 'expanded';
 			var collapseAll = (current === 'expanded');
 			setAllCollapsed(root, trackerId, collapseAll);
@@ -154,8 +154,8 @@
 		});
 	}
 
-	// Klappt alle Sections ein/aus. Top-Level-Groups bleiben unverändert —
-	// die sind feste Anker im Inhaltsverzeichnis.
+	// Collapses or expands all sections. Top-level groups stay unchanged,
+	// since they are fixed anchors in the table of contents.
 	function setAllCollapsed(root, trackerId, collapsed) {
 		var sections = root.querySelectorAll('.ttt-section');
 		for (var i = 0; i < sections.length; i++) {
@@ -169,8 +169,8 @@
 	}
 
 	function refreshCollapseAllLabel(root, btn) {
-		// Wenn mindestens eine Section noch aufgeklappt ist → "Alle einklappen".
-		// Sonst "Alle ausklappen".
+		// If at least one section is still expanded -> "Collapse all".
+		// Otherwise -> "Expand all".
 		var anyExpanded = false;
 		var sections = root.querySelectorAll('.ttt-section');
 		for (var i = 0; i < sections.length; i++) {
@@ -189,7 +189,7 @@
 	}
 
 	// ------------------------------------------------------------------
-	// Filter anwenden
+	// Apply filters
 	// ------------------------------------------------------------------
 
 	function applyFilters(root, state) {
@@ -202,19 +202,19 @@
 			var search = card.getAttribute('data-search') || '';
 			var projectStatus = card.getAttribute('data-project-status') || '';
 
-			// Status-Filter (Component-Overall-Status)
+			// Status filter (component overall status)
 			var matchStatus = (state.status === 'all') || (status === state.status);
 
-			// Such-Filter
+			// Search filter
 			var matchQuery = (state.query === '') || (search.indexOf(state.query) !== -1);
 
-			// Project-Status-Filter (Slug-Match)
+			// Project status filter (slug match)
 			var matchProjectStatus = (state.projectStatus === '') || (projectStatus === state.projectStatus);
 
 			var visible = matchStatus && matchQuery && matchProjectStatus;
-			// Verstecken über das [hidden]-Attribut. Die zugehörige CSS-Regel
-			// `.ttt-tracker .ttt-card[hidden] { display: none !important }` hat
-			// höhere Specificity als die Display-Regel der Karte und gewinnt.
+			// Hide via the [hidden] attribute. The associated CSS rule
+			// `.ttt-tracker .ttt-card[hidden] { display: none !important }` has
+			// higher specificity than the card's display rule and wins.
 			if (visible) {
 				card.removeAttribute('hidden');
 				visibleCount++;
@@ -223,17 +223,17 @@
 			}
 		}
 
-		// Sections, Courses, Groups verstecken, wenn keine sichtbaren Cards drin sind.
+		// Hide sections, courses, groups if they contain no visible cards.
 		hideEmptyContainers(root, '.ttt-section');
 		hideEmptyContainers(root, '.ttt-course');
 		hideEmptyContainers(root, '.ttt-group');
 
-		// Stats-Pillen live updaten — die Counts spiegeln die Karten, die zur
-		// aktuellen Suche passen (unabhängig vom aktiven Status-Filter), damit
-		// der User sieht, wohin er noch wechseln könnte.
+		// Update the stats pills live: the counts mirror the cards matching
+		// the current search (regardless of the active status filter), so the
+		// user can see where they could still switch to.
 		updateStatsPills(root, state);
 
-		// Empty-State auf Tracker-Ebene
+		// Empty state at tracker level
 		var emptyMsg = root.querySelector('.ttt-no-results');
 		if (emptyMsg) {
 			if (visibleCount === 0) {
@@ -289,11 +289,11 @@
 	}
 
 	// ------------------------------------------------------------------
-	// Active-State der Filter-Buttons aktualisieren
+	// Update the active state of the filter buttons
 	// ------------------------------------------------------------------
 
 	function setActiveStatus(root, status) {
-		// Stats-Pills sind die einzige Filter-UI. Active-Class für visuelles Feedback.
+		// Stats pills are the only filter UI. Active class for visual feedback.
 		var stats = root.querySelectorAll('.ttt-stat[data-filter-status]');
 		for (var j = 0; j < stats.length; j++) {
 			var statStatus = stats[j].getAttribute('data-filter-status');
@@ -306,25 +306,25 @@
 	}
 
 	// ------------------------------------------------------------------
-	// Collapse-Toggle pro Section
+	// Collapse toggle per section
 	// ------------------------------------------------------------------
 
 	// ------------------------------------------------------------------
-	// Komponenten-Popover — Avatar + Profil-Link bei Hover/Klick
+	// Component popover: avatar + profile link on hover/click
 	// ------------------------------------------------------------------
 	//
-	// Jeder Tracker bekommt EIN einziges Popover-Element, das beim Hover
-	// (Maus) oder Klick (Touch/Tastatur) auf ein Komponenten-Icon mit
-	// Daten gefüllt und unter dem Icon positioniert wird.
+	// Each tracker gets ONE single popover element, which on hover (mouse)
+	// or click (touch/keyboard) on a component icon is filled with data
+	// and positioned below the icon.
 	//
-	// Datenquelle: data-comp-* Attribute am Icon-Element (vom PHP gesetzt).
-	// Avatare kommen direkt von github.com/<username>.png ohne API-Call.
+	// Data source: data-comp-* attributes on the icon element (set by PHP).
+	// Avatars come directly from github.com/<username>.png without an API call.
 
 	function setupCompPopover(root) {
 		var icons = root.querySelectorAll('.ttt-card-footer-right .ttt-comp-icon');
 		if (icons.length === 0) return;
 
-		// Ein gemeinsames Popover-Element pro Tracker, lazy beim ersten Hover erzeugt.
+		// One shared popover element per tracker, created lazily on the first hover.
 		var popover = null;
 		var hideTimer = null;
 		var currentIcon = null;
@@ -336,20 +336,20 @@
 			popover.setAttribute('hidden', '');
 			popover.setAttribute('role', 'dialog');
 			popover.setAttribute('aria-label', tr('componentDetails', 'Component details'));
-			// Beim Hover über das Popover selbst nicht schließen — der User
-			// will den Profil-Link anklicken können.
+			// Do not close on hover over the popover itself, since the user
+			// wants to be able to click the profile link.
 			popover.addEventListener('mouseenter', function () {
 				if (hideTimer) { clearTimeout(hideTimer); hideTimer = null; }
 			});
 			popover.addEventListener('mouseleave', scheduleHide);
-			// Tastatur-Steuerung im offenen Popover:
-			//   Esc       → schließen + Focus zurück zum Icon
-			//   Tab       → am letzten Element: schließen + Focus zum nächsten Icon
-			//   Shift+Tab → am ersten Element: schließen + Focus zurück zum Icon
-			// Damit kommt der User mit der Tastatur sauber durch alle Komponenten-
-			// Icons einer Karte (sonst würde Tab aus dem Popover hinaus in den
-			// WordPress-Footer springen, weil das Popover-Element am Ende von
-			// .ttt-tracker hängt).
+			// Keyboard handling in the open popover:
+			//   Esc       -> close + return focus to the icon
+			//   Tab       -> on the last element: close + focus the next icon
+			//   Shift+Tab -> on the first element: close + return focus to the icon
+			// This lets the user move cleanly through all component icons of a
+			// card with the keyboard (otherwise Tab would jump out of the
+			// popover into the WordPress footer, because the popover element is
+			// appended at the end of .ttt-tracker).
 			popover.addEventListener('keydown', function (e) {
 				if (e.key === 'Escape') {
 					e.preventDefault();
@@ -362,11 +362,11 @@
 				var first = focusables[0];
 				var last = focusables[focusables.length - 1];
 				if (e.shiftKey && document.activeElement === first) {
-					// Shift+Tab am ersten Element → schließen, Focus zurück aufs Icon
+					// Shift+Tab on the first element -> close, focus back on the icon
 					e.preventDefault();
 					hideNow({ returnFocus: true });
 				} else if (!e.shiftKey && document.activeElement === last) {
-					// Tab am letzten Element → zum nächsten Komponenten-Icon
+					// Tab on the last element -> move to the next component icon
 					e.preventDefault();
 					var icon = currentIcon;
 					hideNow();
@@ -379,7 +379,7 @@
 					if (next) {
 						next.focus();
 					} else {
-						// War das letzte Icon der Karte — Focus auf Icon zurück
+						// This was the last icon of the card, so return focus to the icon
 						icon.focus();
 					}
 				}
@@ -394,18 +394,18 @@
 			var creator = icon.getAttribute('data-comp-creator') || '';
 			var reviewer = icon.getAttribute('data-comp-reviewer') || '';
 
-			// Komponenten-Name und Status durch i18n-Mapping schicken, damit
-			// das Popover in der WP-Locale erscheint statt in den rohen
-			// englischen Tokens aus tracker.json.
+			// Run the component name and status through the i18n mapping so that
+			// the popover appears in the WP locale instead of the raw English
+			// tokens from tracker.json.
 			var nameLabel = COMPONENT_LABELS[name] || name;
 			var statusLabel = STATUS_LABELS[status] || status;
 
 			var html = '<div class="ttt-comp-popover-header">' + escapeHtml(nameLabel) + '</div>';
 			html += '<span class="ttt-comp-popover-status ttt-comp-status-' + escapeAttr(status) + '">' + escapeHtml(statusLabel) + '</span>';
 
-			// Beide Personen anzeigen (User-Vorgabe: auch wenn identisch — sollte
-			// nie vorkommen, weil Creator ≠ Reviewer im Workflow). Leere Personen
-			// werden übersprungen — wenn z. B. niemand reviewed hat.
+			// Show both people (user requirement: even if identical, which should
+			// never happen because Creator != Reviewer in the workflow). Empty
+			// people are skipped, e.g. when nobody has reviewed.
 			if (creator) {
 				html += renderPerson(tr('creator', 'Creator'), creator);
 			}
@@ -431,16 +431,16 @@
 		}
 
 		function positionPopover(icon) {
-			// Positioniert das Popover unterhalb des Icons, relativ zum
-			// Tracker-Container. Wenn rechts kein Platz, nach links versetzen.
+			// Positions the popover below the icon, relative to the tracker
+			// container. If there is no room on the right, shift it to the left.
 			var rootRect = root.getBoundingClientRect();
 			var iconRect = icon.getBoundingClientRect();
 			popover.style.top = (iconRect.bottom - rootRect.top + 6) + 'px';
-			// Erst sichtbar machen, damit wir die Breite kennen.
+			// Make it visible first so we know its width.
 			popover.removeAttribute('hidden');
 			var popoverWidth = popover.offsetWidth;
 			var leftPreferred = iconRect.left - rootRect.left;
-			// Über den rechten Rand des Trackers schauen — bei Bedarf einrücken.
+			// Check past the right edge of the tracker, and shift in if needed.
 			if (leftPreferred + popoverWidth > rootRect.width) {
 				leftPreferred = rootRect.width - popoverWidth - 8;
 			}
@@ -459,16 +459,16 @@
 			ensurePopover();
 			fillPopover(icon);
 			positionPopover(icon);
-			// Tastatur-A11y: Wenn das Popover via Keyboard (Enter/Space) geöffnet
-			// wurde, Focus in das Popover schicken. Tab erreicht dann die
-			// Profile-Links; Esc schließt und gibt den Focus zurück ans Icon.
+			// Keyboard a11y: if the popover was opened via the keyboard
+			// (Enter/Space), move focus into the popover. Tab then reaches the
+			// profile links; Esc closes and returns focus to the icon.
 			if (opts.fromKeyboard) {
 				var firstFocusable = popover.querySelector('a, button, [tabindex]:not([tabindex="-1"])');
 				if (firstFocusable) {
 					firstFocusable.focus();
 				} else {
-					// Kein interaktiver Inhalt — Popover selbst fokussierbar machen,
-					// damit Esc auch funktioniert.
+					// No interactive content, so make the popover itself focusable
+					// so that Esc still works.
 					popover.setAttribute('tabindex', '-1');
 					popover.focus();
 				}
@@ -481,7 +481,7 @@
 			var iconToRefocus = currentIcon;
 			if (currentIcon) currentIcon.setAttribute('aria-expanded', 'false');
 			currentIcon = null;
-			// Focus zurück ans auslösende Icon, wenn von Esc oder Esc-im-Popover.
+			// Return focus to the triggering icon when invoked from Esc or Esc-in-popover.
 			if (opts.returnFocus && iconToRefocus && typeof iconToRefocus.focus === 'function') {
 				iconToRefocus.focus();
 			}
@@ -495,7 +495,7 @@
 		function bindIcon(icon) {
 			icon.addEventListener('mouseenter', function () { showFor(icon); });
 			icon.addEventListener('mouseleave', scheduleHide);
-			// Klick / Tap (für Touch und Tastatur)
+			// Click / tap (for touch and keyboard)
 			icon.addEventListener('click', function (e) {
 				e.preventDefault();
 				if (currentIcon === icon && popover && !popover.hasAttribute('hidden')) {
@@ -518,18 +518,18 @@
 			bindIcon(icons[i]);
 		}
 
-		// Klick außerhalb → schließen
+		// Click outside -> close
 		document.addEventListener('click', function (e) {
 			if (!popover || popover.hasAttribute('hidden')) return;
 			if (popover.contains(e.target)) return;
-			// Wenn auf ein Icon im selben Tracker geklickt wurde, lass den
-			// Icon-Handler die Arbeit machen.
+			// If an icon in the same tracker was clicked, let the icon handler
+			// do the work.
 			if (e.target.closest && e.target.closest('.ttt-comp-icon')) return;
 			hideNow();
 		});
 	}
 
-	// Mini-Escape-Helfer (kein dependency-heavy Framework nötig).
+	// Tiny escape helpers (no dependency-heavy framework needed).
 	function escapeHtml(s) {
 		return String(s).replace(/[&<>"']/g, function (c) {
 			return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
@@ -547,11 +547,11 @@
 			if (!section) continue;
 			var key = section.getAttribute('data-section-key') || '';
 
-			// Initialzustand aus localStorage
+			// Initial state from localStorage
 			var collapsed = loadCollapse(trackerId, key);
 			applyCollapsedState(section, title, collapsed);
 
-			// Click + Keyboard
+			// Click + keyboard
 			title.addEventListener('click', function (e) {
 				toggleSection(e.currentTarget, trackerId);
 			});
@@ -572,9 +572,9 @@
 		applyCollapsedState(section, titleEl, collapsed);
 		saveCollapse(trackerId, key, collapsed);
 
-		// Alle-Toggle-Button-Label aktualisieren — kann nicht im Tracker-Scope
-		// gehalten werden, weil die Funktion auch aus dem Keyboard-Handler
-		// kommt. Über das DOM raussuchen.
+		// Update the label of the collapse-all toggle button. It cannot be kept
+		// in the tracker scope because this function is also invoked from the
+		// keyboard handler, so look it up via the DOM.
 		var tracker = section.closest('.ttt-tracker');
 		if (tracker) {
 			var btn = tracker.querySelector('.ttt-collapse-all-btn');
@@ -597,7 +597,7 @@
 	}
 
 	// ------------------------------------------------------------------
-	// localStorage-Helfer (mit Fallback wenn localStorage gesperrt ist)
+	// localStorage helpers (with fallback when localStorage is blocked)
 	// ------------------------------------------------------------------
 
 	function storageKey(trackerId, suffix) {
@@ -616,7 +616,7 @@
 		try {
 			window.localStorage.setItem(key, value);
 		} catch (e) {
-			// Quota überschritten oder Storage gesperrt — still ignorieren.
+			// Quota exceeded or storage blocked, silently ignore.
 		}
 	}
 

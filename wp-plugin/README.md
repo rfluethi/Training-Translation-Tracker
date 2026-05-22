@@ -1,80 +1,90 @@
-# Training Translation Tracker (v2)
+# Training Translation Tracker
 
-> **Status:** Alpha — schlankes WordPress-Plugin, das die statische
-> `tracker.json` aus der Schwester-Action liest und auf einer WordPress-Seite
-> als Übersetzungs-Dashboard rendert.
+> WordPress plugin that reads the static `tracker.json` published by the
+> sister GitHub Action and renders it as a translation dashboard on a
+> WordPress page.
 
-Diese Version ist der Nachfolger des alten `wp-translation-tracker`-Plugins.
-Statt selbst GraphQL/REST-Calls gegen WordPress/Learn zu machen, holt sie
-einmal eine vorgerechnete JSON-Datei. Die wird von der GitHub Action im
-Repo [Training-Translation-Tracker-Inventory-Plugin][action-repo] alle 12 h
-gebaut und auf einem `data`-Branch veröffentlicht.
+This plugin is the slim renderer half of the mono-repo. Instead of making
+GraphQL or REST calls against WordPress/Learn itself, it loads a single
+precomputed JSON file. That file is built by the GitHub Action in this
+same repo every 12 hours and published on a separate `data` branch.
 
-[action-repo]: https://github.com/rfluethi/Training-Translation-Tracker-Inventory-Plugin
+For the full picture (mono-repo, three-component pipeline, design
+decisions) see the [top-level README](../README.md) and
+[docs/Architecture.md](../docs/Architecture.md).
 
----
+## What it does
 
-## Was es kann (Alpha-Stand)
+The shortcode `[translation_tracker]` renders the dashboard on any page.
 
-- Shortcode `[translation_tracker]` rendert die Übersicht auf jeder Seite.
-- Settings unter **Einstellungen → Translation Tracker**:
-  - URL der `tracker.json` (Default zeigt aufs Inventory-Plugin-Repo, `data`-Branch).
-  - Cache-Dauer (Default 12 Stunden via WordPress-Transient).
-  - Knopf „Cache jetzt leeren".
-  - Anzeige des `generated_at`-Zeitstempels aus dem aktuellen Cache.
-- `schema_version`-Check (lehnt unbekannte Major-Versionen ab).
-- Fehlerpfad: bei Fetch-Fehler wird die letzte erfolgreiche Version weiterhin angezeigt.
+Settings under **Settings → Translation Tracker**: tracker.json URL
+(defaults to the inventory plugin repo, `data` branch), cache duration
+(default 12 hours via a WordPress transient), a "Clear cache now" button,
+and a display of the `generated_at` timestamp from the current cache.
 
-## Was es noch nicht kann
+A `schema_version` check rejects payloads with an unknown major version.
+On fetch errors the plugin keeps showing the last successful state from a
+separate `last_good` transient, so the dashboard never goes blank.
 
-- Karten-Layout, Komponenten-Icons, Statusmarker im Frontend (kommt in 2.3).
-- Filter, Sortierung, Suche (kommt in 2.3).
-- Übersetzungen `de_DE` / `en_US` (Strings sind i18n-fähig, `.po`/`.mo` folgt).
-- Distribution per Release-ZIP über GitHub Updater Plugin (Phase 4).
+The frontend supports filters, search, sectional collapse, and a
+component popover (creator and reviewer with GitHub avatars). All
+user-facing strings are i18n-enabled (source language English, German
+translation shipped under `languages/`).
 
-## Anforderungen
+## Requirements
 
 | | |
 | --- | --- |
-| WordPress | 6.0 oder höher |
-| PHP | 8.0 oder höher |
-| Datenquelle | Eine erreichbare `tracker.json` gemäß `tracker.schema.json` v1 |
+| WordPress | 6.0 or higher |
+| PHP | 8.0 or higher |
+| Data source | A reachable `tracker.json` conforming to `tracker.schema.json` v1 |
 
-## Installation (lokal testen)
+## Installation (local testing)
+
+Either symlink the plugin folder into your local WP install:
 
 ```bash
-# In der WordPress-Installation
-cd wp-content/plugins
-# Symlink auf den Workspace-Ordner (komfortabel beim Entwickeln)
-ln -s "/.../Training-Translation-Tracker-Inventory-Plugin/wp-plugin" training-translation-tracker
+cd /path/to/wp-content/plugins
+ln -s /path/to/Training-Translation-Tracker-Inventory-Plugin/wp-plugin training-translation-tracker
 ```
 
-Im WP-Admin: **Plugins** → **Training Translation Tracker** aktivieren.
-Dann **Einstellungen → Translation Tracker**, evtl. URL ändern, „Cache jetzt
-leeren". Auf einer beliebigen Seite den Shortcode einbauen:
+Or build a release ZIP from the repo root and upload it via the WP admin:
+
+```bash
+./build-plugin-zip.sh
+# Then upload ~/Desktop/training-translation-tracker.zip via Plugins → Add New → Upload Plugin
+```
+
+In WP admin: **Plugins → Training Translation Tracker** → activate, then
+**Settings → Translation Tracker**, adjust the URL if needed, press
+"Clear cache now". Insert the shortcode on any page:
 
 ```text
 [translation_tracker]
 ```
 
-## Repository-Struktur
+Full usage including shortcode attributes lives in
+[docs/User-Guide.md](../docs/User-Guide.md).
+
+## Repository layout
 
 ```text
 .
-├── training-translation-tracker.php   Hauptdatei (Header, Constants, Boot)
-├── uninstall.php                       Cleanup beim Plugin-Löschen
+├── training-translation-tracker.php   Main file (header, constants, boot)
+├── uninstall.php                       Cleanup on plugin deletion
 ├── includes/
-│   ├── class-settings.php              Settings-Seite + Clear-Cache
-│   ├── class-fetcher.php               wp_remote_get + Transient-Cache
-│   └── class-renderer.php              Shortcode + HTML-Output
+│   ├── class-settings.php              Settings page + clear-cache AJAX
+│   ├── class-fetcher.php               wp_remote_get + transient cache
+│   └── class-renderer.php              Shortcode + HTML output
 ├── assets/
-│   └── style.css                       Basic-Styling für die Liste
-├── languages/                          .pot / .po / .mo (später)
-├── readme.txt                          WordPress-Standard-Readme
-├── README.md                           dieses Dokument
+│   ├── tracker.js                      Frontend interaction (filter, search, collapse)
+│   └── admin.js                        Clear-cache AJAX in the settings page
+├── languages/                          .pot / de_DE.po / de_DE.mo
+├── readme.txt                          WordPress standard readme
+├── README.md                           This document
 └── LICENSE
 ```
 
-## Lizenz
+## License
 
-GPL v2 oder später — siehe `LICENSE`.
+GPL v2 or later, see `LICENSE`.

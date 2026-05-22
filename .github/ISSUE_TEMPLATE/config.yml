@@ -1,20 +1,21 @@
-# Issue-Template-Konfiguration
+# Issue template configuration.
 #
-# blank_issues_enabled: false → User muss eines der Templates wählen.
-# contact_links: zusätzliche Links unter den Templates.
+# blank_issues_enabled: false means users must pick one of the templates.
+# contact_links: extra links shown below the templates.
 
 blank_issues_enabled: false
 contact_links:
-  - name: Translation-Issue für eine konkrete Lesson anlegen
+  - name: Create a translation issue for a specific lesson
     url: https://github.com/WordPress/Learn/issues/new
     about: >
-      Wenn du als DACH-Team-Mitglied ein Übersetzungs-Issue für eine
-      einzelne Lesson anlegen willst, gehört das ins WordPress/Learn-Repo,
-      NICHT hier. Format der Issue-Vorlage siehe User-Guide dieses
-      Plugins (docs/User-Guide.md → "Issues für neue Übersetzungen
-      anlegen").
-  - name: Allgemeine Fragen / Diskussion
+      If you are a DACH team member and want to open a translation
+      issue for a single lesson, that belongs in the WordPress/Learn
+      repo, NOT here. For the issue template see this plugin's
+      user guide: docs/User-Guide.md, section "Creating issues for
+      new translations".
+  - name: General questions / discussion
     url: https://make.wordpress.org/training/
     about: >
-      Allgemeine Fragen zum Training-Team oder zu Übersetzungs-Workflows
-      auf dem Make.WordPress.org Training-Team-Blog stellen.
+      Ask general questions about the Training team or about
+      translation workflows on the Make.WordPress.org Training team
+      blog.

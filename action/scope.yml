@@ -1,23 +1,23 @@
-# Scope der DACH-Übersetzung — eine einzige Datei
+# DACH translation scope, single source of truth
 #
-# Diese Datei vereint zwei Dinge:
-#   1. Welche Locale wird übersetzt (für den GitHub-Project-Filter).
-#   2. Welche URLs sind in Scope UND wie sind sie gruppiert (Pathway → Course → Section).
+# This file combines two things:
+#   1. Which locale is being translated (used for the GitHub project filter).
+#   2. Which URLs are in scope AND how they are grouped (Pathway -> Course -> Section).
 #
-# Die Menge der „in Scope"-URLs ergibt sich aus allen items: in der Hierarchie unten.
-# Es gibt keine separate flache URL-Liste — eine URL ist genau dann in Scope, wenn sie
-# unten in einer Section auftaucht.
+# The "in scope" URL set is exactly the union of all `items:` entries in the
+# hierarchy below. There is no separate flat URL list; a URL is in scope if
+# and only if it appears below in a section.
 #
-# URL-Form muss kanonisch sein:
+# URL form must be canonical:
 #   - lowercase, https
-#   - mit Trailing-Slash
-#   - ohne Query-Parameter, ohne Fragment
-#   - ohne www.-Subdomäne
+#   - with a trailing slash
+#   - no query parameters, no fragment
+#   - no www. subdomain
 #
-# Slugs auf den Hierarchie-Ebenen: kebab-case, eindeutig je Ebene. Frei wählbar
-# (sind unsere internen IDs). Labels sind das, was im Tracker angezeigt wird.
+# Slugs on the hierarchy levels: kebab-case, unique per level. Free to pick
+# (they are our internal IDs). Labels are what gets shown in the tracker.
 #
-# Validierung gegen schemas/scope.schema.json
+# Validated against schemas/scope.schema.json.
 
 locale: German
 locale_short: de
@@ -25,7 +25,7 @@ locale_short: de
 pathways:
 
   # ------------------------------------------------------------
-  # Pathway 1: Start using WordPress (mit Course "Beginner WordPress User")
+  # Pathway 1: Start using WordPress (with course "Beginner WordPress User")
   # ------------------------------------------------------------
   - slug: user
     label: Start using WordPress
@@ -87,10 +87,10 @@ pathways:
               - https://learn.wordpress.org/lesson/how-to-find-help-with-wordpress-2/
 
   # ------------------------------------------------------------
-  # Pathway 2: Lesson Plans (auf gleicher Ebene wie die User-Pathway)
-  # Hat technisch einen Course-Wrapper "all", weil unser Schema
-  # die Hierarchie Pathway → Course → Section verlangt. Im
-  # WP-Plugin kann das visuell anders gerendert werden.
+  # Pathway 2: Lesson Plans (at the same level as the User pathway).
+  # Technically wrapped by a course "all" because our schema requires
+  # the hierarchy Pathway -> Course -> Section. The WP plugin may
+  # render this visually differently.
   # ------------------------------------------------------------
   - slug: lesson-plans
     label: Lesson Plans
@@ -107,13 +107,13 @@ pathways:
 # ------------------------------------------------------------
 # Training Handbook
 #
-# Flache URL-Liste — die Section-Hierarchie ergibt sich aus dem parent_path,
-# den die make.wordpress.org/training/handbook-API zurückliefert. Im
-# Tracker erscheinen die Seiten unter "Training Handbook", gruppiert nach
-# ihrem Top-Level-Section-Slug ("about", "getting-started", "lessons", ...).
+# Flat URL list. The section hierarchy is derived from the parent_path
+# returned by the make.wordpress.org/training/handbook API. In the
+# tracker these pages appear under "Training Handbook", grouped by
+# their top-level section slug ("about", "getting-started", "lessons", ...).
 #
-# Erweiterungen einfach hier anhängen — die Action holt sich die Hierarchie
-# beim nächsten --refresh-cache automatisch.
+# Add new entries here. The action will pick up the hierarchy on the
+# next --refresh-cache run automatically.
 # ------------------------------------------------------------
 handbook:
   - https://make.wordpress.org/training/handbook/about/

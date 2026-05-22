@@ -5,9 +5,9 @@ Builds three buckets:
   - handbook groups (Handbook items, grouped by parent_path)
   - orphan group (issues without matching inventory OR items outside scope)
 
-Hierarchy comes from groups.yml (DACH-maintained pathway → course → section
+Hierarchy comes from groups.yml (DACH-maintained pathway -> course -> section
 structure). Items in scope.yml but not mentioned in groups.yml fall back to
-a pseudo-pathway 'Ohne Gruppe'.
+a pseudo-pathway 'Unassigned'.
 """
 
 from __future__ import annotations
@@ -42,7 +42,7 @@ def build_groups(
     """Top-level entry point. Returns groups + a list of human-readable warnings.
 
     `scope_config` is the parsed groups.yml (a dict with key "pathways").
-    Pass None to fall back to a single 'Ohne Gruppe' pathway containing all
+    Pass None to fall back to a single 'Unassigned' pathway containing all
     inventory items in scope.yml order.
     """
 
@@ -74,7 +74,7 @@ def build_groups(
     # 5) Build the actual pathway groups, in the order they appear in groups.yml
     groups: list[dict[str, Any]] = []
     pathway_order = _pathway_order_from_config(scope_config or {})
-    pathway_order.append(("__no_group__", "Ohne Gruppe"))  # fallback last
+    pathway_order.append(("__no_group__", "Unassigned"))  # fallback last
 
     for pathway_slug, pathway_label in pathway_order:
         courses_data = pathway_tree.get(pathway_slug)
@@ -82,33 +82,33 @@ def build_groups(
             continue
         course_blocks = []
         course_order = _course_order_for_pathway(scope_config or {}, pathway_slug)
-        course_order.append(("__no_course__", "Ohne Kurs"))
+        course_order.append(("__no_course__", "No Course"))
         for course_slug, course_label in course_order:
             sections_data = courses_data.get(course_slug)
             if not sections_data:
                 continue
             section_blocks = []
             section_order = _section_order_for_course(scope_config or {}, pathway_slug, course_slug)
-            section_order.append(("__no_section__", "Ohne Section"))
+            section_order.append(("__no_section__", "No Section"))
             for section_slug, section_label in section_order:
                 items_in_section = sections_data.get(section_slug)
                 if not items_in_section:
                     continue
                 section_blocks.append({
-                    "slug": section_slug if section_slug != "__no_section__" else "ohne-section",
+                    "slug": section_slug if section_slug != "__no_section__" else "no-section",
                     "label": section_label,
                     "items": items_in_section,
                 })
             if section_blocks:
                 course_blocks.append({
-                    "slug": course_slug if course_slug != "__no_course__" else "ohne-kurs",
+                    "slug": course_slug if course_slug != "__no_course__" else "no-course",
                     "label": course_label,
                     "sections": section_blocks,
                 })
         if course_blocks:
             groups.append({
                 "type": "pathway",
-                "slug": pathway_slug if pathway_slug != "__no_group__" else "ohne-gruppe",
+                "slug": pathway_slug if pathway_slug != "__no_group__" else "unassigned",
                 "label": pathway_label,
                 "courses": course_blocks,
             })
@@ -123,11 +123,11 @@ def build_groups(
     if orphan_items:
         groups.append({
             "type": "orphan",
-            "label": "Sonstige",
+            "label": "Other",
             "items": orphan_items,
         })
 
-    # 7) Hygiene-Bericht — sammelt pflegerelevante Beobachtungen
+    # 7) Hygiene report: collects maintenance-relevant observations
     hygiene = collect_hygiene(
         parsed_issues=issues,
         inventory=inventory,
@@ -139,7 +139,7 @@ def build_groups(
 
 
 # ---------------------------------------------------------------------------
-# overall_status algorithm (Arbeitsplan §A.2.1)
+# overall_status algorithm (work plan, section A.2.1)
 # ---------------------------------------------------------------------------
 
 def calculate_overall_status(component_statuses: list[str]) -> str:
@@ -244,7 +244,7 @@ def _walk_inventory(
         position = url_to_position.get(inv_item.url_en)
         if position is None:
             warnings.append(
-                f"URL not in groups.yml — placed under 'Ohne Gruppe': {inv_item.url_en}"
+                f"URL not in groups.yml - placed under 'Unassigned': {inv_item.url_en}"
             )
             pathway_tree["__no_group__"]["__no_course__"]["__no_section__"].append(item_dict)
         else:
@@ -258,11 +258,12 @@ def _walk_inventory(
 def _bucket_handbook_items(items: list[dict[str, Any]]) -> list[dict[str, Any]]:
     """Group handbook items by their top-most section in parent_path.
 
-    Pages mit leerem parent_path (= Top-Level-Pages wie "/handbook/about/")
-    werden als ihre eigene Section behandelt — ihr Slug wird zum Section-Slug.
-    Eine Kind-Seite wie "/handbook/about/team-values/" hat parent_path=["about"]
-    und landet in derselben Section "about". So entstehen aus dem flachen
-    handbook:-Block in scope.yml saubere Section-Gruppen.
+    Pages with an empty parent_path (i.e. top-level pages such as
+    "/handbook/about/") are treated as their own section: their slug
+    becomes the section slug. A child page like
+    "/handbook/about/team-values/" has parent_path=["about"] and lands in
+    the same "about" section. This turns the flat handbook: block from
+    scope.yml into clean section groups.
     """
     sections: dict[str, list[dict[str, Any]]] = defaultdict(list)
     for entry in items:
@@ -315,7 +316,7 @@ def _item_to_dict(
         item["url_de"] = primary.parsed.url_translated
     if primary.parsed.title_de:
         item["title_de"] = primary.parsed.title_de
-    # Video-URLs: getrennt nach EN/DE; Alias-Felder fürs alte Konsumenten-API.
+    # Video URLs: separated by EN/DE; alias fields kept for the old consumer API.
     if primary.parsed.url_wptv_en:
         item["url_wptv_en"] = primary.parsed.url_wptv_en
     if primary.parsed.url_wptv_de:
@@ -398,7 +399,7 @@ def _collect_orphans(
 # ---------------------------------------------------------------------------
 
 def _humanize(slug: str) -> str:
-    if not slug or slug.startswith("ohne-"):
+    if not slug or slug.startswith("no-") or slug == "unassigned":
         return slug
     return " ".join(part.capitalize() for part in slug.split("-"))
 

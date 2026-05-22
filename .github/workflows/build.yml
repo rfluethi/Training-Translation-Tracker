@@ -1,22 +1,22 @@
 name: Build tracker.json
 
-# Auslöser — siehe Arbeitsplan §A.4.8
+# Triggers, see Operations.md section 3.
 on:
   schedule:
-    # Alle 12 Stunden. Intervall hier ändern, z.B.:
-    #   "0 */6 * * *"  → alle 6 Stunden
-    #   "0 6 * * *"    → täglich um 06:00 UTC
+    # Every 12 hours. Adjust the interval here, for example:
+    #   "0 */6 * * *"  -> every 6 hours
+    #   "0 6 * * *"    -> daily at 06:00 UTC
     - cron: "0 */12 * * *"
 
   workflow_dispatch:
-    # Manueller Knopf in der GitHub-UI; GraphQL-Cost erscheint im Log.
+    # Manual button in the GitHub UI. GraphQL cost is written to the log.
 
   push:
     branches:
       - main
-    # Nur Action-relevante Pfade triggern den Build — Plugin-Änderungen
-    # (wp-plugin/) lösen die Action NICHT aus, weil sie tracker.json
-    # nicht beeinflussen.
+    # Only action-relevant paths trigger a build. Plugin changes
+    # (wp-plugin/) do NOT trigger the action because they do not affect
+    # tracker.json.
     paths:
       - "action/scope.yml"
       - "action/component-templates.yml"
@@ -26,11 +26,11 @@ on:
       - "action/requirements.txt"
       - ".github/workflows/build.yml"
 
-# Workflow darf den data-Branch beschreiben, sonst nur lesen.
+# The workflow may write to the data branch; everything else is read-only.
 permissions:
   contents: write
 
-# Mehrere Läufe für denselben Trigger zusammenfassen.
+# Coalesce multiple runs for the same trigger.
 concurrency:
   group: build-tracker
   cancel-in-progress: false
@@ -38,7 +38,7 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
-    # Alle Action-Schritte laufen im action/-Unterordner (Mono-Repo-Layout).
+    # All action steps run inside the action/ subfolder (mono-repo layout).
     defaults:
       run:
         working-directory: action
@@ -46,7 +46,7 @@ jobs:
       - name: Checkout main
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0   # für scope_version aus git log
+          fetch-depth: 0   # for scope_version derived from git log
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -87,23 +87,23 @@ jobs:
           fi
 
       # ---------------------------------------------------------------
-      # Output committen — force-push auf data-Branch (Arbeitsplan §A.4.6)
-      # Bei Fehler im build-Schritt läuft dieser Schritt NICHT.
+      # Commit the output, force-push to the data branch.
+      # If the build step fails, this step does NOT run.
       # ---------------------------------------------------------------
       - name: Publish to data branch
         if: success()
-        # Worktree-Operation muss vom Repo-Root aus laufen, nicht aus action/
+        # The worktree operation must run from the repo root, not from action/.
         working-directory: ${{ github.workspace }}
         run: |
           set -euo pipefail
 
-          # Frischer Worktree für den data-Branch
+          # Fresh worktree for the data branch.
           rm -rf _data
           git worktree add --detach _data
           cd _data
           git checkout --orphan data-publish
 
-          # Alles aus dem alten Branch entfernen, nur Output rüberkopieren
+          # Drop everything from the old branch, copy only the output across.
           git rm -rf . >/dev/null 2>&1 || true
           cp ../action/_output/tracker.json .
           cp ../action/_output/last-run.md .
@@ -114,5 +114,5 @@ jobs:
           git add tracker.json last-run.md data-hygiene.md
           git commit -m "Update tracker.json ($(date -u +%Y-%m-%dT%H:%M:%SZ))"
 
-          # Force-push: data-Branch trägt nur den letzten Stand
+          # Force push: the data branch only carries the latest state.
           git push --force origin HEAD:data

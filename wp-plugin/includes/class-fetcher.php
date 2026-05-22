@@ -1,10 +1,10 @@
 <?php
 /**
- * Datenholer für die tracker.json.
+ * Data fetcher for the tracker.json.
  *
- * Cached den geparsten Payload als WordPress-Transient (TTL aus den Settings).
- * Hält parallel einen separaten „last-good"-Transient, der bei Fetch-Fehlern
- * verwendet wird, damit der Tracker nicht stumm bleibt (A.5.3).
+ * Caches the parsed payload as a WordPress transient (TTL from the settings).
+ * Holds a separate "last-good" transient that is used on fetch errors so the
+ * tracker does not go silent (A.5.3).
  *
  * @package training-translation-tracker
  */
@@ -12,22 +12,22 @@
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Fetcher-Klasse — keine Instanzen nötig, nur statische Helpers.
+ * Fetcher class. No instances needed, static helpers only.
  */
 class TTT_Fetcher {
 
 	/**
-	 * Liefert den Tracker-Payload (Dictionary aus der gecachten oder frisch geholten JSON).
+	 * Returns the tracker payload (dictionary parsed from the cached or freshly fetched JSON).
 	 *
-	 * Reihenfolge:
-	 *   1. Aktiver Cache (Transient TTT_TRANSIENT_KEY).
-	 *   2. Frischer HTTP-Fetch. Bei Erfolg: in Cache + last-good schreiben.
-	 *   3. Fehler / unsupported schema → last-good zurückgeben + interne Fehlernotiz.
+	 * Order:
+	 *   1. Active cache (transient TTT_TRANSIENT_KEY).
+	 *   2. Fresh HTTP fetch. On success: write to cache + last-good.
+	 *   3. Error / unsupported schema, return last-good + internal error note.
 	 *
 	 * @return array {
-	 *     @type array|null $payload  Geparste JSON oder null.
+	 *     @type array|null $payload  Parsed JSON or null.
 	 *     @type string     $source   'cache' | 'fresh' | 'last_good' | 'none'.
-	 *     @type string     $error    Optionale Fehlermeldung (intern, fürs Backend).
+	 *     @type string     $error    Optional error message (internal, for the backend).
 	 * }
 	 */
 	public static function get() {
@@ -56,10 +56,10 @@ class TTT_Fetcher {
 	}
 
 	/**
-	 * Hilfsmethode für die Rückgabe.
+	 * Helper method for the return value.
 	 *
-	 * @param array|null $payload Payload-Daten.
-	 * @param string     $source  Quelle.
+	 * @param array|null $payload Payload data.
+	 * @param string     $source  Source.
 	 * @param string     $error   Optional.
 	 * @return array
 	 */
@@ -72,7 +72,7 @@ class TTT_Fetcher {
 	}
 
 	/**
-	 * Liest die last-good-Kopie (ohne TTL — bleibt liegen, bis erneut überschrieben).
+	 * Reads the last-good copy (no TTL, kept until overwritten by a new success).
 	 *
 	 * @return array|null
 	 */
@@ -82,9 +82,9 @@ class TTT_Fetcher {
 	}
 
 	/**
-	 * Speichert frischen Payload in beiden Slots (kurzlebigen Cache + last-good).
+	 * Stores a fresh payload in both slots (short-lived cache + last-good).
 	 *
-	 * @param array $payload Decodierte JSON.
+	 * @param array $payload Decoded JSON.
 	 * @return void
 	 */
 	private static function store( $payload ) {
@@ -94,17 +94,17 @@ class TTT_Fetcher {
 		}
 		set_transient( TTT_TRANSIENT_KEY, $payload, $hours * HOUR_IN_SECONDS );
 
-		// last-good ohne TTL (wird nur überschrieben bei Erfolg). Wir geben ihm aber
-		// einen sehr langen TTL, damit WordPress ihn nicht überraschend räumt.
+		// last-good has no real TTL (it is only overwritten on success). We do
+		// give it a very long TTL so WordPress does not reap it unexpectedly.
 		set_transient( TTT_LAST_GOOD_KEY, $payload, 30 * DAY_IN_SECONDS );
 	}
 
 	// -------------------------------------------------------------------- HTTP
 
 	/**
-	 * GET-Request → geparste JSON oder WP_Error.
+	 * GET request, returns parsed JSON or WP_Error.
 	 *
-	 * @param string $url Endpunkt.
+	 * @param string $url Endpoint.
 	 * @return array|WP_Error
 	 */
 	private static function http_get_json( $url ) {
@@ -157,8 +157,8 @@ class TTT_Fetcher {
 	// ------------------------------------------------------------------ schema
 
 	/**
-	 * Validiert die wichtigsten Pflichtfelder. Keine vollständige JSON-Schema-Validation —
-	 * der Builder validiert ohnehin schon vor dem Commit.
+	 * Validates the most important required fields. Not a full JSON Schema validation,
+	 * the builder already validates before committing.
 	 *
 	 * @param array $payload Decoded JSON.
 	 * @return true|WP_Error
@@ -171,7 +171,7 @@ class TTT_Fetcher {
 					/* translators: 1: expected schema version, 2: actual. */
 					__( 'Schema version mismatch. Expected: %1$d, found: %2$s', 'training-translation-tracker' ),
 					TTT_TRACKER_SCHEMA_VERSION,
-					isset( $payload['schema_version'] ) ? (string) $payload['schema_version'] : 'fehlt'
+					isset( $payload['schema_version'] ) ? (string) $payload['schema_version'] : __( 'missing', 'training-translation-tracker' )
 				)
 			);
 		}

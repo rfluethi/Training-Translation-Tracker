@@ -1,68 +1,68 @@
-# Action, Translation-Tracker-Datenpipeline
+# Action, Translation Tracker data pipeline
 
-> Python-basierte GitHub Action, die `tracker.json` für den DACH-Tracker baut.
-> Teil des Mono-Repos, das WordPress-Plugin liegt unter `../wp-plugin/`.
-> Übersicht: [Top-Level-README](../README.md).
+> Python-based GitHub Action that builds `tracker.json` for the DACH tracker.
+> Part of the mono-repo. The WordPress plugin lives under `../wp-plugin/`.
+> For an overview, see the [top-level README](../README.md).
 
-## Was hier passiert
+## What happens here
 
-Eine GitHub Action läuft alle 12 Stunden und:
+A GitHub Action runs every 12 hours and:
 
-1. liest `scope.yml` (welche URLs sollen im Tracker erscheinen)
-2. holt für jede URL die Inventar-Daten von `learn.wordpress.org` bzw. `make.wordpress.org/training/handbook/`
-3. holt alle DACH-Übersetzungs-Issues aus `WordPress/Learn` (Project V2 #104, Locale = German)
-4. matched Inventar ↔ Issues über die normalisierte Original-URL
-5. parst die Status-Tabellen aus den Issue-Bodies
-6. schreibt `tracker.json` (und `last-run.md` als Logfile) auf den `data`-Branch
+1. reads `scope.yml` (which URLs should appear in the tracker)
+2. fetches inventory data for every URL from `learn.wordpress.org` or `make.wordpress.org/training/handbook/`
+3. fetches all DACH translation issues from `WordPress/Learn` (Project V2 #104, Locale = German)
+4. matches inventory and issues via the normalized original URL
+5. parses the status tables from the issue bodies
+6. writes `tracker.json` (and `last-run.md` as a log) onto the `data` branch
 
-Das resultierende `tracker.json` ist anschließend statisch unter `https://raw.githubusercontent.com/<owner>/Training-Translation-Tracker-Inventory-Plugin/data/tracker.json` abrufbar und wird vom WordPress-Plugin gelesen.
+The resulting `tracker.json` is then statically available at `https://raw.githubusercontent.com/<owner>/Training-Translation-Tracker-Inventory-Plugin/data/tracker.json` and is read by the WordPress plugin.
 
-## Architektur-Übersicht
+## Architecture overview
 
-Siehe [Top-Level-README](../README.md) für die Drei-Komponenten-Pipeline
-(Issues → Action → Plugin) und das komplette Repo-Layout.
+See the [top-level README](../README.md) for the three-component pipeline
+(issues → action → plugin) and the full repository layout.
 
-Format und Pflege der DACH-Übersetzungs-Issues sind im User-Guide
-beschrieben: [docs/User-Guide.md → Issues für neue Übersetzungen anlegen](../docs/User-Guide.md#7-issues-für-neue-übersetzungen-anlegen).
+The format and maintenance of DACH translation issues are described in the
+user guide: [docs/User-Guide.md → Creating issues for new translations](../docs/User-Guide.md#7-creating-issues-for-new-translations).
 
-Architektur-Hintergrund (Komponenten, Datenfluss, Designentscheidungen):
-[docs/Architektur.md](../docs/Architektur.md).
+Architectural background (components, data flow, design decisions):
+[docs/Architecture.md](../docs/Architecture.md).
 
-## Repository-Struktur
+## Repository structure
 
 ```text
 action/
-├── scope.yml                      Locale + Hierarchie + URLs (Single Source of Truth)
-├── component-templates.yml        Default-Komponenten pro Item-Typ
-├── inventory-cache.json           Vorberechnete Inventar-Daten (lokal aktualisiert)
-├── schemas/                       JSON-Schemata für tracker.json, scope.yml, component-templates.yml
+├── scope.yml                      Locale + hierarchy + URLs (single source of truth)
+├── component-templates.yml        Default components per item type
+├── inventory-cache.json           Precomputed inventory data (refreshed locally)
+├── schemas/                       JSON schemas for tracker.json, scope.yml, component-templates.yml
 ├── src/
-│   ├── inventory/                 REST-Module pro Item-Typ + URL-Normalizer
-│   ├── github/                    GraphQL-Client + Issue-Parser
-│   ├── builder/                   Joiner, Stats, Output-Writer
-│   └── build.py                   Einstiegspunkt für die Action
-├── tests/                         Unit-Tests (mit gemockter API)
+│   ├── inventory/                 REST modules per item type + URL normalizer
+│   ├── github/                    GraphQL client + issue parser
+│   ├── builder/                   Joiner, stats, output writer
+│   └── build.py                   Entry point for the action
+├── tests/                         Unit tests (with mocked API)
 ├── requirements.txt
 ├── LICENSE                        GPL-2.0-or-later
-└── README.md                      Dieses Dokument
+└── README.md                      This document
 ```
 
-Der Workflow `../.github/workflows/build.yml` liegt auf Repo-Top-Level
-(GitHub-Convention) und nutzt `working-directory: action` für die Befehle.
+The workflow `../.github/workflows/build.yml` lives at the repo top level
+(GitHub convention) and uses `working-directory: action` for its commands.
 
-Output landet auf einem separaten Branch:
+Output lands on a separate branch:
 
 ```text
 data branch
-├── tracker.json                   Vom WP-Plugin gelesene Datei
-└── last-run.md                    Mensch-lesbarer Bericht je Lauf
+├── tracker.json                   Read by the WP plugin
+└── last-run.md                    Human-readable report per run
 ```
 
-## Erst-Einrichtung durch den Maintainer
+## Initial setup by the maintainer
 
-1. Repo auf GitHub anlegen (öffentlich): `<owner>/Training-Translation-Tracker-Inventory-Plugin`.
-2. Default-Branch `main` (wird beim Push automatisch erzeugt).
-3. Zweiten Branch `data` anlegen, leer reicht, wird vom Workflow überschrieben:
+1. Create a public repository on GitHub: `<owner>/Training-Translation-Tracker-Inventory-Plugin`.
+2. Default branch `main` (created automatically on first push).
+3. Create a second branch `data`. Empty is enough, the workflow overwrites it:
 
    ```bash
    git checkout --orphan data
@@ -74,58 +74,58 @@ data branch
    git checkout main
    ```
 
-4. Secret `GH_PAT_PROJECT_READ` setzen:
-   - Token unter <https://github.com/settings/tokens> erstellen.
+4. Set the secret `GH_PAT_PROJECT_READ`:
+   - Create a token at <https://github.com/settings/tokens>.
    - Scopes: `read:org`, `project`.
-   - Im Repo unter Settings → Secrets and variables → Actions als Repository Secret hinterlegen.
-5. Workflow manuell auslösen unter Actions → „Build tracker.json" → Run workflow.
+   - Store it in the repo under Settings → Secrets and variables → Actions as a repository secret.
+5. Trigger the workflow manually via Actions → "Build tracker.json" → Run workflow.
 
-## Inventar-Cache
+## Inventory cache
 
-Die Action ruft `learn.wordpress.org` **nicht** mehr live an, die
-GitHub-Runner-IPs werden vom WP-CDN aggressiv ratelimitet, in der Praxis
-kommt fast keine Anfrage durch. Stattdessen lebt das Inventar als
-vorberechnete Datei `inventory-cache.json` im Repo. Die Action liest diese
-Datei und macht damit die Pathway-Gruppierung.
+The action no longer calls `learn.wordpress.org` live. The GitHub
+runner IPs are rate-limited aggressively by the WP CDN, in practice
+hardly any request gets through. Instead, the inventory lives as a
+precomputed file `inventory-cache.json` in the repo. The action reads
+that file and uses it for pathway grouping.
 
-Wenn sich `scope.yml` ändert oder Inhalte auf learn.wordpress.org
-umstrukturiert werden, frischt der Maintainer den Cache **lokal** auf
-(Heim-/Büro-IPs sind nicht ratelimitet) und committet die neue Datei:
+Whenever `scope.yml` changes or content on learn.wordpress.org is
+restructured, the maintainer refreshes the cache **locally** (home or
+office IPs are not rate-limited) and commits the new file:
 
 ```bash
 python -m src.build --refresh-cache
-git diff inventory-cache.json     # Review der Änderungen
+git diff inventory-cache.json     # review the changes
 git add inventory-cache.json
 git commit -m "Refresh inventory cache"
 git push
 ```
 
-`--refresh-cache` fetcht jede URL aus `scope.yml` (mit 1.5s-Throttle,
-default-mäßig) und schreibt die InventoryItems in `inventory-cache.json`.
-Es macht **keinen** Issue-Fetch und schreibt **kein** `tracker.json`.
+`--refresh-cache` fetches every URL from `scope.yml` (with a 1.5 s throttle
+by default) and writes the InventoryItems into `inventory-cache.json`. It
+does **not** fetch issues and does **not** write `tracker.json`.
 
-URLs, die beim Refresh nicht erreichbar sind, bleiben einfach nicht im
-Cache, beim nächsten lokalen Lauf erneut versuchen. Issues zu diesen
-URLs landen dann eben (vorübergehend) im Orphan-Bucket.
+URLs that cannot be reached during the refresh simply stay out of the cache.
+Retry on the next local run. Issues for those URLs end up (temporarily) in
+the orphan bucket.
 
-## Lokale Entwicklung
+## Local development
 
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
 
-# Tests laufen lassen:
+# Run tests:
 pytest
 
-# Lokaler Voll-Build (braucht Token, liest aus Cache):
+# Local full build (needs a token, reads from cache):
 export GH_PAT_PROJECT_READ=<your token>
 python -m src.build
 
-# Cache aufbauen / aktualisieren:
+# Build / refresh the cache:
 python -m src.build --refresh-cache
 ```
 
-## Lizenz
+## License
 
-GPL-2.0-or-later, siehe `LICENSE`.
+GPL-2.0-or-later, see `LICENSE`.

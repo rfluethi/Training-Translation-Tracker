@@ -24,7 +24,7 @@
       "items": { "$ref": "#/$defs/Pathway" }
     },
     "handbook": {
-      "description": "Flache URL-Liste fürs Training-Handbook auf make.wordpress.org/training/handbook/. Sections/Hierarchie kommen automatisch aus dem parent_path der Handbook-API.",
+      "description": "Flat URL list for the Training Handbook on make.wordpress.org/training/handbook/. Sections and hierarchy are derived automatically from the parent_path returned by the handbook API.",
       "type": "array",
       "minItems": 0,
       "uniqueItems": true,

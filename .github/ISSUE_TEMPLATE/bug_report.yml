@@ -1,68 +1,68 @@
-name: Bug-Report
-description: Etwas funktioniert nicht wie erwartet — sei es im WordPress-Plugin oder in der Action
+name: Bug report
+description: Something is not working as expected, either in the WordPress plugin or in the action.
 title: "[Bug] "
 labels: ["bug"]
 body:
   - type: markdown
     attributes:
       value: |
-        Danke fürs Melden! Bitte fülle so viel aus wie möglich — je präziser, desto schneller fixierbar.
+        Thanks for reporting! Please fill in as much as possible. The more precise, the faster a fix.
 
   - type: dropdown
     id: component
     attributes:
-      label: Welcher Teil betrifft den Bug?
+      label: Which part is affected?
       options:
-        - WordPress-Plugin (wp-plugin/)
+        - WordPress plugin (wp-plugin/)
         - GitHub Action (action/)
-        - Beides / nicht sicher
+        - Both / not sure
     validations:
       required: true
 
   - type: input
     id: version
     attributes:
-      label: Plugin-Version
-      description: Steht im WP-Admin unter Plugins → Training Translation Tracker, oder in der `training-translation-tracker.php`. Bei Action-Bugs den Commit-SHA angeben.
-      placeholder: "z. B. 0.2.3"
+      label: Plugin version
+      description: Shown in WP Admin under Plugins -> Training Translation Tracker, or in `training-translation-tracker.php`. For action bugs, supply the commit SHA.
+      placeholder: "e.g. 0.2.3"
     validations:
       required: false
 
   - type: textarea
     id: what-happens
     attributes:
-      label: Was passiert?
-      description: Was beobachtest du? Welche Fehlermeldung erscheint, falls vorhanden?
-      placeholder: "Beim Klick auf … erscheint …"
+      label: What happens?
+      description: What do you observe? Which error message appears, if any?
+      placeholder: "When clicking on ... the following appears: ..."
     validations:
       required: true
 
   - type: textarea
     id: what-expected
     attributes:
-      label: Was hattest du erwartet?
-      placeholder: "Eigentlich sollte …"
+      label: What did you expect?
+      placeholder: "I expected ..."
     validations:
       required: true
 
   - type: textarea
     id: steps
     attributes:
-      label: Schritte zur Reproduktion
-      description: Wenn möglich, schreibe die Schritte 1, 2, 3 auf, mit denen man den Bug auslösen kann.
+      label: Steps to reproduce
+      description: If possible, list the steps 1, 2, 3 that trigger the bug.
       placeholder: |
-        1. Plugin in WP installieren
-        2. Shortcode `[translation_tracker]` auf eine Seite setzen
-        3. Auf … klicken
-        4. Fehler erscheint
+        1. Install the plugin in WP
+        2. Place the shortcode `[translation_tracker]` on a page
+        3. Click on ...
+        4. The error appears
     validations:
       required: false
 
   - type: textarea
     id: environment
     attributes:
-      label: Umgebung (Plugin-Bugs)
-      description: WordPress-Version, PHP-Version, Theme/Page-Builder, Browser. Nur bei Plugin-Bugs nötig.
+      label: Environment (plugin bugs)
+      description: WordPress version, PHP version, theme / page builder, browser. Only needed for plugin bugs.
       placeholder: |
         WordPress: 6.6
         PHP: 8.2
@@ -74,8 +74,8 @@ body:
   - type: textarea
     id: logs
     attributes:
-      label: Logs / Browser-Konsole / Screenshots
-      description: Bei JS-Problemen die Browser-Konsole-Ausgabe (F12 → Console). Bei Action-Fehlern den Action-Log-Auszug. Bei Layout-Problemen einen Screenshot anhängen.
+      label: Logs / browser console / screenshots
+      description: For JS issues, the browser console output (F12 -> Console). For action errors, the action log excerpt. For layout issues, attach a screenshot.
       render: shell
     validations:
       required: false

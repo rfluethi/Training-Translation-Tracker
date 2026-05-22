@@ -27,7 +27,7 @@ COMPONENT_TEMPLATES = {
 
 
 # ---------------------------------------------------------------------------
-# overall_status (Arbeitsplan §A.2.1)
+# overall_status (work plan, section A.2.1)
 # ---------------------------------------------------------------------------
 
 @pytest.mark.parametrize(
@@ -131,7 +131,7 @@ def test_joiner_uses_scope_hierarchy():
 
 
 def test_joiner_url_outside_hierarchy_falls_back():
-    """An inventory URL that isn't placed anywhere in scope.yml lands under 'Ohne Gruppe'."""
+    """An inventory URL that isn't placed anywhere in scope.yml lands under 'Unassigned'."""
     inv = [_inventory_item("not-mapped")]
     scope_config = {"locale": "German", "locale_short": "de", "pathways": []}
 
@@ -139,7 +139,7 @@ def test_joiner_url_outside_hierarchy_falls_back():
 
     pathways = [g for g in result.groups if g["type"] == "pathway"]
     assert len(pathways) == 1
-    assert pathways[0]["label"] == "Ohne Gruppe"
+    assert pathways[0]["label"] == "Unassigned"
 
 
 def test_joiner_without_scope_config():
@@ -248,7 +248,7 @@ def test_stats_count_per_overall_status():
         },
         {
             "type": "orphan",
-            "label": "Sonstige",
+            "label": "Other",
             "items": [
                 {"type": "lesson", "slug": "z", "title_en": "Z",
                  "url_en": "https://learn.wordpress.org/lesson/z/",

@@ -1,11 +1,11 @@
 <?php
 /**
- * Settings-Seite unter Einstellungen → Translation Tracker.
+ * Settings page under Settings → Translation Tracker.
  *
- * - Feld: URL der tracker.json
- * - Feld: Cache-Dauer in Stunden (1–168)
- * - Button: Cache jetzt leeren (AJAX)
- * - Anzeige: zuletzt erfolgreicher generated_at-Stempel
+ * - Field: tracker.json URL
+ * - Field: cache duration in hours (1 to 168)
+ * - Button: clear cache now (AJAX)
+ * - Display: last successful generated_at stamp
  *
  * @package training-translation-tracker
  */
@@ -13,12 +13,12 @@
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Settings-Klasse.
+ * Settings class.
  */
 class TTT_Settings {
 
 	/**
-	 * Konstruktor: Hooks registrieren.
+	 * Constructor: register hooks.
 	 */
 	public function __construct() {
 		add_action( 'admin_menu', array( $this, 'add_settings_page' ) );
@@ -28,7 +28,7 @@ class TTT_Settings {
 	}
 
 	/**
-	 * Eintrag im Settings-Menü.
+	 * Entry in the settings menu.
 	 *
 	 * @return void
 	 */
@@ -43,7 +43,7 @@ class TTT_Settings {
 	}
 
 	/**
-	 * Registriert die Settings-Felder über die WP Settings API.
+	 * Registers the settings fields via the WP Settings API.
 	 *
 	 * @return void
 	 */
@@ -86,9 +86,9 @@ class TTT_Settings {
 	}
 
 	/**
-	 * Wert-Bereinigung beim Speichern.
+	 * Value sanitization on save.
 	 *
-	 * @param array $input Roh-Eingaben aus dem Formular.
+	 * @param array $input Raw form input.
 	 * @return array
 	 */
 	public function sanitize_settings( $input ) {
@@ -110,9 +110,9 @@ class TTT_Settings {
 	// ---------------------------------------------------------------- helpers
 
 	/**
-	 * Bequemer Getter für Settings-Werte.
+	 * Convenience getter for settings values.
 	 *
-	 * @param string $key Welche Setting.
+	 * @param string $key Which setting.
 	 * @return mixed
 	 */
 	public static function get( $key ) {
@@ -129,7 +129,7 @@ class TTT_Settings {
 	// ---------------------------------------------------------------- fields
 
 	/**
-	 * Eingabefeld: tracker.json-URL.
+	 * Input field: tracker.json URL.
 	 *
 	 * @return void
 	 */
@@ -143,14 +143,14 @@ class TTT_Settings {
 		);
 		echo '<p class="description">';
 		echo esc_html__(
-			'Direct link to tracker.json — typically the raw.githubusercontent.com link to the data branch of the Inventory Action.',
+			'Direct link to tracker.json, typically the raw.githubusercontent.com link to the data branch of the Inventory Action.',
 			'training-translation-tracker'
 		);
 		echo '</p>';
 	}
 
 	/**
-	 * Eingabefeld: Cache-Stunden.
+	 * Input field: cache hours.
 	 *
 	 * @return void
 	 */
@@ -169,7 +169,7 @@ class TTT_Settings {
 	// ----------------------------------------------------------------- render
 
 	/**
-	 * Rendert die komplette Settings-Seite inkl. Cache-Status und Clear-Button.
+	 * Renders the full settings page including cache status and clear-cache button.
 	 *
 	 * @return void
 	 */
@@ -182,20 +182,20 @@ class TTT_Settings {
 		$generated   = $this->extract_generated_at( $last_good );
 		$cache_state = false !== get_transient( TTT_TRANSIENT_KEY );
 
-		// Inline-<style>-Block bewusst statt eines separaten admin-Stylesheets,
-		// um den enqueue-Overhead für eine Handvoll Settings-spezifischer Regeln
-		// zu vermeiden. Wenn die Settings-Seite mal wachsen sollte: in eigene
-		// CSS-Datei umstellen und per wp_enqueue_style laden.
+		// Inline <style> block on purpose instead of a separate admin stylesheet,
+		// to avoid the enqueue overhead for a handful of settings-specific rules.
+		// If the settings page ever grows: move to a dedicated CSS file and load
+		// it via wp_enqueue_style.
 		// phpcs:disable WordPress.WP.EnqueuedResources.NonEnqueuedStylesheet
 		?>
 		<style>
-			/* Kleine Styles nur für diese Settings-Seite. */
+			/* Small styles scoped to this settings page only. */
 			.ttt-settings-status-active   { color: #2271b1; }
 			.ttt-settings-status-inactive { color: #999; }
 			.ttt-settings-clear-msg       { margin-left: 10px; }
 			.ttt-settings-shortcode-table { max-width: 800px; }
 			.ttt-settings-shortcode-note  { margin-top: 0.75rem; }
-			/* Status-Farben für die AJAX-Rückmeldung aus admin.js */
+			/* Status colors for the AJAX response from admin.js */
 			.ttt-clear-msg-pending { color: #666; }
 			.ttt-clear-msg-success { color: #46b450; }
 			.ttt-clear-msg-error   { color: #dc3232; }
@@ -312,10 +312,10 @@ class TTT_Settings {
 	}
 
 	/**
-	 * Holt generated_at aus dem letzten guten Payload.
+	 * Extracts generated_at from the last good payload.
 	 *
-	 * @param mixed $payload Cached payload (oder false).
-	 * @return string Empty string, wenn nichts da.
+	 * @param mixed $payload Cached payload (or false).
+	 * @return string Empty string when nothing is available.
 	 */
 	private function extract_generated_at( $payload ) {
 		if ( is_array( $payload ) && isset( $payload['generated_at'] ) ) {
@@ -327,7 +327,7 @@ class TTT_Settings {
 	// ------------------------------------------------------------------- AJAX
 
 	/**
-	 * Admin-AJAX: Cache leeren.
+	 * Admin AJAX: clear cache.
 	 *
 	 * @return void
 	 */
@@ -342,7 +342,7 @@ class TTT_Settings {
 		}
 
 		delete_transient( TTT_TRANSIENT_KEY );
-		// Den last-good-Eintrag lassen wir stehen, damit das Frontend bei Fetch-Fehlern weiter etwas zeigt.
+		// We keep the last-good entry so the frontend still shows something on fetch errors.
 
 		wp_send_json_success(
 			array(
@@ -352,9 +352,9 @@ class TTT_Settings {
 	}
 
 	/**
-	 * Lädt das Admin-JS nur auf unserer Settings-Seite.
+	 * Enqueues the admin JS only on our settings page.
 	 *
-	 * @param string $hook Hook-Name der aktuellen Admin-Seite.
+	 * @param string $hook Hook name of the current admin page.
 	 * @return void
 	 */
 	public function enqueue_admin_assets( $hook ) {

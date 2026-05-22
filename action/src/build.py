@@ -47,7 +47,7 @@ from .inventory.dispatcher import Dispatcher
 
 LOG = logging.getLogger("build")
 
-# Default Project V2 source (Arbeitsplan §5.1 / §5.2)
+# Default Project V2 source (work plan, sections 5.1 / 5.2)
 DEFAULT_PROJECT_OWNER = "WordPress"
 DEFAULT_PROJECT_NUMBER = 104
 
@@ -278,8 +278,8 @@ def _build_tracker(repo_root: Path, output_dir: Path | None, skip_issues: bool) 
     LOG.info("Wrote %s and %s", tracker_path.name, report_path.name)
 
     # ----------------------------------------------------------------- step 7b
-    # Pflege-Bericht (Datenhygiene). Wird zusätzlich auf den data-Branch
-    # committet — siehe .github/workflows/build.yml.
+    # Maintenance report (data hygiene). Also committed to the data branch;
+    # see .github/workflows/build.yml.
     hygiene_md = render_hygiene_markdown(result.hygiene, generated_at=generated_at)
     hygiene_path = output_dir / "data-hygiene.md"
     hygiene_path.write_text(hygiene_md, encoding="utf-8")

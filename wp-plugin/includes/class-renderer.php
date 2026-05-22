@@ -1,9 +1,9 @@
 <?php
 /**
- * Shortcode [translation_tracker] und HTML-Output.
+ * Shortcode [translation_tracker] and HTML output.
  *
- * Für die Alpha-Variante reicht ein semantisch sauberer Listen-Output mit
- * Status-Pillen. Karten-Layout, Filter, Suche und Sortierung folgen in Phase 2.3.
+ * For the alpha variant, a semantically clean list output with status pills is
+ * sufficient. Card layout, filter, search and sorting will follow in phase 2.3.
  *
  * @package training-translation-tracker
  */
@@ -11,13 +11,13 @@
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Renderer-Klasse.
+ * Renderer class.
  */
 class TTT_Renderer {
 
 	/**
-	 * Material-Icons-Pfade (Apache-2.0) für die Komponenten-Anzeige.
-	 * Jede Komponente bekommt ein eindeutiges Icon. Größe 24x24-viewBox.
+	 * Material Icons paths (Apache-2.0) for the component display.
+	 * Each component gets a unique icon. Size: 24x24 viewBox.
 	 *
 	 * @var array<string,string>
 	 */
@@ -32,8 +32,8 @@ class TTT_Renderer {
 	);
 
 	/**
-	 * Kanonische Reihenfolge der Komponenten in der Karten-Footer-Zeile.
-	 * Nicht im Item enthaltene Komponenten werden übersprungen.
+	 * Canonical order of components in the card footer row.
+	 * Components not present in the item are skipped.
 	 *
 	 * @var array<int,string>
 	 */
@@ -42,65 +42,65 @@ class TTT_Renderer {
 	);
 
 	/**
-	 * Zählt Shortcode-Aufrufe pro Page-Render. Wird Teil der tracker_id und
-	 * sorgt damit für stabile localStorage-Keys über Reloads hinweg.
+	 * Counts shortcode invocations per page render. Becomes part of the
+	 * tracker_id, which ensures stable localStorage keys across reloads.
 	 *
 	 * @var int
 	 */
 	private static $instance_counter = 0;
 
 	/**
-	 * Cached Icon-Mapping pro Render-Cycle.
+	 * Cached icon mapping per render cycle.
 	 *
-	 * Wird in render_payload() aus payload['component_icons'] gefüllt (falls
-	 * vorhanden) und in render_component_icon() ausgelesen. So müssen wir den
-	 * Filter `ttt_component_icons` nicht pro Icon-Render erneut anwenden.
+	 * Populated in render_payload() from payload['component_icons'] (if
+	 * available) and read in render_component_icon(). This way we do not need
+	 * to reapply the `ttt_component_icons` filter on every icon render.
 	 *
 	 * @var array<string,string>|null
 	 */
 	private $icon_map = null;
 
 	/**
-	 * Konstruktor: Shortcode registrieren.
+	 * Constructor: register the shortcode.
 	 *
-	 * Das gesamte CSS wird seit 0.3.2 ausschließlich inline mit dem Shortcode-
-	 * Output ausgegeben (siehe `render_inline_styles`). Damit gibt es nur noch
-	 * eine CSS-Quelle, keine Doppelpflege mit einer externen `style.css`.
+	 * Since 0.3.2, all CSS is emitted exclusively inline with the shortcode
+	 * output (see `render_inline_styles`). This leaves a single CSS source,
+	 * with no duplicate maintenance against an external `style.css`.
 	 */
 	public function __construct() {
 		add_shortcode( 'translation_tracker', array( $this, 'render_shortcode' ) );
 	}
 
 	/**
-	 * Shortcode-Handler. Liefert das fertige HTML.
+	 * Shortcode handler. Returns the finished HTML.
 	 *
-	 * Akzeptiert Attribute zum Filtern:
-	 *   pathway       — Slug einer Pathway (z. B. "user", "lesson-plans"). Nur diese wird angezeigt.
-	 *                   Mehrere durch Komma trennen.
-	 *   show_orphans  — "no"/"false" blendet die Orphan-Gruppe aus.
-	 *   show_handbook — "no"/"false" blendet die Handbook-Gruppe aus.
-	 *   show_stats    — "no"/"false" blendet den Stats-Header aus.
+	 * Accepts attributes for filtering:
+	 *   pathway       - slug of a pathway (e.g. "user", "lesson-plans"). Only this one is shown.
+	 *                   Separate multiple values with commas.
+	 *   show_orphans  - "no"/"false" hides the orphan group.
+	 *   show_handbook - "no"/"false" hides the handbook group.
+	 *   show_stats    - "no"/"false" hides the stats header.
 	 *
-	 * Beispiele:
+	 * Examples:
 	 *   [translation_tracker]
 	 *   [translation_tracker pathway="user"]
 	 *   [translation_tracker pathway="lesson-plans" show_stats="no"]
 	 *
-	 * @param array $atts Shortcode-Attribute.
+	 * @param array $atts Shortcode attributes.
 	 * @return string
 	 */
 	public function render_shortcode( $atts = array() ) {
-		// CSS wird komplett inline mit dem Shortcode-Output ausgegeben
-		// (render_inline_styles), kein separates wp_enqueue_style mehr.
-		// Begründung: Page-Builder / Cache-Plugins laden externe Stylesheets
-		// unzuverlässig, und seit 0.3.2 ist der Inline-Block die einzige
-		// CSS-Quelle (Single Source of Truth).
+		// CSS is emitted entirely inline with the shortcode output
+		// (render_inline_styles); no separate wp_enqueue_style anymore.
+		// Rationale: page builders and cache plugins load external stylesheets
+		// unreliably, and since 0.3.2 the inline block is the only CSS source
+		// (single source of truth).
 
-		// Was der User explizit gesetzt hat — *bevor* shortcode_atts die Defaults
-		// einsetzt. Wird unten verwendet, um zu entscheiden, ob `show_orphans`
-		// und `show_handbook` als "Default-yes" oder als "explizit-yes" zu lesen
-		// sind. So können wir bei `pathway="user"` automatisch auch orphan/handbook
-		// ausblenden, ohne dass der User das explizit angeben muss.
+		// What the user set explicitly, *before* shortcode_atts applies the
+		// defaults. Used below to decide whether `show_orphans` and
+		// `show_handbook` should be read as "default-yes" or as
+		// "explicitly-yes". This lets us also hide orphan/handbook automatically
+		// when `pathway="user"` is set, without the user having to specify it.
 		$explicit_atts = is_array( $atts ) ? $atts : array();
 
 		$atts = shortcode_atts(
@@ -114,7 +114,7 @@ class TTT_Renderer {
 			$atts,
 			'translation_tracker'
 		);
-		// Marker mitgeben, damit `render_payload` weiß, was explizit gesetzt war.
+		// Pass along a marker so `render_payload` knows what was set explicitly.
 		$atts['_explicit'] = $explicit_atts;
 
 		$result  = TTT_Fetcher::get();
@@ -134,16 +134,16 @@ class TTT_Renderer {
 	}
 
 	/**
-	 * Gibt einen `<script src="…">`-Tag aus, der tracker.js lädt.
+	 * Emits a `<script src="…">` tag that loads tracker.js.
 	 *
-	 * Hintergrund: Inline-`<script>`-Blocks werden in manchen Themes/Page-
-	 * Buildern durch wpautop oder ähnliche Content-Filter zerstört (Newlines
-	 * werden zu <br>, das JS hat dann Syntaxfehler). Ein `<script src>`-Tag
-	 * ist EINE Zeile, wpautop lässt ihn in Ruhe, und der Browser lädt die
-	 * Datei ganz normal über den Plugin-URL.
+	 * Background: inline `<script>` blocks get destroyed by wpautop or similar
+	 * content filters in some themes/page builders (newlines become <br>, which
+	 * gives the JS syntax errors). A `<script src>` tag is ONE line, wpautop
+	 * leaves it alone, and the browser loads the file normally via the plugin
+	 * URL.
 	 *
-	 * Ein statischer Marker verhindert mehrfache Ausgabe, falls der Shortcode
-	 * auf einer Seite mehrmals vorkommt.
+	 * A static marker prevents multiple output if the shortcode appears
+	 * multiple times on a page.
 	 *
 	 * @return void
 	 */
@@ -154,11 +154,12 @@ class TTT_Renderer {
 		}
 		$already_printed = true;
 
-		// i18n-Daten ans Frontend: alle vom JS angezeigten Strings als globales
-		// Objekt window.tttI18n. Muss VOR dem tracker.js-Script-Tag stehen,
-		// damit das JS die Werte beim DOMContentLoaded schon lesen kann.
-		// Konzeptionell wie wp_localize_script(), aber ohne wp_enqueue_script()
-		// (siehe untern Kommentar zum <script src>-Tag).
+		// i18n data for the frontend: all strings displayed by the JS, as a
+		// global object window.tttI18n. Must come BEFORE the tracker.js script
+		// tag so the JS can already read the values on DOMContentLoaded.
+		// Conceptually like wp_localize_script(), but without
+		// wp_enqueue_script() (see the comment below about the <script src>
+		// tag).
 		// JSON_HEX_TAG escapes < > as < >, so the JSON is safe to
 		// embed inside a <script> tag (no risk of `</script>` injection).
 		// Plugin-Check still flags the variable, so the inline phpcs:ignore
@@ -169,22 +170,23 @@ class TTT_Renderer {
 		// phpcs:enable WordPress.WP.EnqueuedResources.NonEnqueuedScript
 
 		$src = TTT_PLUGIN_URL . 'assets/tracker.js?ver=' . rawurlencode( TTT_VERSION );
-		// Bewusste Abweichung von wp_enqueue_script():
-		// Der Standard-Weg über `wp_enqueue_scripts`-Hook + has_shortcode()-Check
-		// funktioniert in Page-Buildern (Elementor, Divi, etc.) nicht zuverlässig,
-		// weil der Shortcode dort nicht in $post->post_content sitzt, sondern in
-		// Builder-spezifischen Meta-Feldern. has_shortcode() liefert false, das
-		// Script wird nie enqueued, der Tracker bleibt funktionslos.
-		// Direkter <script src>-Tag im Shortcode-Output umgeht das Problem.
+		// Intentional deviation from wp_enqueue_script():
+		// The standard route via the `wp_enqueue_scripts` hook plus a
+		// has_shortcode() check does not work reliably in page builders
+		// (Elementor, Divi, etc.) because the shortcode is not stored in
+		// $post->post_content there but in builder-specific meta fields.
+		// has_shortcode() returns false, the script is never enqueued, and the
+		// tracker stays non-functional.
+		// A direct <script src> tag in the shortcode output avoids the problem.
 		echo '<script src="' . esc_url( $src ) . '" defer></script>'; // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
 	}
 
 	/**
-	 * Liefert alle vom Frontend-JS benötigten i18n-Strings als Array.
+	 * Returns all i18n strings required by the frontend JS as an array.
 	 *
-	 * Wird als window.tttI18n ans JS übergeben. Statt im JS einzelne
-	 * Hardcoded-Strings stehen zu haben, leitet das JS alle anzeigbaren
-	 * Strings hier durch — damit sind sie via .po/.mo übersetzbar.
+	 * Passed to the JS as window.tttI18n. Instead of having individual
+	 * hardcoded strings in the JS, the JS routes all displayable strings
+	 * through here, so they are translatable via .po/.mo.
 	 *
 	 * @return array
 	 */
@@ -216,39 +218,39 @@ class TTT_Renderer {
 	}
 
 	/**
-	 * Gibt die kritischen Layout-Styles als Inline-`<style>`-Block aus.
+	 * Emits the critical layout styles as an inline `<style>` block.
 	 *
-	 * Hintergrund: Externe CSS-Dateien laden nicht zuverlässig, wenn der
-	 * Shortcode aus einem Page-Builder, Custom-Block oder caching-Plugin
-	 * gerendert wird. Inline-Styles im Output umgehen das komplett.
+	 * Background: external CSS files do not load reliably when the shortcode
+	 * is rendered from a page builder, custom block, or caching plugin.
+	 * Inline styles in the output avoid that entirely.
 	 *
-	 * Single Source of Truth: Seit 0.3.2 enthält dieser Block das vollständige
-	 * Frontend-CSS, es gibt keine externe assets/style.css mehr.
+	 * Single source of truth: since 0.3.2 this block contains the complete
+	 * frontend CSS; there is no longer an external assets/style.css.
 	 *
 	 * @return void
 	 */
 	private function render_inline_styles() {
-		// Bewusste Abweichung von wp_enqueue_style(): Page-Builder, Cache-Plugins
-		// und manche Theme-Setups laden externe Stylesheets nicht zuverlässig,
-		// wenn der Shortcode aus einem Builder-Meta-Feld kommt statt aus
-		// $post->post_content. Ein Inline-<style>-Tag im Shortcode-Output
-		// umgeht das komplett, selbe Begründung wie beim <script src>-Tag
-		// in render_inline_script().
+		// Intentional deviation from wp_enqueue_style(): page builders, cache
+		// plugins, and some theme setups do not load external stylesheets
+		// reliably when the shortcode comes from a builder meta field rather
+		// than $post->post_content. An inline <style> tag in the shortcode
+		// output avoids this completely; same rationale as for the <script src>
+		// tag in render_inline_script().
 		// phpcs:disable WordPress.WP.EnqueuedResources.NonEnqueuedStylesheet
 		?>
 <style id="ttt-inline-critical">
-/* Training Translation Tracker, Inline Styles (<?php echo esc_html( TTT_VERSION ); ?>)
+/* Training Translation Tracker, inline styles (<?php echo esc_html( TTT_VERSION ); ?>)
  *
- * Single Source of Truth fürs Frontend-CSS. Pflege passiert hier, nirgends
- * sonst. Tokens (--ttt-*) sind oben definiert, Pflege erfolgt über die
- * Token-Werte, nicht über zig verstreute Regeln.
+ * Single source of truth for the frontend CSS. Maintenance happens here,
+ * nowhere else. Tokens (--ttt-*) are defined at the top; updates are made
+ * via the token values, not via dozens of scattered rules.
  *
- * Brand-Farben fallen auf theme.json-Variablen zurück, Status-Farben sind
- * bewusst fix (Semantik).
+ * Brand colors fall back to theme.json variables; status colors are
+ * intentionally fixed (semantics).
  */
 
 .ttt-tracker {
-	/* --- Brand-Farben (vom Theme überschreibbar) --- */
+	/* --- Brand colors (overridable by the theme) --- */
 	--ttt-color-primary: var(--wp--preset--color--primary, #2271b1);
 	--ttt-color-primary-soft-bg: rgba(34,113,177,0.18);
 	--ttt-color-primary-ring: rgba(34,113,177,0.25);
@@ -262,7 +264,7 @@ class TTT_Renderer {
 	--ttt-color-border-subtle: #e9ecef;
 	--ttt-color-border-input: #d0d4d9;
 	--ttt-color-surface-subtle: #f1f3f5;
-	/* --- Status-Semantik (Plugin-fix) --- */
+	/* --- Status semantics (plugin-fixed) --- */
 	--ttt-color-done-fg:   #155724;
 	--ttt-color-done-bg:   #d4edda;
 	--ttt-color-done:      #28a745;
@@ -282,11 +284,11 @@ class TTT_Renderer {
 	--ttt-color-na:        #ced4da;
 	--ttt-color-total-fg:  #fff;
 	--ttt-color-total-bg:  #343a40;
-	/* --- Marker --- */
+	/* --- Markers --- */
 	--ttt-color-marker-warn-fg: #c92a2a;
 	--ttt-color-marker-warn-bg: #ffe3e3;
 	--ttt-color-warn-strong: #d63638;
-	/* --- Project-Status-Pillen --- */
+	/* --- Project status pills --- */
 	--ttt-color-ps-default-fg: #1c4f86;
 	--ttt-color-ps-default-bg: #e7f1fb;
 	--ttt-color-ps-triage-fg: #842029;
@@ -295,7 +297,7 @@ class TTT_Renderer {
 	--ttt-color-ps-looking-bg: #ffe8d1;
 	--ttt-color-ps-prep-fg: #0c5460;
 	--ttt-color-ps-prep-bg: #d1ecf1;
-	/* --- Spacing-Skala --- */
+	/* --- Spacing scale --- */
 	--ttt-space-xs:  0.25rem;
 	--ttt-space-sm:  0.4rem;
 	--ttt-space-md:  0.6rem;
@@ -303,7 +305,7 @@ class TTT_Renderer {
 	--ttt-space-xl:  1rem;
 	--ttt-space-2xl: 1.5rem;
 	--ttt-space-3xl: 2rem;
-	/* --- Typografie --- */
+	/* --- Typography --- */
 	--ttt-font-size-xs:   0.7rem;
 	--ttt-font-size-sm:   0.85rem;
 	--ttt-font-size-base: 0.95rem;
@@ -311,7 +313,7 @@ class TTT_Renderer {
 	--ttt-font-size-lg:   1.2rem;
 	--ttt-font-size-xl:   1.4rem;
 	--ttt-line-height: 1.5;
-	/* --- Borders & Radien --- */
+	/* --- Borders and radii --- */
 	--ttt-border-width: 1px;
 	--ttt-radius-md: 6px;
 	--ttt-radius-lg: 8px;
@@ -347,7 +349,7 @@ class TTT_Renderer {
 .ttt-tracker .ttt-project-status-select { padding: var(--ttt-space-sm) var(--ttt-space-md); border: var(--ttt-border-width) solid var(--ttt-color-border-input); background: var(--ttt-color-bg); color: var(--ttt-color-open-fg); border-radius: var(--ttt-radius-md); font-size: var(--ttt-font-size-sm); cursor: pointer; font-family: inherit; line-height: 1.3; flex-shrink: 0; max-width: 200px; }
 .ttt-tracker .ttt-project-status-select:focus { outline: none; border-color: var(--ttt-color-primary); box-shadow: var(--ttt-shadow-focus); }
 .ttt-tracker .ttt-project-status { display: inline-block; padding: 0.05rem 0.5rem; border-radius: var(--ttt-radius-pill); font-size: var(--ttt-font-size-xs); font-weight: 600; background: var(--ttt-color-ps-default-bg); color: var(--ttt-color-ps-default-fg); white-space: nowrap; }
-/* Farbvarianten pro Status-Slug. Bei unbekannten Werten greift der Default oben. */
+/* Color variants per status slug. For unknown values the default above applies. */
 .ttt-tracker .ttt-project-status-awaiting-triage         { background: var(--ttt-color-ps-triage-bg);  color: var(--ttt-color-ps-triage-fg); }
 .ttt-tracker .ttt-project-status-looking-for-translator  { background: var(--ttt-color-ps-looking-bg); color: var(--ttt-color-ps-looking-fg); }
 .ttt-tracker .ttt-project-status-translation-in-progress { background: var(--ttt-color-wip-bg);       color: var(--ttt-color-wip-fg); }
@@ -361,8 +363,8 @@ class TTT_Renderer {
 .ttt-tracker .ttt-no-results { padding: var(--ttt-space-2xl); text-align: center; color: var(--ttt-color-text-muted); font-style: italic; }
 .ttt-tracker .ttt-cards { display: flex !important; flex-direction: column; gap: var(--ttt-space-md); }
 .ttt-tracker .ttt-card { background: var(--ttt-color-bg) !important; border: var(--ttt-border-width) solid var(--ttt-color-border) !important; border-left: var(--ttt-card-border-width) solid var(--ttt-color-text-faint) !important; border-radius: var(--ttt-radius-md); padding: var(--ttt-space-lg) 0.9rem var(--ttt-space-md); display: block; margin-bottom: var(--ttt-space-md); }
-/* Hide-Regeln mit erhöhter Specificity ([attr]-Selektor schlägt .class) — gewinnt
-   gegen .ttt-card { display: block }, damit JS-gesetzte [hidden]-Attribute greifen. */
+/* Hide rules with elevated specificity ([attr] selector beats .class); wins
+   against .ttt-card { display: block } so that JS-set [hidden] attributes apply. */
 .ttt-tracker .ttt-card[hidden] { display: none !important; }
 .ttt-tracker .ttt-section[hidden] { display: none !important; }
 .ttt-tracker .ttt-course[hidden] { display: none !important; }
@@ -394,8 +396,8 @@ class TTT_Renderer {
 .ttt-tracker .ttt-card-footer-right .ttt-comp-icon.ttt-comp-wip    { color: var(--ttt-color-wip); }
 .ttt-tracker .ttt-card-footer-right .ttt-comp-icon.ttt-comp-open   { color: var(--ttt-color-open); opacity: 0.65; }
 .ttt-tracker .ttt-card-footer-right .ttt-comp-icon.ttt-comp-na     { color: var(--ttt-color-na); opacity: 0.45; }
-/* Komponenten-Popover (vom JS dynamisch positioniert). Liegt immer auf einer
-   höheren Stacking-Ebene als die Karten. */
+/* Component popover (positioned dynamically by the JS). Always on a higher
+   stacking layer than the cards. */
 .ttt-tracker .ttt-comp-popover { position: absolute !important; z-index: 9999; background: var(--ttt-color-bg) !important; border: var(--ttt-border-width) solid var(--ttt-color-border-input); border-radius: var(--ttt-radius-lg); box-shadow: var(--ttt-shadow-popover); padding: var(--ttt-space-md) var(--ttt-space-lg); min-width: 200px; max-width: 280px; font-size: var(--ttt-font-size-sm); color: var(--ttt-color-text) !important; line-height: 1.4; }
 .ttt-tracker .ttt-comp-popover[hidden] { display: none !important; }
 .ttt-tracker .ttt-comp-popover-header { font-weight: 700; font-size: var(--ttt-font-size-base); text-transform: capitalize; margin: 0 0 var(--ttt-space-xs); padding-bottom: var(--ttt-space-xs); border-bottom: var(--ttt-border-width) solid var(--ttt-color-border-subtle); }
@@ -447,15 +449,14 @@ class TTT_Renderer {
 	}
 
 	/**
-	 * Rechnet die Item-Stats aus einer beliebigen Gruppen-Liste neu.
+	 * Recomputes the item stats from an arbitrary group list.
 	 *
-	 * Zählt pro overall_status (done/review/wip/open/na) plus das Gesamttotal.
-	 * Wird vor dem Rendern aufgerufen mit den per Shortcode-Attribute
-	 * gefilterten Gruppen — die Pillen oben spiegeln also die tatsächlich
-	 * angezeigte Menge.
+	 * Counts per overall_status (done/review/wip/open/na) plus the total.
+	 * Called before rendering with the groups filtered by shortcode
+	 * attributes, so the pills at the top reflect the actually visible set.
 	 *
-	 * @param array $groups Gefilterte Gruppen-Liste.
-	 * @return array Stats-Dict (total_items, done, review, wip, open, na).
+	 * @param array $groups Filtered group list.
+	 * @return array Stats dict (total_items, done, review, wip, open, na).
 	 */
 	private function calculate_stats_from_groups( $groups ) {
 		$stats = array(
@@ -503,9 +504,9 @@ class TTT_Renderer {
 	}
 
 	/**
-	 * Hilfsmethode: parst "yes"/"no"/"true"/"false"/"1"/"0" zu bool.
+	 * Helper: parses "yes"/"no"/"true"/"false"/"1"/"0" to bool.
 	 *
-	 * @param string $value Eingabe.
+	 * @param string $value Input.
 	 * @param bool   $default Fallback.
 	 * @return bool
 	 */
@@ -521,9 +522,9 @@ class TTT_Renderer {
 	}
 
 	/**
-	 * Fallback-Output, wenn (noch) keine Daten vorhanden sind.
+	 * Fallback output when (no) data is yet available.
 	 *
-	 * @param string $error Optionale interne Fehlermeldung.
+	 * @param string $error Optional internal error message.
 	 * @return string
 	 */
 	private function render_empty( $error ) {
@@ -553,21 +554,21 @@ class TTT_Renderer {
 	}
 
 	/**
-	 * Rendert den eigentlichen Tracker.
+	 * Renders the actual tracker.
 	 *
-	 * @param array $payload tracker.json-Inhalt.
-	 * @param array $result  Result-Dict vom Fetcher (für Header-Info).
-	 * @param array $atts    Shortcode-Attribute (für Filter).
+	 * @param array $payload tracker.json content.
+	 * @param array $result  Result dict from the fetcher (for header info).
+	 * @param array $atts    Shortcode attributes (for filters).
 	 * @return void
 	 */
 	private function render_payload( $payload, $result, $atts ) {
 		$generated = isset( $payload['generated_at'] ) ? (string) $payload['generated_at'] : '';
 		$groups    = isset( $payload['groups'] ) && is_array( $payload['groups'] ) ? $payload['groups'] : array();
 
-		// Icon-Mapping pro Render-Cycle vorberechnen.
-		// Priorität (von niedrig nach hoch): COMPONENT_ICONS (PHP-Fallback)
-		// < payload['component_icons'] (aus tracker.json) < Filter-Hook
-		// `ttt_component_icons` (finaler Override durch Theme oder Plugin).
+		// Precompute the icon mapping per render cycle.
+		// Priority (from low to high): COMPONENT_ICONS (PHP fallback)
+		// < payload['component_icons'] (from tracker.json) < filter hook
+		// `ttt_component_icons` (final override by theme or plugin).
 		$from_payload = isset( $payload['component_icons'] ) && is_array( $payload['component_icons'] )
 			? $payload['component_icons']
 			: array();
@@ -582,10 +583,10 @@ class TTT_Renderer {
 		$show_stats     = $this->bool_attr( $atts['show_stats'] ?? 'yes', true );
 		$show_pathways  = $this->bool_attr( $atts['show_pathways'] ?? 'yes', true );
 
-		// Smarte Defaults: Wenn der Shortcode ein pathway-Attribut hat, wollen
-		// 99% der User *nur* diesen Pathway sehen — also Orphan und Handbook
-		// per Default ausblenden. Wer sie trotzdem braucht, schreibt explizit
-		// show_orphans="yes"/show_handbook="yes".
+		// Smart defaults: when the shortcode has a pathway attribute, 99% of
+		// users want to see *only* that pathway, so hide orphan and handbook
+		// by default. Anyone who still needs them writes
+		// show_orphans="yes"/show_handbook="yes" explicitly.
 		$default_show_orphans  = $has_pathway ? false : true;
 		$default_show_handbook = $has_pathway ? false : true;
 		$show_orphans  = isset( $explicit['show_orphans'] )
@@ -595,20 +596,20 @@ class TTT_Renderer {
 			? $this->bool_attr( $atts['show_handbook'], $default_show_handbook )
 			: $default_show_handbook;
 
-		// Stabile ID pro Tracker-Instanz auf einer Seite. Wichtig:
-		//   1. Eindeutig wenn mehrere Shortcodes auf derselben Seite stehen → Counter.
-		//   2. Stabil über Reloads, damit localStorage-State (Filter, Collapse)
-		//      erhalten bleibt → keine UUID, sondern Post-ID + Counter.
-		// Die statische Property zählt pro Page-Render hoch und resettet bei
-		// jedem neuen WordPress-Request — bei stabiler Shortcode-Position auf
-		// der Seite ergibt sich derselbe Counter beim Reload.
+		// Stable ID per tracker instance on a page. Important:
+		//   1. Unique when several shortcodes appear on the same page -> counter.
+		//   2. Stable across reloads so localStorage state (filter, collapse)
+		//      is preserved -> not a UUID, but post ID + counter.
+		// The static property increments per page render and resets on every
+		// new WordPress request; with a stable shortcode position on the page,
+		// the same counter results on reload.
 		self::$instance_counter++;
 		$post_id    = (int) ( get_the_ID() ?: 0 );
 		$tracker_id = 'ttt-post' . $post_id . '-' . self::$instance_counter;
 
-		// Erst die per Shortcode-Attribute gefilterte Gruppen-Liste bestimmen,
-		// dann Stats AUS DIESER LISTE berechnen. So zeigt die Pillen-Reihe
-		// die tatsächlich angezeigten Item-Zahlen, nicht den Gesamt-Wert aus
+		// First determine the group list filtered by shortcode attributes,
+		// then compute the stats FROM THAT LIST. This makes the pill row show
+		// the actually displayed item counts, not the overall value from
 		// payload.stats.
 		$visible_groups = array();
 		foreach ( $groups as $group ) {
@@ -618,8 +619,8 @@ class TTT_Renderer {
 		}
 		$stats = $this->calculate_stats_from_groups( $visible_groups );
 
-		// Distinkte Project-Status-Werte aus den sichtbaren Items sammeln,
-		// damit das Dropdown nur Optionen zeigt, die wirklich vorkommen.
+		// Collect distinct project status values from the visible items so the
+		// dropdown only shows options that actually occur.
 		$project_status_values = $this->collect_project_statuses( $visible_groups );
 
 		?>
@@ -630,10 +631,10 @@ class TTT_Renderer {
 				<?php endif; ?>
 				<?php $this->render_filter_bar( $project_status_values ); ?>
 				<?php
-				// "Stand: …" erscheint nicht im Frontend — Zeitstempel steht in der
-				// Settings-Seite (Einstellungen → Translation Tracker). Last-Good-
-				// Fallback-Hinweis sehen Admins weiterhin im Tracker, damit ein
-				// stiller API-Ausfall nicht unbemerkt bleibt.
+				// "As of: ..." does not appear on the frontend; the timestamp
+				// lives on the settings page (Settings > Translation Tracker).
+				// Admins still see the last-good fallback notice in the tracker
+				// so a silent API failure does not go unnoticed.
 				if ( 'last_good' === $result['source'] && current_user_can( 'manage_options' ) ) :
 					?>
 					<p class="ttt-generated">
@@ -654,9 +655,9 @@ class TTT_Renderer {
 	}
 
 	/**
-	 * Suchfeld unter den Stats. Status-Filter findet über die klickbaren
-	 * Stats-Pillen oben (data-filter-status auf .ttt-stat) statt — kein
-	 * doppelter Button-Row mehr.
+	 * Search field below the stats. Status filtering happens via the clickable
+	 * stats pills above (data-filter-status on .ttt-stat); no duplicate button
+	 * row anymore.
 	 *
 	 * @return void
 	 */
@@ -691,11 +692,11 @@ class TTT_Renderer {
 	}
 
 	/**
-	 * Sammelt alle distinkten Project-Status-Werte aus den sichtbaren Gruppen.
-	 * Liefert ein Slug → Label Map (Slug für robustes Filter-Matching, Label
-	 * fürs UI). Sortiert alphabetisch nach Label.
+	 * Collects all distinct project status values from the visible groups.
+	 * Returns a slug-to-label map (slug for robust filter matching, label for
+	 * the UI). Sorted alphabetically by label.
 	 *
-	 * @param array $groups Gefilterte Gruppen-Liste.
+	 * @param array $groups Filtered group list.
 	 * @return array<string,string>
 	 */
 	private function collect_project_statuses( $groups ) {
@@ -740,11 +741,11 @@ class TTT_Renderer {
 	}
 
 	/**
-	 * Parst das pathway-Attribut zu einem Set von erlaubten Slugs.
-	 * Leerer String oder "all" => alle Pathways.
+	 * Parses the pathway attribute into a set of allowed slugs.
+	 * Empty string or "all" => all pathways.
 	 *
-	 * @param string $value Komma-getrennte Slugs oder leer.
-	 * @return array|null Array von Slugs oder null wenn unrestricted.
+	 * @param string $value Comma-separated slugs or empty.
+	 * @return array|null Array of slugs, or null when unrestricted.
 	 */
 	private function parse_pathway_filter( $value ) {
 		$value = trim( (string) $value );
@@ -762,12 +763,12 @@ class TTT_Renderer {
 	}
 
 	/**
-	 * Entscheidet, ob eine Gruppe entsprechend der Shortcode-Filter angezeigt wird.
+	 * Decides whether a group is displayed according to the shortcode filters.
 	 *
-	 * @param array      $group           Gruppe.
-	 * @param array|null $pathway_filter  Erlaubte Pathway-Slugs oder null.
-	 * @param bool       $show_orphans    Orphan-Gruppe anzeigen?
-	 * @param bool       $show_handbook   Handbook-Gruppe anzeigen?
+	 * @param array      $group           Group.
+	 * @param array|null $pathway_filter  Allowed pathway slugs, or null.
+	 * @param bool       $show_orphans    Show the orphan group?
+	 * @param bool       $show_handbook   Show the handbook group?
 	 * @return bool
 	 */
 	private function group_passes_filter( $group, $pathway_filter, $show_orphans, $show_handbook, $show_pathways = true ) {
@@ -780,18 +781,20 @@ class TTT_Renderer {
 			return $show_handbook;
 		}
 		if ( 'pathway' === $type ) {
-			// show_pathways="no" blendet *alle* Pathways aus — unabhängig vom
-			// pathway-Attribut. Praktisch für `[translation_tracker
-			// show_pathways="no" show_orphans="no"]` → nur Handbook.
+			// show_pathways="no" hides *all* pathways, independent of the
+			// pathway attribute. Useful for `[translation_tracker
+			// show_pathways="no" show_orphans="no"]`, which leaves only the
+			// handbook.
 			if ( ! $show_pathways ) {
 				return false;
 			}
 			if ( null === $pathway_filter ) {
 				return true;
 			}
-			// Mehrere Match-Strategien: roher Slug, Label-zu-Slug und Lowercase-
-			// Slug. Damit funktioniert sowohl pathway="user" als auch
-			// pathway="beginner-wordpress-user" oder pathway="Beginner WordPress User".
+			// Multiple match strategies: raw slug, label-to-slug, and lowercase
+			// slug. That way pathway="user" works just as well as
+			// pathway="beginner-wordpress-user" or
+			// pathway="Beginner WordPress User".
 			$slug       = strtolower( (string) ( $group['slug'] ?? '' ) );
 			$label_slug = sanitize_title( (string) ( $group['label'] ?? '' ) );
 			$filter_lc  = array_map( 'strtolower', $pathway_filter );
@@ -802,9 +805,9 @@ class TTT_Renderer {
 	}
 
 	/**
-	 * Stats-Header (X items · Y done · Z review · …).
+	 * Stats header (X items, Y done, Z review, ...).
 	 *
-	 * @param array $stats Stats-Dict.
+	 * @param array $stats Stats dict.
 	 * @return void
 	 */
 	private function render_stats( $stats ) {
@@ -846,9 +849,9 @@ class TTT_Renderer {
 	}
 
 	/**
-	 * Rendert eine Top-Level-Gruppe (pathway / handbook / orphan).
+	 * Renders a top-level group (pathway / handbook / orphan).
 	 *
-	 * @param array $group Gruppe.
+	 * @param array $group Group.
 	 * @return void
 	 */
 	private function render_group( $group ) {
@@ -858,28 +861,29 @@ class TTT_Renderer {
 		$key   = $type . '-' . $slug;
 
 		echo '<section class="ttt-group ttt-group-' . esc_attr( $type ) . '" data-group-key="' . esc_attr( $key ) . '">';
-		// Group-Titel ist ein fester Anker, nicht klickbar — Einklappen passiert
-		// nur auf Section-Ebene. So bleiben die Hauptüberschriften (Beginner
-		// WordPress User, Lesson Plans, Training Handbook, Sonstige) immer
-		// als visuelles Inhaltsverzeichnis sichtbar.
+		// The group title is a fixed anchor, not clickable; collapsing happens
+		// only at the section level. This keeps the main headings (Beginner
+		// WordPress User, Lesson Plans, Training Handbook, Other) always
+		// visible as a visual table of contents.
 		echo '<h2 class="ttt-group-title">' . esc_html( $label ) . '</h2>';
 		echo '<div class="ttt-group-body">';
 
 		if ( 'pathway' === $type ) {
 			foreach ( (array) ( $group['courses'] ?? array() ) as $course ) {
-				// Group-Label als Parent mitgeben — wenn Course-Label gleich
-				// ist, blendet render_course den h3 aus (redundant).
+				// Pass the group label as parent; if the course label is the
+				// same, render_course hides the h3 (redundant).
 				$this->render_course( $course, $key, $label );
 			}
 		} elseif ( 'handbook' === $type ) {
 			foreach ( (array) ( $group['sections'] ?? array() ) as $section ) {
-				// Group-Label als Parent — wenn Section-Label gleich ist,
-				// blendet render_section den h4 aus.
+				// Group label as parent; if the section label is the same,
+				// render_section hides the h4.
 				$this->render_section( $section, $key, $label );
 			}
 		} elseif ( 'orphan' === $type ) {
-			// Pseudo-Section um die Items, damit sie über die Section-Collapse-
-			// Mechanik klappbar werden (analog zu Lesson Plans und Handbook).
+			// Pseudo-section wrapping the items so they become collapsible via
+			// the section collapse mechanism (analogous to Lesson Plans and
+			// Handbook).
 			$fake_section = array(
 				'slug'  => 'all',
 				'label' => $label,
@@ -893,7 +897,7 @@ class TTT_Renderer {
 	}
 
 	/**
-	 * Rendert einen Course-Block (innerhalb eines Pathway).
+	 * Renders a course block (within a pathway).
 	 *
 	 * @param array $course Course.
 	 * @return void
@@ -903,17 +907,18 @@ class TTT_Renderer {
 		$slug  = (string) ( $course['slug'] ?? sanitize_title( $label ) );
 		$key   = trim( $parent_key . '-' . $slug, '-' );
 
-		// Wenn das Course-Label identisch zum Group-Label ist, ist der Course-
-		// Titel redundant (kommt bei „Lesson Plans" vor, wo Pathway → Course →
-		// Section alle denselben Namen tragen). Dann den h3 weglassen.
+		// If the course label is identical to the group label, the course
+		// title is redundant (this occurs for "Lesson Plans", where pathway,
+		// course, and section all share the same name). In that case, omit
+		// the h3.
 		$is_redundant = ( '' !== $parent_group_label && $label === $parent_group_label );
 
 		echo '<div class="ttt-course" data-course-key="' . esc_attr( $key ) . '">';
 		if ( $label && ! $is_redundant ) {
 			echo '<h3 class="ttt-course-title">' . esc_html( $label ) . '</h3>';
 		}
-		// Effektives Parent-Label für die Section: bei redundantem Course
-		// vergleicht die Section direkt mit dem Group-Label.
+		// Effective parent label for the section: when the course is
+		// redundant, the section compares directly against the group label.
 		$effective_parent = $is_redundant ? $parent_group_label : $label;
 		foreach ( (array) ( $course['sections'] ?? array() ) as $section ) {
 			$this->render_section( $section, $key, $effective_parent );
@@ -922,7 +927,7 @@ class TTT_Renderer {
 	}
 
 	/**
-	 * Rendert eine Section (Module-Ebene).
+	 * Renders a section (module level).
 	 *
 	 * @param array $section Section.
 	 * @return void
@@ -932,16 +937,16 @@ class TTT_Renderer {
 		$slug  = (string) ( $section['slug'] ?? sanitize_title( $label ) );
 		$key   = trim( $parent_key . '-' . $slug, '-' );
 
-		// Section-Header wird immer angezeigt (sofern Label nicht leer), auch
-		// wenn er das Group-Label wiederholt. Grund: er ist der einzige
-		// klickbare Toggle für Collapse — ohne ihn wäre die Section nicht ein-
-		// klappbar. Die Course-Ebene unterdrücken wir weiterhin bei Redundanz
-		// (siehe render_course), damit nicht drei Stufen denselben Namen tragen.
+		// The section header is always shown (as long as the label is not
+		// empty), even if it repeats the group label. Reason: it is the only
+		// clickable toggle for collapse; without it, the section could not be
+		// collapsed. We still suppress the course level on redundancy (see
+		// render_course) so that three levels do not all carry the same name.
 		echo '<div class="ttt-section" data-section-key="' . esc_attr( $key ) . '">';
 		if ( $label ) {
-			// Section-Header: Heading-Hierarchie via <h4> + echtes <button>
-			// als Toggle-Element. aria-expanded reflektiert den Collapse-Zustand
-			// und wird vom JS gepflegt.
+			// Section header: heading hierarchy via <h4> plus a real <button>
+			// as the toggle element. aria-expanded reflects the collapse
+			// state and is maintained by the JS.
 			echo '<h4 class="ttt-section-heading">';
 			echo '<button type="button" class="ttt-section-title" aria-expanded="true">';
 			echo '<span class="ttt-section-toggle" aria-hidden="true">▾</span> ';
@@ -956,9 +961,9 @@ class TTT_Renderer {
 	}
 
 	/**
-	 * Rendert eine flache Liste von Items.
+	 * Renders a flat list of items.
 	 *
-	 * @param array $items Liste.
+	 * @param array $items List.
 	 * @return void
 	 */
 	private function render_item_list( $items ) {
@@ -975,7 +980,7 @@ class TTT_Renderer {
 	}
 
 	/**
-	 * Rendert ein einzelnes Item.
+	 * Renders a single item.
 	 *
 	 * @param array $item Item.
 	 * @return void
@@ -994,7 +999,7 @@ class TTT_Renderer {
 		$issue          = isset( $item['issue'] ) && is_array( $item['issue'] ) ? $item['issue'] : null;
 		$markers        = $this->collect_markers( $item );
 
-		// Komponenten-Lookup nach Name, damit wir sie in kanonischer Reihenfolge ausgeben.
+		// Component lookup by name so we can emit them in canonical order.
 		$components_by_name = array();
 		foreach ( $components as $comp ) {
 			$name = (string) ( $comp['name'] ?? '' );
@@ -1003,23 +1008,23 @@ class TTT_Renderer {
 			}
 		}
 
-		// Übersetzungs-Titel: nicht hardcoden — wenn kein DE-Titel da ist, das EN als
-		// Platzhalter verwenden, in gedeckter Farbe. Die Karte zeigt dann sofort an,
-		// wo eine Übersetzung noch fehlt.
+		// Translation title: do not hardcode; if there is no DE title, use the
+		// EN one as a placeholder in a muted color. The card then immediately
+		// shows where a translation is still missing.
 		$translation_text = $title_de ?: $title;
 		$translation_is_placeholder = ! $title_de;
 
-		// data-search: ein einziger lowercase-String mit allem, was wir durchsuchen.
-		// Reduziert das JS auf ein simples `dataset.search.includes(query)`.
+		// data-search: a single lowercase string with everything we search.
+		// Reduces the JS to a simple `dataset.search.includes(query)`.
 		$issue_number   = $issue && isset( $issue['number'] ) ? '#' . (int) $issue['number'] : '';
 		$project_status = $issue ? (string) ( $issue['project_status'] ?? '' ) : '';
 		$search_haystack = strtolower( trim(
 			$title . ' ' . $title_de . ' ' . $issue_number . ' ' . $project_status
 		) );
 
-		// data-project-status: für den Dropdown-Filter im Header.
-		// Der Slug (sanitize_title) macht das Matching robust gegen Großbuchstaben
-		// und Sonderzeichen.
+		// data-project-status: for the dropdown filter in the header.
+		// The slug (sanitize_title) makes matching robust against uppercase
+		// letters and special characters.
 		$project_status_slug = $project_status !== '' ? sanitize_title( $project_status ) : '';
 
 		echo '<article class="ttt-card ttt-overall-' . esc_attr( $overall )
@@ -1028,10 +1033,10 @@ class TTT_Renderer {
 			. '" data-project-status="' . esc_attr( $project_status_slug )
 			. '">';
 
-		// ------- Zwei Spalten: Original / Translation -------
+		// ------- Two columns: Original / Translation -------
 		echo '<div class="ttt-card-cols">';
 
-		// Original-Spalte
+		// Original column
 		echo '<div class="ttt-card-col ttt-card-col-en">';
 		echo '<div class="ttt-card-label">' . esc_html__( 'Original', 'training-translation-tracker' ) . '</div>';
 		echo '<div class="ttt-card-title">';
@@ -1044,7 +1049,7 @@ class TTT_Renderer {
 		$this->render_card_media_row( $url_wptv_en, $url_youtube_en );
 		echo '</div>';
 
-		// Translation-Spalte
+		// Translation column
 		echo '<div class="ttt-card-col ttt-card-col-de' . ( $translation_is_placeholder ? ' ttt-card-col-placeholder' : '' ) . '">';
 		echo '<div class="ttt-card-label">' . esc_html__( 'Translation', 'training-translation-tracker' ) . '</div>';
 		echo '<div class="ttt-card-title">';
@@ -1059,10 +1064,10 @@ class TTT_Renderer {
 
 		echo '</div>'; // .ttt-card-cols
 
-		// ------- Footer-Zeile: Issue + Marker links, Komponenten-Icons rechts -------
+		// ------- Footer row: issue and markers on the left, component icons on the right -------
 		echo '<div class="ttt-card-footer">';
 
-		// Linke Seite: Issue-Nummer + State + Project-Status + Marker
+		// Left side: issue number + state + project status + markers
 		echo '<div class="ttt-card-footer-left">';
 		if ( $issue && isset( $issue['url'], $issue['number'] ) ) {
 			echo '<a class="ttt-issue-number" href="' . esc_url( (string) $issue['url'] ) . '" target="_blank" rel="noopener noreferrer">';
@@ -1072,8 +1077,8 @@ class TTT_Renderer {
 			if ( $state ) {
 				echo ' <span class="ttt-issue-state ttt-issue-state-' . esc_attr( $state ) . '">' . esc_html( $state ) . '</span>';
 			}
-			// Project-V2-Status-Pill (z. B. "Translation in Progress"). Slug-Klasse
-			// für gezielte Farbe pro Status.
+			// Projects V2 status pill (e.g. "Translation in Progress"). Slug
+			// class used for targeted coloring per status.
 			$project_status = (string) ( $issue['project_status'] ?? '' );
 			if ( $project_status !== '' ) {
 				$ps_slug = sanitize_title( $project_status );
@@ -1086,7 +1091,7 @@ class TTT_Renderer {
 		}
 		echo '</div>';
 
-		// Rechte Seite: Komponenten-Icons in kanonischer Reihenfolge
+		// Right side: component icons in canonical order
 		echo '<div class="ttt-card-footer-right">';
 		foreach ( self::COMPONENT_ORDER as $comp_name ) {
 			if ( ! isset( $components_by_name[ $comp_name ] ) ) {
@@ -1102,10 +1107,10 @@ class TTT_Renderer {
 	}
 
 	/**
-	 * Rendert die kleine Medien-Zeile innerhalb einer Karten-Spalte (Original oder Translation).
+	 * Renders the small media row inside a card column (Original or Translation).
 	 *
-	 * @param string $wptv_url    WP.tv-Link oder leer.
-	 * @param string $youtube_url YouTube-Link oder leer.
+	 * @param string $wptv_url    WP.tv link or empty.
+	 * @param string $youtube_url YouTube link or empty.
 	 * @return void
 	 */
 	private function render_card_media_row( $wptv_url, $youtube_url ) {
@@ -1123,10 +1128,10 @@ class TTT_Renderer {
 	}
 
 	/**
-	 * Rendert ein einzelnes Komponenten-Icon (SVG) mit Status-Klasse und Tooltip.
+	 * Renders a single component icon (SVG) with a status class and tooltip.
 	 *
-	 * @param string $name Komponenten-Name (z.B. "text").
-	 * @param array  $comp Komponenten-Eintrag aus tracker.json.
+	 * @param string $name Component name (e.g. "text").
+	 * @param array  $comp Component entry from tracker.json.
 	 * @return void
 	 */
 	private function render_component_icon( $name, $comp ) {
@@ -1134,7 +1139,7 @@ class TTT_Renderer {
 		$creator  = (string) ( $comp['creator'] ?? '' );
 		$reviewer = (string) ( $comp['reviewer'] ?? '' );
 
-		// Fallback-Tooltip für No-JS-Browser und Screen-Reader.
+		// Fallback tooltip for no-JS browsers and screen readers.
 		$tooltip = $name . ' · ' . $status;
 		if ( $creator ) {
 			$tooltip .= ' · ' . __( 'Creator', 'training-translation-tracker' ) . ': ' . $creator;
@@ -1146,34 +1151,33 @@ class TTT_Renderer {
 		/**
 		 * Filter: ttt_component_icons.
 		 *
-		 * Erlaubt Themes und Companion-Plugins, die Icon-SVG-Path-Daten pro
-		 * Komponente zu überschreiben, ohne den Plugin-Code anzufassen.
+		 * Allows themes and companion plugins to override the icon SVG path
+		 * data per component without touching the plugin code.
 		 *
-		 * Beispiel im Theme:
+		 * Example in a theme:
 		 *
 		 *     add_filter( 'ttt_component_icons', function( $icons ) {
-		 *         $icons['text']  = 'M3 5h18v2H3V5...'; // eigener SVG-Pfad
+		 *         $icons['text']  = 'M3 5h18v2H3V5...'; // custom SVG path
 		 *         $icons['video'] = 'M8 5v14l11-7...';
 		 *         return $icons;
 		 *     } );
 		 *
-		 * Priorität: COMPONENT_ICONS (Fallback) wird durch das `component_icons`
-		 * aus der `tracker.json` überschrieben, das wiederum durch diesen
-		 * Filter überschrieben werden kann. Filter ist die letzte Instanz.
+		 * Priority: COMPONENT_ICONS (fallback) is overridden by the
+		 * `component_icons` value from `tracker.json`, which in turn can be
+		 * overridden by this filter. The filter is the final authority.
 		 *
-		 * Unbekannte Komponenten-Namen werden defensiv ignoriert; ungültige
-		 * SVG-Path-Daten erzeugen kein Render-Error, sondern nur eine leere
-		 * SVG-Form.
+		 * Unknown component names are defensively ignored; invalid SVG path
+		 * data does not produce a render error, only an empty SVG shape.
 		 *
 		 * @since 0.3.0
 		 *
-		 * @param array<string,string> $icons Map: Komponenten-Name → SVG-Pfad-d-Attribut.
+		 * @param array<string,string> $icons Map: component name to SVG path d attribute.
 		 */
 		if ( null !== $this->icon_map ) {
 			$icons = $this->icon_map;
 		} else {
-			// Defensive Fallback: render_component_icon wird normalerweise nur
-			// von render_payload aus aufgerufen, wo icon_map gefüllt wird.
+			// Defensive fallback: render_component_icon is normally only
+			// called from render_payload, where icon_map is populated.
 			$icons = apply_filters( 'ttt_component_icons', self::COMPONENT_ICONS );
 		}
 
@@ -1182,15 +1186,15 @@ class TTT_Renderer {
 			return;
 		}
 
-		// data-Attribute füttern das JS-Popover (Komponenten-Name, Status,
-		// Personen). Bei Hover/Klick rendert das JS ein Custom-Popover mit
-		// Avataren und GitHub-Profil-Links.
+		// data attributes feed the JS popover (component name, status,
+		// people). On hover/click, the JS renders a custom popover with
+		// avatars and GitHub profile links.
 		//
-		// SVG-Größe: HTML-Attribute `width="18" height="18"` setzen die
-		// intrinsische Größe; die endgültige Darstellung kommt aus den
-		// CSS-Regeln in style.css und render_inline_styles (mit !important
-		// gegen Theme-Resets wie `svg { max-width: 100% }`). Beide Quellen
-		// nutzen den Token `--ttt-icon-svg`.
+		// SVG size: the HTML attributes `width="18" height="18"` set the
+		// intrinsic size; the final rendering comes from the CSS rules in
+		// style.css and render_inline_styles (with !important to defeat
+		// theme resets like `svg { max-width: 100% }`). Both sources use
+		// the token `--ttt-icon-svg`.
 		echo '<span class="ttt-comp-icon ttt-comp-' . esc_attr( $status ) . '"';
 		echo ' title="' . esc_attr( $tooltip ) . '"';
 		echo ' aria-label="' . esc_attr( $tooltip ) . '"';
@@ -1207,7 +1211,7 @@ class TTT_Renderer {
 	}
 
 	/**
-	 * Sammelt sichtbare Marker für ein Item (Orphan, Parse-Error, Duplikat, Draft).
+	 * Collects visible markers for an item (orphan, parse error, duplicate, draft).
 	 *
 	 * @param array $item Item.
 	 * @return array<array{key:string,label:string}>
