@@ -4,7 +4,7 @@ Tags: translation, learn-wordpress, tracker, dashboard
 Requires at least: 6.0
 Tested up to: 7.0
 Requires PHP: 8.0
-Stable tag: 0.4.7
+Stable tag: 0.4.8
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -34,6 +34,27 @@ DACH Team for translating learn.wordpress.org content into German.
 4. Embed the shortcode `[translation_tracker]` on any page.
 
 == Changelog ==
+
+= 0.4.8 =
+* Security polish: tracker URL setting is now validated against an
+  allow-list of hosts at save time. Default allow-list contains only
+  `raw.githubusercontent.com`; admins can extend via the new filter
+  hook `ttt_tracker_url_allowed_hosts`. URLs that are not HTTPS or
+  whose host is not on the list are rejected and the previous saved
+  value is kept (with an admin notice). Mitigates accidental
+  misconfiguration and an SSRF-style risk vector.
+* Docs (User-Guide, EN + DE): combined component+status filter and
+  the "unspecified" pill (introduced in 0.4.4 / 0.4.5) are now
+  documented; a CSP hint for `avatars.githubusercontent.com` was
+  added to the troubleshooting section.
+* Docs (Developer.md, EN + DE): describe the new filter hook
+  `ttt_tracker_url_allowed_hosts`.
+* i18n: `languages/training-translation-tracker.pot` regenerated from
+  scratch out of the current PHP sources. The old file still
+  contained extractor comments left over from earlier German
+  docblocks; the new file has 87 entries with clean file:line
+  references. The German `.mo` was rebuilt against the new `.po`
+  (translates "unspecified" -> "keine Angabe").
 
 = 0.4.7 =
 * Accessibility: WCAG-AA contrast for status icons. The icon foreground

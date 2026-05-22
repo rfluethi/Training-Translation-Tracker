@@ -171,12 +171,23 @@ Show the totals per status:
 
 - **Items**, all items combined
 - **done** (green), `overall_status = done`
-- **review** (yellow), `overall_status = review`
+- **Review** (gold), `overall_status = review`
 - **in progress** (blue), `overall_status = wip`
-- **open** (gray), `overall_status = open`
+- **open** (yellow), `overall_status = open`. Yellow since 0.4.4 to make "still to do" items stand out.
+- **unspecified** (neutral gray), sub-count of items whose every component is still `unset` (the status table in the issue has not been filled in yet). Sub-count of "open" — these items are also counted in the "open" pill, this pill surfaces "how many of the open ones are completely untouched".
 - **n/a** (light gray), `overall_status = na`
 
-Clicking a pill filters the cards to that status. Clicking "Items" resets the filter.
+Clicking a pill filters the cards to that status. Clicking "Items" resets the filter. The "n/a" pill is informational only and not clickable.
+
+### Combined component filter
+
+Below the search field, two grouped dropdowns let you filter by component AND component status together. Example use case: "show me all cards where the text component is still open" — pick **text** in the first dropdown and **open** in the second.
+
+The second dropdown is disabled while the first one is on "All components", because a status filter without a chosen component would not be useful.
+
+When the first dropdown is set to "All components" no component filter is applied. Picking a specific component without a status shows cards that have that component (regardless of its status). Picking both narrows further.
+
+Filter selections are persisted in the browser (localStorage) so they survive page reloads.
 
 ### The cards
 
@@ -285,6 +296,18 @@ In both cases action is needed either on the issue (fix the URL) or on the scope
 In certain theme / page builder combinations the interaction JavaScript does not load reliably. **Workaround:** instead of clicking filters, use a shortcode with a `pathway=` attribute on its own page, that filters server-side and always works.
 
 Diagnosis: open the browser console (F12 → Console + Network) and check whether `tracker.js` loaded with HTTP 200. If not, the page builder stripped the `<script src>` tag out of the output.
+
+### Creator / reviewer avatars are missing in the popover
+
+The component popover shows GitHub avatars for creator and reviewer, fetched directly from `https://avatars.githubusercontent.com/`. If your site uses a strict Content-Security-Policy (CSP), this host must be on the `img-src` allow-list, otherwise the browser blocks the requests and the popover shows initials only.
+
+Recommended CSP additions if you have one:
+
+```text
+img-src 'self' data: https://avatars.githubusercontent.com;
+```
+
+Sites without a custom CSP do not need to do anything.
 
 ## 9. Reporting a bug
 

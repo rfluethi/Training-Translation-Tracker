@@ -280,3 +280,7 @@ msgstr "keine Angabe"
 msgid "missing"
 msgstr "fehlt"
 
+# 0.4.8: SSRF allow-list for tracker URL
+msgid "Invalid tracker URL. Must be HTTPS and on the allowed-hosts list. Reverted to previous value."
+msgstr "Ungültige Tracker-URL. Muss HTTPS sein und auf der erlaubten Host-Liste stehen. Vorheriger Wert wiederhergestellt."
+

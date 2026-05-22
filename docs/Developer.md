@@ -415,6 +415,19 @@ What gets passed is the SVG path `d` attribute (not a full SVG tag), because the
 
 Since 0.3.3, icons can also be defined centrally in `action/component-templates.yml` and shipped via `tracker.json` as a top-level `component_icons` map. The priority order is: hardcoded `COMPONENT_ICONS` (fallback) < `component_icons` from `tracker.json` < `ttt_component_icons` filter (final override).
 
+#### `ttt_tracker_url_allowed_hosts` (since 0.4.8)
+
+Allow-list of hosts the tracker URL setting may point at. Default is just `raw.githubusercontent.com`. Add hosts when self-hosting the `tracker.json` on a mirror or CDN.
+
+```php
+add_filter( 'ttt_tracker_url_allowed_hosts', function( $hosts ) {
+    $hosts[] = 'cdn.example.com';
+    return $hosts;
+} );
+```
+
+URLs whose host is not on the list, or that are not HTTPS, are rejected on save and the previous saved URL is kept. An admin notice explains the rejection.
+
 ### New item types or components
 
 1. **Action**: define the new type in `component-templates.yml`.

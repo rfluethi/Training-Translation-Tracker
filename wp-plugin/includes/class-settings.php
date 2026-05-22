@@ -88,12 +88,60 @@ class TTT_Settings {
 	/**
 	 * Value sanitization on save.
 	 *
+	 * The tracker URL is validated against a small allow-list of hosts as a
+	 * defensive measure against accidental misconfiguration (typos pointing
+	 * at the wrong domain) and against an admin pasting a URL that would
+	 * trigger SSRF-style behavior from a misconfigured WordPress server.
+	 * The capability check on the settings page already restricts who can
+	 * change this, so the risk is small; the allow-list is just an extra
+	 * layer.
+	 *
+	 * Themes and companion plugins can extend the allow-list via the
+	 * `ttt_tracker_url_allowed_hosts` filter (e.g. when self-hosting the
+	 * `tracker.json` on a custom domain).
+	 *
 	 * @param array $input Raw form input.
 	 * @return array
 	 */
 	public function sanitize_settings( $input ) {
 		$tracker_url = isset( $input['tracker_url'] ) ? esc_url_raw( trim( (string) $input['tracker_url'] ) ) : '';
 		$cache_hours = isset( $input['cache_hours'] ) ? absint( $input['cache_hours'] ) : TTT_DEFAULT_CACHE_HOURS;
+
+		if ( '' !== $tracker_url ) {
+			/**
+			 * Filter: ttt_tracker_url_allowed_hosts.
+			 *
+			 * Returns the list of hosts (without scheme, lower-case) that
+			 * the tracker URL setting is allowed to point at. Default:
+			 * just `raw.githubusercontent.com`, where the action publishes
+			 * the JSON. Extend this to allow self-hosted mirrors.
+			 *
+			 * @param array $hosts Default list of allowed hosts.
+			 */
+			$allowed_hosts = apply_filters(
+				'ttt_tracker_url_allowed_hosts',
+				array( 'raw.githubusercontent.com' )
+			);
+			$allowed_hosts = array_map( 'strtolower', (array) $allowed_hosts );
+
+			$scheme = wp_parse_url( $tracker_url, PHP_URL_SCHEME );
+			$host   = strtolower( (string) wp_parse_url( $tracker_url, PHP_URL_HOST ) );
+
+			if ( 'https' !== $scheme || '' === $host || ! in_array( $host, $allowed_hosts, true ) ) {
+				// Reject the new URL and keep the existing saved value, so
+				// a fat-fingered host or http:// pasted in the field does
+				// not accidentally break a working tracker.
+				$previous    = get_option( TTT_OPTION_KEY, array() );
+				$tracker_url = isset( $previous['tracker_url'] ) && is_string( $previous['tracker_url'] )
+					? $previous['tracker_url']
+					: TTT_DEFAULT_TRACKER_URL;
+				add_settings_error(
+					'ttt_settings',
+					'ttt_invalid_url',
+					__( 'Invalid tracker URL. Must be HTTPS and on the allowed-hosts list. Reverted to previous value.', 'training-translation-tracker' )
+				);
+			}
+		}
 
 		if ( $cache_hours < 1 ) {
 			$cache_hours = 1;
