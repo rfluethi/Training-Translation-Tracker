@@ -147,7 +147,12 @@ class TTT_Fetcher {
 			);
 		}
 
-		if ( ! is_array( $data ) ) {
+		// Reject both non-array shapes and JSON top-level arrays. The tracker
+		// schema requires an object at the top level (with keys like
+		// schema_version, generated_at, stats, groups). PHP arrays double
+		// as both maps and lists, so we use array_is_list() to detect the
+		// list case explicitly.
+		if ( ! is_array( $data ) || ( function_exists( 'array_is_list' ) && array_is_list( $data ) ) ) {
 			return new WP_Error( 'ttt_json_shape', __( 'tracker.json has unexpected structure (no top-level object).', 'training-translation-tracker' ) );
 		}
 

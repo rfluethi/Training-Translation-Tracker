@@ -4,7 +4,7 @@ Tags: translation, learn-wordpress, tracker, dashboard
 Requires at least: 6.0
 Tested up to: 7.0
 Requires PHP: 8.0
-Stable tag: 0.4.5
+Stable tag: 0.4.7
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -34,6 +34,50 @@ DACH Team for translating learn.wordpress.org content into German.
 4. Embed the shortcode `[translation_tracker]` on any page.
 
 == Changelog ==
+
+= 0.4.7 =
+* Accessibility: WCAG-AA contrast for status icons. The icon foreground
+  tokens `--ttt-color-open` and `--ttt-color-review` were darkened
+  (open: #facc15 -> #ca8a04, 3.8:1; review: #d4a017 -> #b45309, 5.2:1)
+  so the component icons meet the 3:1 graphics contrast threshold
+  against a white card. Pill backgrounds and other token uses remain
+  unchanged.
+* Polish: removed redundant `title=` attribute on component icons
+  (kept only `aria-label=`). Screen readers no longer double-announce
+  the same string. The popover remains the primary affordance for
+  sighted users.
+* Polish: `class-fetcher.php` now rejects JSON top-level arrays as
+  well as non-array values via `array_is_list()`. Previously a JSON
+  list slipped through to the deeper schema validation; now it is
+  caught at the first guard.
+* Polish: explicit `return;` after the capability-check failure in
+  `handle_clear_cache()` to make the early-out obvious (no functional
+  change because `wp_send_json_*` already calls `wp_die()`).
+* Credits: README.md and CONTRIBUTING.md now mention Andy Rudorfer
+  (@Bigod) as the source of the frontend UI design concept (card
+  layout, status pills, component icons, filter bar).
+* Maintainer rule: documentation must be maintained in both English
+  (GitHub repo) and German (Konzept/ mirror). Documented in
+  Arbeitsplan.md, no impact on shipped plugin.
+
+= 0.4.6 =
+* UX polish on the combined component+status filter introduced in 0.4.4:
+  the two dependent dropdowns ("Filter by component" and "Filter
+  component by status") are now visually grouped inside a single
+  bordered container with a divider between them, so it is clear at
+  a glance that they belong together. The status dropdown is disabled
+  while no component is selected, and resets its value when the
+  component is cleared.
+* Stats pill and filter option renamed from "untouched" to
+  "unspecified" (German: "keine Angabe"). The underlying data status
+  value remains `unset`; only the visible labels changed.
+* i18n: new strings added to languages/training-translation-tracker.pot
+  and languages/training-translation-tracker-de_DE.po:
+  "All components", "Any status", "Filter by component",
+  "Filter component by status", "Show only items whose status table
+  is empty", "unspecified", "missing", "Component filter".
+  Maintainers running a release: regenerate the .mo via
+  `msgfmt languages/training-translation-tracker-de_DE.po -o ...mo`.
 
 = 0.4.5 =
 * Bugfix: components from issues that have no status table (template

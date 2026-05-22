@@ -132,10 +132,32 @@
 			});
 		}
 
+		// Helper: enable / disable the status select based on the
+		// component select. When no component is chosen, the status
+		// select is grayed out, its value is reset, and the matching
+		// state is cleared so it does not silently remain active.
+		function syncComponentStatusEnabled() {
+			if (!componentStatusSelect) return;
+			if (state.component) {
+				componentStatusSelect.disabled = false;
+			} else {
+				componentStatusSelect.disabled = true;
+				if (state.componentStatus) {
+					state.componentStatus = '';
+					componentStatusSelect.value = '';
+				}
+			}
+		}
+
+		// Initial sync (in case localStorage rehydrated a component
+		// value, or did not).
+		syncComponentStatusEnabled();
+
 		// Component dropdown: change event (combined with componentStatus below)
 		if (componentSelect) {
 			componentSelect.addEventListener('change', function (e) {
 				state.component = e.target.value || '';
+				syncComponentStatusEnabled();
 				applyFilters(root, state);
 				saveState(trackerId, state);
 			});
@@ -233,13 +255,13 @@
 			var search = card.getAttribute('data-search') || '';
 			var projectStatus = card.getAttribute('data-project-status') || '';
 
-			// Status filter (overall status). The pseudo-status "untouched"
-			// (introduced in 0.4.5) is a sub-filter that matches cards where
-			// every component icon is in state "unset".
+			// Status filter (overall status). The pseudo-status "unspecified"
+			// (introduced in 0.4.5, renamed in 0.4.6) is a sub-filter that
+			// matches cards where every component icon is in state "unset".
 			var matchStatus;
 			if (state.status === 'all') {
 				matchStatus = true;
-			} else if (state.status === 'untouched') {
+			} else if (state.status === 'unspecified') {
 				var iconsAll = card.querySelectorAll('.ttt-comp-icon[data-comp-name]');
 				if (iconsAll.length === 0) {
 					matchStatus = false;

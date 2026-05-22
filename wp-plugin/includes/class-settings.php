@@ -339,6 +339,7 @@ class TTT_Settings {
 				array( 'message' => __( 'Insufficient permissions.', 'training-translation-tracker' ) ),
 				403
 			);
+			return;
 		}
 
 		delete_transient( TTT_TRANSIENT_KEY );
