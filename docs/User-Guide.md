@@ -242,6 +242,12 @@ In the **`WordPress/Learn`** repo, not in the inventory plugin repo. The issue m
 
 `open` · `wip` · `review` · `done` · `na`
 
+A sixth value `unset` exists internally and is assigned by the action to
+components when an issue has no parsed status table yet (e.g. the
+template was not filled in). You normally do not write `unset` yourself;
+the action emits it automatically so the frontend can render those
+components in a neutral gray rather than the bright yellow "open" color.
+
 ### Creator / reviewer
 
 GitHub username, with or without the `@` prefix. Both `rfluethi` and `@rfluethi` work, the parser strips the leading `@` automatically. Separate multiple names with a comma. Leave empty if nobody is assigned yet.

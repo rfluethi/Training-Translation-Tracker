@@ -18,7 +18,7 @@ from dataclasses import dataclass
 
 LOG = logging.getLogger(__name__)
 
-VALID_STATUSES = {"open", "wip", "review", "done", "na"}
+VALID_STATUSES = {"open", "wip", "review", "done", "na", "unset"}
 VALID_COMPONENTS = {"text", "thumbnails", "video", "subtitles", "quiz", "exercise", "audio"}
 
 # Markers used to delimit the status table inside the issue body.

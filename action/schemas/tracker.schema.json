@@ -44,7 +44,7 @@
   "$defs": {
 
     "Stats": {
-      "description": "Item-level aggregation. Component statuses are NOT aggregated into this.",
+      "description": "Item-level aggregation. Component statuses are NOT aggregated into this. `untouched` is an optional sub-count of items whose status table is completely empty (every component has status='unset'); those items are also counted in their overall bucket (typically `open`).",
       "type": "object",
       "required": ["total_items", "done", "review", "wip", "open", "na"],
       "additionalProperties": false,
@@ -54,14 +54,21 @@
         "review":      { "type": "integer", "minimum": 0 },
         "wip":         { "type": "integer", "minimum": 0 },
         "open":        { "type": "integer", "minimum": 0 },
-        "na":          { "type": "integer", "minimum": 0 }
+        "na":          { "type": "integer", "minimum": 0 },
+        "untouched":   { "type": "integer", "minimum": 0 }
       }
     },
 
     "Status": {
-      "description": "Status value used for components and overall_status.",
+      "description": "Status value used for overall_status (item-level rollup). Does NOT include 'unset', because items always roll up to one of the five published statuses.",
       "type": "string",
       "enum": ["na", "done", "review", "wip", "open"]
+    },
+
+    "ComponentStatus": {
+      "description": "Status value used for individual components. Adds 'unset' on top of the five overall statuses to mark components without a recorded status (e.g. when the issue body has no status table, or the table is missing this row).",
+      "type": "string",
+      "enum": ["na", "done", "review", "wip", "open", "unset"]
     },
 
     "ItemType": {
@@ -95,7 +102,7 @@
       "additionalProperties": false,
       "properties": {
         "name":     { "type": "string", "minLength": 1 },
-        "status":   { "$ref": "#/$defs/Status" },
+        "status":   { "$ref": "#/$defs/ComponentStatus" },
         "creator":  { "type": "string" },
         "reviewer": { "type": "string" }
       }

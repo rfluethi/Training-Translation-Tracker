@@ -35,6 +35,12 @@ https://, lowercase, with a trailing slash, no query (?…), no fragment (#…),
 
 Other values are ignored by the parser.
 
+A sixth value `unset` exists in the data model but is assigned by the
+action, not by humans. The action emits it for components in issues
+that have no parsed status table (e.g. the template was not filled in
+yet). Frontend renders those as neutral gray icons so they are
+distinguishable from explicitly open components.
+
 ### Creator / reviewer
 
 GitHub username, with or without the `@` prefix. Both `rfluethi` and `@rfluethi` work, the parser strips the leading `@` automatically. Separate multiple people with a comma: `rfluethi, Ursha-wp` or `@rfluethi, @Ursha-wp`. Leave empty if nobody is assigned yet.

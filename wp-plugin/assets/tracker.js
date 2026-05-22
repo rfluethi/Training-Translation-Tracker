@@ -233,8 +233,28 @@
 			var search = card.getAttribute('data-search') || '';
 			var projectStatus = card.getAttribute('data-project-status') || '';
 
-			// Status filter (component overall status)
-			var matchStatus = (state.status === 'all') || (status === state.status);
+			// Status filter (overall status). The pseudo-status "untouched"
+			// (introduced in 0.4.5) is a sub-filter that matches cards where
+			// every component icon is in state "unset".
+			var matchStatus;
+			if (state.status === 'all') {
+				matchStatus = true;
+			} else if (state.status === 'untouched') {
+				var iconsAll = card.querySelectorAll('.ttt-comp-icon[data-comp-name]');
+				if (iconsAll.length === 0) {
+					matchStatus = false;
+				} else {
+					matchStatus = true;
+					for (var u = 0; u < iconsAll.length; u++) {
+						if (iconsAll[u].getAttribute('data-comp-status') !== 'unset') {
+							matchStatus = false;
+							break;
+						}
+					}
+				}
+			} else {
+				matchStatus = (status === state.status);
+			}
 
 			// Search filter
 			var matchQuery = (state.query === '') || (search.indexOf(state.query) !== -1);
@@ -304,6 +324,7 @@
 
 	function updateStatsPills(root, state) {
 		var counts = { done: 0, review: 0, wip: 0, open: 0, na: 0 };
+		var untouched = 0;
 		var total = 0;
 		var cards = root.querySelectorAll('.ttt-card');
 		for (var i = 0; i < cards.length; i++) {
@@ -335,11 +356,29 @@
 			}
 
 			if (!matchQuery || !matchProjectStatus || !matchComponent) continue;
+
 			var status = card.getAttribute('data-status') || 'open';
 			if (counts.hasOwnProperty(status)) {
 				counts[status]++;
 			}
 			total++;
+
+			// Untouched: card whose every component icon is "unset". This
+			// is a sub-count, the same card is also counted in its overall
+			// bucket above (typically "open").
+			var iconsAll2 = card.querySelectorAll('.ttt-comp-icon[data-comp-name]');
+			if (iconsAll2.length > 0) {
+				var allUnset = true;
+				for (var v = 0; v < iconsAll2.length; v++) {
+					if (iconsAll2[v].getAttribute('data-comp-status') !== 'unset') {
+						allUnset = false;
+						break;
+					}
+				}
+				if (allUnset) {
+					untouched++;
+				}
+			}
 		}
 		setStatCount(root, 'ttt-stat-total', total);
 		for (var s in counts) {
@@ -347,6 +386,7 @@
 				setStatCount(root, 'ttt-stat-' + s, counts[s]);
 			}
 		}
+		setStatCount(root, 'ttt-stat-unset', untouched);
 	}
 
 	function setStatCount(root, className, value) {

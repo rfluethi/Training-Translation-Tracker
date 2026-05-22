@@ -203,6 +203,7 @@ class TTT_Renderer {
 				'review' => __( 'Review', 'training-translation-tracker' ),
 				'wip'    => __( 'in progress', 'training-translation-tracker' ),
 				'open'   => __( 'open', 'training-translation-tracker' ),
+				'unset'  => __( 'untouched', 'training-translation-tracker' ),
 				'na'     => __( 'n/a', 'training-translation-tracker' ),
 			),
 			'componentLabels' => array(
@@ -285,6 +286,12 @@ class TTT_Renderer {
 	--ttt-color-na-fg:     #6c757d;
 	--ttt-color-na-bg:     #e9ecef;
 	--ttt-color-na:        #ced4da;
+	/* Unset (0.4.5): components without a recorded status (no status
+	   table parsed in the issue body). Neutral light gray so they do
+	   not confuse the eye with the bright "open" yellow. */
+	--ttt-color-unset-fg:  #495057;
+	--ttt-color-unset-bg:  #f1f3f5;
+	--ttt-color-unset:     #adb5bd;
 	--ttt-color-total-fg:  #fff;
 	--ttt-color-total-bg:  #343a40;
 	/* --- Markers --- */
@@ -343,6 +350,7 @@ class TTT_Renderer {
 .ttt-tracker .ttt-stat-review { background: var(--ttt-color-review-bg); color: var(--ttt-color-review-fg); }
 .ttt-tracker .ttt-stat-wip    { background: var(--ttt-color-wip-bg);    color: var(--ttt-color-wip-fg); }
 .ttt-tracker .ttt-stat-open   { background: var(--ttt-color-open-bg);   color: var(--ttt-color-open-fg); }
+.ttt-tracker .ttt-stat-unset  { background: var(--ttt-color-unset-bg);  color: var(--ttt-color-unset-fg); }
 .ttt-tracker .ttt-stat-na     { background: var(--ttt-color-na-bg);     color: var(--ttt-color-na-fg); cursor: default !important; }
 .ttt-tracker .ttt-stat-total  { background: var(--ttt-color-total-bg);  color: var(--ttt-color-total-fg); }
 .ttt-tracker .ttt-filter-bar { display: flex !important; flex-wrap: wrap; gap: var(--ttt-space-md); align-items: center; margin: 0.5rem 0; }
@@ -400,6 +408,7 @@ class TTT_Renderer {
 .ttt-tracker .ttt-card-footer-right .ttt-comp-icon.ttt-comp-review { color: var(--ttt-color-review); }
 .ttt-tracker .ttt-card-footer-right .ttt-comp-icon.ttt-comp-wip    { color: var(--ttt-color-wip); }
 .ttt-tracker .ttt-card-footer-right .ttt-comp-icon.ttt-comp-open   { color: var(--ttt-color-open); }
+.ttt-tracker .ttt-card-footer-right .ttt-comp-icon.ttt-comp-unset  { color: var(--ttt-color-unset); opacity: 0.55; }
 .ttt-tracker .ttt-card-footer-right .ttt-comp-icon.ttt-comp-na     { color: var(--ttt-color-na); opacity: 0.45; }
 /* Component popover (positioned dynamically by the JS). Always on a higher
    stacking layer than the cards. */
@@ -410,7 +419,8 @@ class TTT_Renderer {
 .ttt-tracker .ttt-comp-popover-status.ttt-comp-status-done   { background: var(--ttt-color-done-bg);    color: var(--ttt-color-done-fg); }
 .ttt-tracker .ttt-comp-popover-status.ttt-comp-status-review { background: var(--ttt-color-review-bg);  color: var(--ttt-color-review-fg); }
 .ttt-tracker .ttt-comp-popover-status.ttt-comp-status-wip    { background: var(--ttt-color-wip-bg);     color: var(--ttt-color-wip-fg); }
-.ttt-tracker .ttt-comp-popover-status.ttt-comp-status-open   { background: var(--ttt-color-surface-subtle); color: var(--ttt-color-open-fg); }
+.ttt-tracker .ttt-comp-popover-status.ttt-comp-status-open   { background: var(--ttt-color-open-bg);   color: var(--ttt-color-open-fg); }
+.ttt-tracker .ttt-comp-popover-status.ttt-comp-status-unset  { background: var(--ttt-color-unset-bg);  color: var(--ttt-color-unset-fg); }
 .ttt-tracker .ttt-comp-popover-status.ttt-comp-status-na     { background: var(--ttt-color-na-bg);      color: var(--ttt-color-na-fg); }
 .ttt-tracker .ttt-comp-popover-person { display: flex !important; align-items: center; gap: 0.5rem; padding: 0.3rem 0; }
 .ttt-tracker .ttt-comp-popover-person + .ttt-comp-popover-person { border-top: var(--ttt-border-width) dashed var(--ttt-color-border-subtle); }
@@ -704,6 +714,7 @@ class TTT_Renderer {
 				aria-label="<?php esc_attr_e( 'Filter component by status', 'training-translation-tracker' ); ?>"
 			>
 				<option value=""><?php esc_html_e( 'Any status', 'training-translation-tracker' ); ?></option>
+				<option value="unset"><?php esc_html_e( 'untouched', 'training-translation-tracker' ); ?></option>
 				<option value="open"><?php esc_html_e( 'open', 'training-translation-tracker' ); ?></option>
 				<option value="wip"><?php esc_html_e( 'in progress', 'training-translation-tracker' ); ?></option>
 				<option value="review"><?php esc_html_e( 'Review', 'training-translation-tracker' ); ?></option>
@@ -840,12 +851,13 @@ class TTT_Renderer {
 	 * @return void
 	 */
 	private function render_stats( $stats ) {
-		$total  = (int) ( $stats['total_items'] ?? 0 );
-		$done   = (int) ( $stats['done'] ?? 0 );
-		$review = (int) ( $stats['review'] ?? 0 );
-		$wip    = (int) ( $stats['wip'] ?? 0 );
-		$open   = (int) ( $stats['open'] ?? 0 );
-		$na     = (int) ( $stats['na'] ?? 0 );
+		$total     = (int) ( $stats['total_items'] ?? 0 );
+		$done      = (int) ( $stats['done'] ?? 0 );
+		$review    = (int) ( $stats['review'] ?? 0 );
+		$wip       = (int) ( $stats['wip'] ?? 0 );
+		$open      = (int) ( $stats['open'] ?? 0 );
+		$na        = (int) ( $stats['na'] ?? 0 );
+		$untouched = (int) ( $stats['untouched'] ?? 0 );
 
 		?>
 		<div class="ttt-stats">
@@ -868,6 +880,10 @@ class TTT_Renderer {
 			<button type="button" class="ttt-stat ttt-stat-open" data-filter-status="open" title="<?php esc_attr_e( 'Show only open', 'training-translation-tracker' ); ?>">
 				<span class="ttt-stat-count"><?php echo (int) $open; ?></span>
 				<?php esc_html_e( 'open', 'training-translation-tracker' ); ?>
+			</button>
+			<button type="button" class="ttt-stat ttt-stat-unset" data-filter-status="untouched" title="<?php esc_attr_e( 'Show only items whose status table is empty', 'training-translation-tracker' ); ?>">
+				<span class="ttt-stat-count"><?php echo (int) $untouched; ?></span>
+				<?php esc_html_e( 'untouched', 'training-translation-tracker' ); ?>
 			</button>
 			<span class="ttt-stat ttt-stat-na" title="<?php esc_attr_e( 'n/a — not filterable', 'training-translation-tracker' ); ?>">
 				<span class="ttt-stat-count"><?php echo (int) $na; ?></span>

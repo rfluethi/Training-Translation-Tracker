@@ -143,11 +143,24 @@ def build_groups(
 # ---------------------------------------------------------------------------
 
 def calculate_overall_status(component_statuses: list[str]) -> str:
-    """Reduce a list of component statuses to a single overall status."""
+    """Reduce a list of component statuses to a single overall status.
+
+    The "unset" component status (introduced in 0.4.5 to mark components
+    that have no recorded status, e.g. when the status table is missing
+    in the issue body) is treated as "open" for the rollup. Visually the
+    card border therefore appears as "open" (yellow), while the
+    individual component icons render as neutral gray to make it obvious
+    that the table still needs to be filled in.
+    """
     if not component_statuses:
         return "open"
 
-    non_na = [s for s in component_statuses if s != "na"]
+    # Treat unset as open for the rollup. A card with all-unset components
+    # therefore rolls up to "open", which preserves backwards-compatible
+    # behavior and signals "needs attention".
+    rollup = [("open" if s == "unset" else s) for s in component_statuses]
+
+    non_na = [s for s in rollup if s != "na"]
     if not non_na:
         return "na"
     if all(s == "done" for s in non_na):
@@ -293,8 +306,11 @@ def _item_to_dict(
     item = inv_item.to_minimal_dict()
 
     if not matching_issues:
+        # No translation issue at all. Components are unset (the status
+        # table simply does not exist yet). Overall rolls up to "open"
+        # so the card still appears in the open bucket of the dashboard.
         defaults = component_templates.get(inv_item.type, []) or []
-        item["components"] = [{"name": name, "status": "open"} for name in defaults]
+        item["components"] = [{"name": name, "status": "unset"} for name in defaults]
         item["overall_status"] = "open"
         return item
 
@@ -336,9 +352,13 @@ def _item_to_dict(
         item["components"] = [c.to_dict() for c in primary.components]
         statuses = [c.status for c in primary.components]
     else:
+        # Issue exists but no status table parsed (template not filled in
+        # or markers missing). Fall back to "unset" per component so the
+        # frontend can render them as neutral icons rather than yellow
+        # "open" icons.
         defaults = component_templates.get(inv_item.type, []) or []
-        item["components"] = [{"name": name, "status": "open"} for name in defaults]
-        statuses = ["open"] * len(defaults)
+        item["components"] = [{"name": name, "status": "unset"} for name in defaults]
+        statuses = ["unset"] * len(defaults)
 
     item["overall_status"] = calculate_overall_status(statuses)
     return item

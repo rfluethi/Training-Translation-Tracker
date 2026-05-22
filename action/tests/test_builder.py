@@ -175,13 +175,17 @@ def test_joiner_matches_item_with_issue():
 
 
 def test_joiner_uses_defaults_when_no_issue():
+    """Items without a matching issue fall back to the canonical component
+    set, each marked status='unset' (so the frontend can render them as
+    neutral icons rather than yellow 'open' icons). Overall rolls up to
+    'open' so the item still appears in the open bucket."""
     inv = [_inventory_item()]
     result = build_groups(inv, [], COMPONENT_TEMPLATES)
     item = result.groups[0]["courses"][0]["sections"][0]["items"][0]
 
     assert item["overall_status"] == "open"
     assert [c["name"] for c in item["components"]] == COMPONENT_TEMPLATES["lesson"]
-    assert all(c["status"] == "open" for c in item["components"])
+    assert all(c["status"] == "unset" for c in item["components"])
 
 
 def test_joiner_creates_orphan_for_unmatched_issue():
@@ -264,6 +268,7 @@ def test_stats_count_per_overall_status():
         "wip": 1,
         "open": 1,
         "na": 0,
+        "untouched": 0,
     }
 
 

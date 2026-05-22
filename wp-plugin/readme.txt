@@ -4,7 +4,7 @@ Tags: translation, learn-wordpress, tracker, dashboard
 Requires at least: 6.0
 Tested up to: 7.0
 Requires PHP: 8.0
-Stable tag: 0.4.4
+Stable tag: 0.4.5
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -34,6 +34,30 @@ DACH Team for translating learn.wordpress.org content into German.
 4. Embed the shortcode `[translation_tracker]` on any page.
 
 == Changelog ==
+
+= 0.4.5 =
+* Bugfix: components from issues that have no status table (template
+  not filled in yet) are no longer rendered as bright yellow "open"
+  icons. They now use a new internal status `unset` (neutral gray
+  icons) so the eye can distinguish them from components that are
+  explicitly set to `open` in the status table. The 0.4.4 yellow
+  highlight remains on real, explicit open components.
+* New stats pill "Untouched" between "open" and "n/a" shows the count
+  of items whose status table is completely empty (every component has
+  `unset`). These items are still counted in the existing "open" pill
+  (their overall_status rolls up to `open`), so the new pill is a
+  sub-count that surfaces "how many of the open items still need their
+  status table filled in".
+* New filter dropdown option "untouched" for the component status
+  selector (combine with "All components" to find untouched cards, or
+  with a specific component to find items where that component has not
+  been recorded yet).
+* Action / schema: introduces `unset` to the per-component status enum
+  (`ComponentStatus`). The overall_status enum is unchanged; items with
+  all-unset components still roll up to `overall_status="open"`. The
+  Stats object gains an optional `untouched` integer field.
+* Docs (English and German Konzept mirror): describe the `unset` status
+  in User-Guide and Issue-Templates files.
 
 = 0.4.4 =
 * Open component icons are now highlighted yellow (`#facc15` on a pale
