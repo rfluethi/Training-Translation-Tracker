@@ -107,6 +107,13 @@ git push
 
 The action then triggers automatically and rebuilds tracker.json.
 
+## Credits
+
+The frontend UI design concept (card layout, status pills, component
+icons, filter bar interaction) is by **Andy Rudorfer**
+([@Bigod](https://github.com/Bigod)). The implementation in PHP, CSS
+and JavaScript was carried out on top of that concept.
+
 ## License
 
 GPL v2 or later, see `action/LICENSE` and `wp-plugin/LICENSE`.

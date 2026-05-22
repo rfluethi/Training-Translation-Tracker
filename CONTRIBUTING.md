@@ -13,7 +13,8 @@ you want to change, the workflow is slightly different.
 5. [Documentation](#documentation)
 6. [Pull request process](#pull-request-process)
 7. [Adapting for other locales](#adapting-for-other-locales)
-8. [Code of conduct](#code-of-conduct)
+8. [Acknowledgments](#acknowledgments)
+9. [Code of conduct](#code-of-conduct)
 
 ## What you can contribute
 
@@ -183,6 +184,14 @@ Other language teams can use this tracker for their own locale:
 Pull requests that contribute generic improvements back upstream (e.g. new
 inventory sources, new shortcode options) are welcome. Please keep
 locale-specific changes in your fork.
+
+## Acknowledgments
+
+**Frontend UI design concept:** Andy Rudorfer
+([@Bigod](https://github.com/Bigod)). Card layout, status pills,
+component icons and filter bar interaction follow Andy's design. The
+implementation in PHP, CSS and JavaScript turns that concept into a
+WordPress plugin.
 
 ## Code of conduct
 
