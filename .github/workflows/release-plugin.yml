@@ -126,9 +126,14 @@ jobs:
           echo "Built: $(ls -la ${GITHUB_WORKSPACE}/${ZIP_NAME})"
           echo "zip_name=${ZIP_NAME}" >> "$GITHUB_OUTPUT"
 
-          # Sanity check: ZIP-Inhalt prüfen
+          # Sanity check: ZIP-Inhalt prüfen.
+          # set +o pipefail, weil `... | head -N` SIGPIPE auslöst, sobald
+          # head genug Zeilen hat und sich schließt; das upstream-awk wird
+          # dadurch beendet und der Block würde sonst rot.
           echo "ZIP-Inhalt (Top-Level):"
+          set +o pipefail
           unzip -l "${GITHUB_WORKSPACE}/${ZIP_NAME}" | awk 'NR>3 && NF>=4 {print "  "$4}' | head -15
+          set -o pipefail
 
       # ----------------------------------------------------------
       # Changelog-Eintrag aus readme.txt extrahieren — wird zur

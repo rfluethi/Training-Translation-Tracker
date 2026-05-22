@@ -159,9 +159,13 @@ class TTT_Renderer {
 		// damit das JS die Werte beim DOMContentLoaded schon lesen kann.
 		// Konzeptionell wie wp_localize_script(), aber ohne wp_enqueue_script()
 		// (siehe untern Kommentar zum <script src>-Tag).
-		$i18n = wp_json_encode( $this->get_frontend_i18n() );
+		// JSON_HEX_TAG escapes < > as < >, so the JSON is safe to
+		// embed inside a <script> tag (no risk of `</script>` injection).
+		// Plugin-Check still flags the variable, so the inline phpcs:ignore
+		// documents that the escape happens via wp_json_encode + flags.
+		$i18n = wp_json_encode( $this->get_frontend_i18n(), JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT );
 		// phpcs:disable WordPress.WP.EnqueuedResources.NonEnqueuedScript
-		echo '<script id="ttt-i18n">window.tttI18n=' . $i18n . ';</script>';
+		echo '<script id="ttt-i18n">window.tttI18n=' . $i18n . ';</script>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- wp_json_encode with JSON_HEX_TAG produces script-safe JSON.
 		// phpcs:enable WordPress.WP.EnqueuedResources.NonEnqueuedScript
 
 		$src = TTT_PLUGIN_URL . 'assets/tracker.js?ver=' . rawurlencode( TTT_VERSION );
