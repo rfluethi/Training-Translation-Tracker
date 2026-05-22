@@ -4,7 +4,7 @@ Tags: translation, learn-wordpress, tracker, dashboard
 Requires at least: 6.0
 Tested up to: 6.9
 Requires PHP: 8.0
-Stable tag: 0.3.0
+Stable tag: 0.3.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -34,6 +34,15 @@ DACH Team for translating learn.wordpress.org content into German.
 4. Embed the shortcode `[translation_tracker]` on any page.
 
 == Changelog ==
+
+= 0.3.1 =
+* i18n: source language switched from German to English (WordPress convention).
+  Plugin shows English by default; German is delivered as a translation via
+  `languages/training-translation-tracker-de_DE.mo`. WP installations with
+  `WPLANG=de_DE` continue to show German.
+* `Domain Path: /languages` re-added to the plugin header and
+  `load_plugin_textdomain()` re-enabled so the bundled `.mo` is found in
+  GitHub-distributed builds (where wp.org auto-load doesn't apply).
 
 = 0.3.0 =
 * Accessibility: section toggles are now real `<button>` elements (instead

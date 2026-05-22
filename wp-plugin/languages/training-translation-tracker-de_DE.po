@@ -1,0 +1,228 @@
+# German (de_DE) translation for Training Translation Tracker
+# Copyright (C) 2026 Rico Lüthi
+# This file is distributed under the GPL-2.0-or-later license.
+msgid ""
+msgstr ""
+"Project-Id-Version: Training Translation Tracker 0.3.1\n"
+"Report-Msgid-Bugs-To: https://github.com/rfluethi/Training-Translation-Tracker-Inventory-Plugin/issues\n"
+"POT-Creation-Date: 2026-05-22 11:15+0000\n"
+"PO-Revision-Date: 2026-05-22 11:15+0000\n"
+"Last-Translator: Rico Lüthi <mail@rfluethi.com>\n"
+"Language-Team: German <de@li.org>\n"
+"Language: de_DE\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Domain: training-translation-tracker\n"
+
+msgid "(last successfully cached state — current fetch failed)"
+msgstr "(letzter erfolgreich gespeicherter Stand — aktueller Fetch schlug fehl)"
+
+msgid "1–168 hours. Recommended: 12 (matches the Action interval)."
+msgstr "1–168 Stunden. Empfohlen: 12 (passt zum Action-Intervall)."
+
+msgid "All statuses"
+msgstr "Alle Status"
+
+msgid "Cache cleared. The next page load will fetch fresh data."
+msgstr "Cache geleert. Beim nächsten Seitenaufruf wird neu geladen."
+
+msgid "Cache duration (hours)"
+msgstr "Cache-Dauer (Stunden)"
+
+msgid "Cache is active."
+msgstr "Cache ist aktiv."
+
+msgid "Cache is empty — the next shortcode call will fetch fresh data."
+msgstr "Cache ist leer — beim nächsten Shortcode-Aufruf wird neu geladen."
+
+msgid "Cache status"
+msgstr "Cache-Status"
+
+msgid "Clear cache now"
+msgstr "Cache jetzt leeren"
+
+msgid "Clearing cache…"
+msgstr "Cache wird geleert…"
+
+msgid "Collapse all"
+msgstr "Alle einklappen"
+
+msgid "Collapse or expand all sections"
+msgstr "Alle Sections einklappen oder ausklappen"
+
+msgid "Combination: only Lesson Plans, without stats and orphans — typical for a dedicated Lesson Plans page."
+msgstr "Kombination: nur Lesson Plans, ohne Stats und ohne Orphans — typisch für eine eigene Lesson-Plans-Seite."
+
+msgid "Creator"
+msgstr "Creator"
+
+msgid "Data source & cache"
+msgstr "Datenquelle & Cache"
+
+msgid "Direct link to tracker.json — typically the raw.githubusercontent.com link to the data branch of the Inventory Action."
+msgstr "Direkter Link zur tracker.json — typischerweise der raw.githubusercontent.com-Link auf den data-Branch der Inventory-Action."
+
+msgid "Duplicate"
+msgstr "Doppelt"
+
+msgid "Effect"
+msgstr "Wirkung"
+
+msgid "Error while clearing — please try again."
+msgstr "Fehler beim Leeren — versuche es nochmal."
+
+msgid "Error: %s"
+msgstr "Fehler: %s"
+
+msgid "Everything — all pathways, handbook (if any), orphan group, stats header."
+msgstr "Alles — alle Pathways, Handbuch (falls vorhanden), Orphan-Gruppe, Stats-Header."
+
+msgid "Filter by Project status"
+msgstr "Nach Project-Status filtern"
+
+msgid "HTTP error while loading tracker.json: %d"
+msgstr "HTTP-Fehler beim Laden der tracker.json: %d"
+
+msgid "Hide all pathway groups — Handbook and orphan group remain visible."
+msgstr "Alle Pathway-Gruppen ausblenden — übrig bleiben Handbook und Orphan-Gruppe."
+
+msgid "Hide the Handbook group (useful once handbook content is added)."
+msgstr "Handbook-Gruppe ausblenden (nützlich sobald Handbook-Inhalte dazukommen)."
+
+msgid "Hide the orphan group (\"Other\")."
+msgstr "Orphan-Gruppe (\"Sonstige\") ausblenden."
+
+msgid "Hide the stats header at the top."
+msgstr "Stats-Header oben ausblenden."
+
+msgid "Insert on any WordPress page. Multiple attributes can be combined freely."
+msgstr "Auf einer beliebigen WordPress-Seite einfügen. Mehrere Attribute beliebig kombinierbar."
+
+msgid "Insufficient permissions."
+msgstr "Keine Berechtigung."
+
+msgid "Items"
+msgstr "Items"
+
+msgid "Last successful tracker.json state: %s (UTC)"
+msgstr "Letzter erfolgreicher Stand der tracker.json: %s (UTC)"
+
+msgid "Multiple pathways at once — comma-separated."
+msgstr "Mehrere Pathways gleichzeitig — Komma getrennt."
+
+msgid "No items in this group."
+msgstr "Keine Items in dieser Gruppe."
+
+msgid "No results for the current filter/search combination."
+msgstr "Keine Treffer für die aktuelle Filter-/Suchkombination."
+
+msgid "No table"
+msgstr "Keine Tabelle"
+
+msgid "No tracker.json URL configured."
+msgstr "Keine tracker.json-URL konfiguriert."
+
+msgid "Only the \"Lesson Plans\" pathway."
+msgstr "Nur die Pathway \"Lesson Plans\"."
+
+msgid "Original"
+msgstr "Original"
+
+msgid "Original draft"
+msgstr "Original Entwurf"
+
+msgid "Orphaned"
+msgstr "Verwaist"
+
+msgid "Outside scope"
+msgstr "Außerhalb Scope"
+
+msgid "Required field missing in tracker.json: %s"
+msgstr "Pflichtfeld fehlt in tracker.json: %s"
+
+msgid "Review"
+msgstr "Review"
+
+msgid "Reviewer"
+msgstr "Reviewer"
+
+msgid "Save settings"
+msgstr "Einstellungen speichern"
+
+msgid "Schema version mismatch. Expected: %1$d, found: %2$s"
+msgstr "Schema-Version passt nicht. Erwartet: %1$d, gefunden: %2$s"
+
+msgid "Search titles"
+msgstr "In Titeln suchen"
+
+msgid "Search titles (EN or DE)…"
+msgstr "Titel suchen (DE oder EN)…"
+
+msgid "Shortcode"
+msgstr "Shortcode"
+
+msgid "Shortcodes"
+msgstr "Shortcodes"
+
+msgid "Show all"
+msgstr "Alle anzeigen"
+
+msgid "Show only Review"
+msgstr "Nur Review anzeigen"
+
+msgid "Show only done"
+msgstr "Nur fertige anzeigen"
+
+msgid "Show only in progress"
+msgstr "Nur in Arbeit anzeigen"
+
+msgid "Show only open"
+msgstr "Nur offene anzeigen"
+
+msgid "Show only the Training Handbook — typical for a dedicated handbook page."
+msgstr "Nur das Training Handbook anzeigen — typisch für eine eigene Handbook-Seite."
+
+msgid "Show only the pathway with slug \"user\" (e.g. Start using WordPress)."
+msgstr "Nur die Pathway mit Slug \"user\" anzeigen (z. B. Start using WordPress)."
+
+msgid "Tracker data is being prepared. Please check back later."
+msgstr "Tracker-Daten werden vorbereitet. Bitte später erneut prüfen."
+
+msgid "Translation"
+msgstr "Translation"
+
+msgid "Translation Tracker"
+msgstr "Translation Tracker"
+
+msgid "Values \"yes/no\", \"true/false\", and \"1/0\" are all accepted."
+msgstr "Werte \"yes/no\", \"true/false\" und \"1/0\" werden alle akzeptiert."
+
+msgid "`groups` in tracker.json is not an array."
+msgstr "`groups` in tracker.json ist kein Array."
+
+msgid "done"
+msgstr "fertig"
+
+msgid "in progress"
+msgstr "in Arbeit"
+
+msgid "n/a"
+msgstr "n/a"
+
+msgid "n/a — not filterable"
+msgstr "n/a — nicht filterbar"
+
+msgid "open"
+msgstr "offen"
+
+msgid "tracker.json URL"
+msgstr "URL der tracker.json"
+
+msgid "tracker.json could not be parsed: %s"
+msgstr "tracker.json konnte nicht geparst werden: %s"
+
+msgid "tracker.json has unexpected structure (no top-level object)."
+msgstr "tracker.json hat unerwartete Struktur (kein Top-Level-Objekt)."
+

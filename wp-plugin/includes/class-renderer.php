@@ -499,7 +499,7 @@ class TTT_Renderer {
 			<p>
 				<?php
 				esc_html_e(
-					'Tracker-Daten werden vorbereitet. Bitte später erneut prüfen.',
+					'Tracker data is being prepared. Please check back later.',
 					'training-translation-tracker'
 				);
 				?>
@@ -509,7 +509,7 @@ class TTT_Renderer {
 					<?php
 					printf(
 						/* translators: %s: error message. */
-						esc_html__( 'Fehler: %s', 'training-translation-tracker' ),
+						esc_html__( 'Error: %s', 'training-translation-tracker' ),
 						esc_html( $error )
 					);
 					?>
@@ -593,7 +593,7 @@ class TTT_Renderer {
 				if ( 'last_good' === $result['source'] && current_user_can( 'manage_options' ) ) :
 					?>
 					<p class="ttt-generated">
-						<span class="ttt-warn"><?php esc_html_e( '(letzter erfolgreich gespeicherter Stand — aktueller Fetch schlug fehl)', 'training-translation-tracker' ); ?></span>
+						<span class="ttt-warn"><?php esc_html_e( '(last successfully cached state — current fetch failed)', 'training-translation-tracker' ); ?></span>
 					</p>
 				<?php endif; ?>
 			</header>
@@ -603,7 +603,7 @@ class TTT_Renderer {
 			<?php endforeach; ?>
 
 			<div class="ttt-no-results" hidden>
-				<?php esc_html_e( 'Keine Treffer für die aktuelle Filter-/Suchkombination.', 'training-translation-tracker' ); ?>
+				<?php esc_html_e( 'No results for the current filter/search combination.', 'training-translation-tracker' ); ?>
 			</div>
 		</div>
 		<?php
@@ -622,15 +622,15 @@ class TTT_Renderer {
 			<input
 				type="search"
 				class="ttt-search-input"
-				placeholder="<?php esc_attr_e( 'Titel suchen (DE oder EN)…', 'training-translation-tracker' ); ?>"
-				aria-label="<?php esc_attr_e( 'In Titeln suchen', 'training-translation-tracker' ); ?>"
+				placeholder="<?php esc_attr_e( 'Search titles (EN or DE)…', 'training-translation-tracker' ); ?>"
+				aria-label="<?php esc_attr_e( 'Search titles', 'training-translation-tracker' ); ?>"
 			/>
 			<?php if ( ! empty( $project_status_values ) ) : ?>
 				<select
 					class="ttt-project-status-select"
-					aria-label="<?php esc_attr_e( 'Nach Project-Status filtern', 'training-translation-tracker' ); ?>"
+					aria-label="<?php esc_attr_e( 'Filter by Project status', 'training-translation-tracker' ); ?>"
 				>
-					<option value=""><?php esc_html_e( 'Alle Status', 'training-translation-tracker' ); ?></option>
+					<option value=""><?php esc_html_e( 'All statuses', 'training-translation-tracker' ); ?></option>
 					<?php foreach ( $project_status_values as $slug => $label ) : ?>
 						<option value="<?php echo esc_attr( $slug ); ?>"><?php echo esc_html( $label ); ?></option>
 					<?php endforeach; ?>
@@ -640,8 +640,8 @@ class TTT_Renderer {
 				type="button"
 				class="ttt-collapse-all-btn"
 				data-collapse-all-state="expanded"
-				aria-label="<?php esc_attr_e( 'Alle Sections einklappen oder ausklappen', 'training-translation-tracker' ); ?>"
-			><?php esc_html_e( 'Alle einklappen', 'training-translation-tracker' ); ?></button>
+				aria-label="<?php esc_attr_e( 'Collapse or expand all sections', 'training-translation-tracker' ); ?>"
+			><?php esc_html_e( 'Collapse all', 'training-translation-tracker' ); ?></button>
 		</div>
 		<?php
 	}
@@ -773,27 +773,27 @@ class TTT_Renderer {
 
 		?>
 		<div class="ttt-stats">
-			<button type="button" class="ttt-stat ttt-stat-total" data-filter-status="all" title="<?php esc_attr_e( 'Alle anzeigen', 'training-translation-tracker' ); ?>">
+			<button type="button" class="ttt-stat ttt-stat-total" data-filter-status="all" title="<?php esc_attr_e( 'Show all', 'training-translation-tracker' ); ?>">
 				<span class="ttt-stat-count"><?php echo (int) $total; ?></span>
 				<?php esc_html_e( 'Items', 'training-translation-tracker' ); ?>
 			</button>
-			<button type="button" class="ttt-stat ttt-stat-done" data-filter-status="done" title="<?php esc_attr_e( 'Nur fertige anzeigen', 'training-translation-tracker' ); ?>">
+			<button type="button" class="ttt-stat ttt-stat-done" data-filter-status="done" title="<?php esc_attr_e( 'Show only done', 'training-translation-tracker' ); ?>">
 				<span class="ttt-stat-count"><?php echo (int) $done; ?></span>
-				<?php esc_html_e( 'fertig', 'training-translation-tracker' ); ?>
+				<?php esc_html_e( 'done', 'training-translation-tracker' ); ?>
 			</button>
-			<button type="button" class="ttt-stat ttt-stat-review" data-filter-status="review" title="<?php esc_attr_e( 'Nur Review anzeigen', 'training-translation-tracker' ); ?>">
+			<button type="button" class="ttt-stat ttt-stat-review" data-filter-status="review" title="<?php esc_attr_e( 'Show only Review', 'training-translation-tracker' ); ?>">
 				<span class="ttt-stat-count"><?php echo (int) $review; ?></span>
 				<?php esc_html_e( 'Review', 'training-translation-tracker' ); ?>
 			</button>
-			<button type="button" class="ttt-stat ttt-stat-wip" data-filter-status="wip" title="<?php esc_attr_e( 'Nur in Arbeit anzeigen', 'training-translation-tracker' ); ?>">
+			<button type="button" class="ttt-stat ttt-stat-wip" data-filter-status="wip" title="<?php esc_attr_e( 'Show only in progress', 'training-translation-tracker' ); ?>">
 				<span class="ttt-stat-count"><?php echo (int) $wip; ?></span>
-				<?php esc_html_e( 'in Arbeit', 'training-translation-tracker' ); ?>
+				<?php esc_html_e( 'in progress', 'training-translation-tracker' ); ?>
 			</button>
-			<button type="button" class="ttt-stat ttt-stat-open" data-filter-status="open" title="<?php esc_attr_e( 'Nur offene anzeigen', 'training-translation-tracker' ); ?>">
+			<button type="button" class="ttt-stat ttt-stat-open" data-filter-status="open" title="<?php esc_attr_e( 'Show only open', 'training-translation-tracker' ); ?>">
 				<span class="ttt-stat-count"><?php echo (int) $open; ?></span>
-				<?php esc_html_e( 'offen', 'training-translation-tracker' ); ?>
+				<?php esc_html_e( 'open', 'training-translation-tracker' ); ?>
 			</button>
-			<span class="ttt-stat ttt-stat-na" title="<?php esc_attr_e( 'n/a — nicht filterbar', 'training-translation-tracker' ); ?>">
+			<span class="ttt-stat ttt-stat-na" title="<?php esc_attr_e( 'n/a — not filterable', 'training-translation-tracker' ); ?>">
 				<span class="ttt-stat-count"><?php echo (int) $na; ?></span>
 				<?php esc_html_e( 'n/a', 'training-translation-tracker' ); ?>
 			</span>
@@ -919,7 +919,7 @@ class TTT_Renderer {
 	 */
 	private function render_item_list( $items ) {
 		if ( empty( $items ) ) {
-			echo '<p class="ttt-empty-section">' . esc_html__( 'Keine Items in dieser Gruppe.', 'training-translation-tracker' ) . '</p>';
+			echo '<p class="ttt-empty-section">' . esc_html__( 'No items in this group.', 'training-translation-tracker' ) . '</p>';
 			return;
 		}
 
@@ -1164,7 +1164,7 @@ class TTT_Renderer {
 		if ( ! empty( $item['parse_error'] ) ) {
 			$out[] = array(
 				'key'   => 'parse-error',
-				'label' => __( 'Keine Tabelle', 'training-translation-tracker' ),
+				'label' => __( 'No table', 'training-translation-tracker' ),
 			);
 		}
 
@@ -1172,26 +1172,26 @@ class TTT_Renderer {
 		if ( 'outside_scope' === $orphan_reason ) {
 			$out[] = array(
 				'key'   => 'outside-scope',
-				'label' => __( 'Außerhalb Scope', 'training-translation-tracker' ),
+				'label' => __( 'Outside scope', 'training-translation-tracker' ),
 			);
 		} elseif ( 'missing_in_inventory' === $orphan_reason ) {
 			$out[] = array(
 				'key'   => 'missing-in-inventory',
-				'label' => __( 'Verwaist', 'training-translation-tracker' ),
+				'label' => __( 'Orphaned', 'training-translation-tracker' ),
 			);
 		}
 
 		if ( ! empty( $item['duplicate_issues'] ) ) {
 			$out[] = array(
 				'key'   => 'duplicate',
-				'label' => __( 'Doppelt', 'training-translation-tracker' ),
+				'label' => __( 'Duplicate', 'training-translation-tracker' ),
 			);
 		}
 
 		if ( ! empty( $item['draft_original'] ) ) {
 			$out[] = array(
 				'key'   => 'draft-original',
-				'label' => __( 'Original Entwurf', 'training-translation-tracker' ),
+				'label' => __( 'Original draft', 'training-translation-tracker' ),
 			);
 		}
 

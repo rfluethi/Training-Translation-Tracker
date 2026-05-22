@@ -2,8 +2,8 @@
 /**
  * Plugin Name:       Training Translation Tracker
  * Plugin URI:        https://github.com/rfluethi/learn-wp-dach-sitzungen
- * Description:       Dashboard für den Übersetzungsfortschritt des Learn WP DACH Teams.
- * Version:           0.3.0
+ * Description:       Dashboard for the translation progress of the Learn WP DACH Team.
+ * Version:           0.3.1
  * Requires at least: 6.0
  * Requires PHP:      8.0
  * Author:            Learn WP DACH Team
@@ -11,6 +11,7 @@
  * License:           GPL v2 or later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain:       training-translation-tracker
+ * Domain Path:       /languages
  *
  * @package           training-translation-tracker
  */
@@ -21,7 +22,7 @@ defined( 'ABSPATH' ) || exit;
 // Konstanten
 // -----------------------------------------------------------------------------
 
-define( 'TTT_VERSION', '0.3.0' );
+define( 'TTT_VERSION', '0.3.1' );
 define( 'TTT_PLUGIN_FILE', __FILE__ );
 define( 'TTT_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'TTT_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
@@ -58,12 +59,28 @@ require_once TTT_PLUGIN_DIR . 'includes/class-renderer.php';
 // -----------------------------------------------------------------------------
 
 /**
- * Initialisiert die Hauptkomponenten.
+ * Lädt die Übersetzungs-Dateien aus dem languages/-Unterordner des Plugins.
  *
- * Hinweis: load_plugin_textdomain() wird nicht aufgerufen — seit WordPress 4.6
- * lädt WordPress die Übersetzungen automatisch, sobald das Plugin auf
- * WordPress.org gehostet wird oder die Sprach-Dateien unter wp-content/languages/
- * liegen.
+ * Wird für GitHub-Distribution gebraucht: WordPress 4.6+ lädt Translations
+ * automatisch nur, wenn das Plugin auf wordpress.org gehostet ist oder die
+ * .mo-Dateien unter wp-content/languages/plugins/ liegen. Bei unserem
+ * GitHub-only-Vertrieb sitzen die Dateien hingegen unter dem Plugin-Ordner
+ * selbst (wp-content/plugins/training-translation-tracker/languages/), und
+ * dafür braucht es den expliziten Aufruf.
+ *
+ * @return void
+ */
+function ttt_load_textdomain() {
+	load_plugin_textdomain(
+		'training-translation-tracker',
+		false,
+		dirname( plugin_basename( __FILE__ ) ) . '/languages'
+	);
+}
+add_action( 'init', 'ttt_load_textdomain' );
+
+/**
+ * Initialisiert die Hauptkomponenten.
  *
  * @return void
  */

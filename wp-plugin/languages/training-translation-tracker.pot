@@ -2,9 +2,9 @@
 # This file is distributed under the GPL-2.0-or-later license.
 msgid ""
 msgstr ""
-"Project-Id-Version: Training Translation Tracker 0.3.0\n"
+"Project-Id-Version: Training Translation Tracker 0.3.1\n"
 "Report-Msgid-Bugs-To: https://github.com/rfluethi/Training-Translation-Tracker-Inventory-Plugin/issues\n"
-"POT-Creation-Date: 2026-05-22 10:37+0000\n"
+"POT-Creation-Date: 2026-05-22 11:16+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -14,71 +14,55 @@ msgstr ""
 "X-Domain: training-translation-tracker\n"
 
 #: wp-plugin/includes/class-renderer.php:596
-msgid "(letzter erfolgreich gespeicherter Stand — aktueller Fetch schlug fehl)"
+msgid "(last successfully cached state — current fetch failed)"
 msgstr ""
 
 #: wp-plugin/includes/class-settings.php:165
-msgid "1–168 Stunden. Empfohlen: 12 (passt zum Action-Intervall)."
-msgstr ""
-
-#: wp-plugin/includes/class-settings.php:290
-msgid "Alle Pathway-Gruppen ausblenden — übrig bleiben Handbook und Orphan-Gruppe."
-msgstr ""
-
-#: wp-plugin/includes/class-renderer.php:643
-msgid "Alle Sections einklappen oder ausklappen"
+msgid "1–168 hours. Recommended: 12 (matches the Action interval)."
 msgstr ""
 
 #: wp-plugin/includes/class-renderer.php:633
-msgid "Alle Status"
-msgstr ""
-
-#: wp-plugin/includes/class-renderer.php:776
-msgid "Alle anzeigen"
-msgstr ""
-
-#: wp-plugin/includes/class-renderer.php:644
-msgid "Alle einklappen"
-msgstr ""
-
-#: wp-plugin/includes/class-settings.php:262
-msgid "Alles — alle Pathways, Handbuch (falls vorhanden), Orphan-Gruppe, Stats-Header."
-msgstr ""
-
-#: wp-plugin/includes/class-settings.php:250
-msgid "Auf einer beliebigen WordPress-Seite einfügen. Mehrere Attribute beliebig kombinierbar."
-msgstr ""
-
-#: wp-plugin/includes/class-renderer.php:1175
-msgid "Außerhalb Scope"
+msgid "All statuses"
 msgstr ""
 
 #: wp-plugin/includes/class-settings.php:349
-msgid "Cache geleert. Beim nächsten Seitenaufruf wird neu geladen."
-msgstr ""
-
-#: wp-plugin/includes/class-settings.php:221
-msgid "Cache ist aktiv."
-msgstr ""
-
-#: wp-plugin/includes/class-settings.php:224
-msgid "Cache ist leer — beim nächsten Shortcode-Aufruf wird neu geladen."
-msgstr ""
-
-#: wp-plugin/includes/class-settings.php:241
-msgid "Cache jetzt leeren"
-msgstr ""
-
-#: wp-plugin/includes/class-settings.php:379
-msgid "Cache wird geleert…"
+msgid "Cache cleared. The next page load will fetch fresh data."
 msgstr ""
 
 #: wp-plugin/includes/class-settings.php:81
-msgid "Cache-Dauer (Stunden)"
+msgid "Cache duration (hours)"
+msgstr ""
+
+#: wp-plugin/includes/class-settings.php:221
+msgid "Cache is active."
+msgstr ""
+
+#: wp-plugin/includes/class-settings.php:224
+msgid "Cache is empty — the next shortcode call will fetch fresh data."
 msgstr ""
 
 #: wp-plugin/includes/class-settings.php:217
-msgid "Cache-Status"
+msgid "Cache status"
+msgstr ""
+
+#: wp-plugin/includes/class-settings.php:241
+msgid "Clear cache now"
+msgstr ""
+
+#: wp-plugin/includes/class-settings.php:379
+msgid "Clearing cache…"
+msgstr ""
+
+#: wp-plugin/includes/class-renderer.php:644
+msgid "Collapse all"
+msgstr ""
+
+#: wp-plugin/includes/class-renderer.php:643
+msgid "Collapse or expand all sections"
+msgstr ""
+
+#: wp-plugin/includes/class-settings.php:302
+msgid "Combination: only Lesson Plans, without stats and orphans — typical for a dedicated Lesson Plans page."
 msgstr ""
 
 #: wp-plugin/includes/class-renderer.php:1096
@@ -86,111 +70,99 @@ msgid "Creator"
 msgstr ""
 
 #: wp-plugin/includes/class-settings.php:66
-msgid "Datenquelle & Cache"
+msgid "Data source & cache"
 msgstr ""
 
 #: wp-plugin/includes/class-settings.php:145
-msgid "Direkter Link zur tracker.json — typischerweise der raw.githubusercontent.com-Link auf den data-Branch der Inventory-Action."
+msgid "Direct link to tracker.json — typically the raw.githubusercontent.com link to the data branch of the Inventory Action."
 msgstr ""
 
 #: wp-plugin/includes/class-renderer.php:1187
-msgid "Doppelt"
+msgid "Duplicate"
 msgstr ""
 
-#: wp-plugin/includes/class-settings.php:211
-msgid "Einstellungen speichern"
+#: wp-plugin/includes/class-settings.php:256
+msgid "Effect"
 msgstr ""
 
 #: wp-plugin/includes/class-settings.php:380
-msgid "Fehler beim Leeren — versuche es nochmal."
+msgid "Error while clearing — please try again."
 msgstr ""
 
 #. translators: %s: error message.
 #: wp-plugin/includes/class-renderer.php:512
-msgid "Fehler: %s"
+msgid "Error: %s"
+msgstr ""
+
+#: wp-plugin/includes/class-settings.php:262
+msgid "Everything — all pathways, handbook (if any), orphan group, stats header."
+msgstr ""
+
+#: wp-plugin/includes/class-renderer.php:631
+msgid "Filter by Project status"
 msgstr ""
 
 #. translators: %d: HTTP status code.
 #: wp-plugin/includes/class-fetcher.php:131
-msgid "HTTP-Fehler beim Laden der tracker.json: %d"
+msgid "HTTP error while loading tracker.json: %d"
+msgstr ""
+
+#: wp-plugin/includes/class-settings.php:290
+msgid "Hide all pathway groups — Handbook and orphan group remain visible."
 msgstr ""
 
 #: wp-plugin/includes/class-settings.php:282
-msgid "Handbook-Gruppe ausblenden (nützlich sobald Handbook-Inhalte dazukommen)."
+msgid "Hide the Handbook group (useful once handbook content is added)."
 msgstr ""
 
-#: wp-plugin/includes/class-renderer.php:626
-msgid "In Titeln suchen"
+#: wp-plugin/includes/class-settings.php:278
+msgid "Hide the orphan group (\"Other\")."
+msgstr ""
+
+#: wp-plugin/includes/class-settings.php:286
+msgid "Hide the stats header at the top."
+msgstr ""
+
+#: wp-plugin/includes/class-settings.php:250
+msgid "Insert on any WordPress page. Multiple attributes can be combined freely."
+msgstr ""
+
+#: wp-plugin/includes/class-settings.php:178
+#: wp-plugin/includes/class-settings.php:339
+msgid "Insufficient permissions."
 msgstr ""
 
 #: wp-plugin/includes/class-renderer.php:778
 msgid "Items"
 msgstr ""
 
-#: wp-plugin/includes/class-settings.php:178
-#: wp-plugin/includes/class-settings.php:339
-msgid "Keine Berechtigung."
-msgstr ""
-
-#: wp-plugin/includes/class-renderer.php:922
-msgid "Keine Items in dieser Gruppe."
-msgstr ""
-
-#: wp-plugin/includes/class-renderer.php:1167
-msgid "Keine Tabelle"
-msgstr ""
-
-#: wp-plugin/includes/class-renderer.php:606
-msgid "Keine Treffer für die aktuelle Filter-/Suchkombination."
-msgstr ""
-
-#: wp-plugin/includes/class-fetcher.php:41
-msgid "Keine tracker.json-URL konfiguriert."
-msgstr ""
-
-#: wp-plugin/includes/class-settings.php:302
-msgid "Kombination: nur Lesson Plans, ohne Stats und ohne Orphans — typisch für eine eigene Lesson-Plans-Seite."
-msgstr ""
-
 #. translators: %s: UTC timestamp from tracker.json.
 #: wp-plugin/includes/class-settings.php:232
-msgid "Letzter erfolgreicher Stand der tracker.json: %s (UTC)"
+msgid "Last successful tracker.json state: %s (UTC)"
 msgstr ""
 
 #: wp-plugin/includes/class-settings.php:274
-msgid "Mehrere Pathways gleichzeitig — Komma getrennt."
+msgid "Multiple pathways at once — comma-separated."
 msgstr ""
 
-#: wp-plugin/includes/class-renderer.php:631
-msgid "Nach Project-Status filtern"
+#: wp-plugin/includes/class-renderer.php:922
+msgid "No items in this group."
 msgstr ""
 
-#: wp-plugin/includes/class-renderer.php:784
-msgid "Nur Review anzeigen"
+#: wp-plugin/includes/class-renderer.php:606
+msgid "No results for the current filter/search combination."
 msgstr ""
 
-#: wp-plugin/includes/class-settings.php:296
-msgid "Nur das Training Handbook anzeigen — typisch für eine eigene Handbook-Seite."
+#: wp-plugin/includes/class-renderer.php:1167
+msgid "No table"
+msgstr ""
+
+#: wp-plugin/includes/class-fetcher.php:41
+msgid "No tracker.json URL configured."
 msgstr ""
 
 #: wp-plugin/includes/class-settings.php:270
-msgid "Nur die Pathway \"Lesson Plans\"."
-msgstr ""
-
-#: wp-plugin/includes/class-settings.php:266
-msgid "Nur die Pathway mit Slug \"user\" anzeigen (z. B. Start using WordPress)."
-msgstr ""
-
-#: wp-plugin/includes/class-renderer.php:780
-msgid "Nur fertige anzeigen"
-msgstr ""
-
-#: wp-plugin/includes/class-renderer.php:788
-msgid "Nur in Arbeit anzeigen"
-msgstr ""
-
-#: wp-plugin/includes/class-renderer.php:792
-msgid "Nur offene anzeigen"
+msgid "Only the \"Lesson Plans\" pathway."
 msgstr ""
 
 #: wp-plugin/includes/class-renderer.php:992
@@ -198,15 +170,19 @@ msgid "Original"
 msgstr ""
 
 #: wp-plugin/includes/class-renderer.php:1194
-msgid "Original Entwurf"
+msgid "Original draft"
 msgstr ""
 
-#: wp-plugin/includes/class-settings.php:278
-msgid "Orphan-Gruppe (\"Sonstige\") ausblenden."
+#: wp-plugin/includes/class-renderer.php:1180
+msgid "Orphaned"
+msgstr ""
+
+#: wp-plugin/includes/class-renderer.php:1175
+msgid "Outside scope"
 msgstr ""
 
 #. translators: %d: HTTP status code. */
-#. __( 'HTTP-Fehler beim Laden der tracker.json: %d', 'training-translation-tracker' ),
+#. __( 'HTTP error while loading tracker.json: %d', 'training-translation-tracker' ),
 #. $code
 #. )
 #. );
@@ -218,13 +194,13 @@ msgstr ""
 #. 'ttt_json_error',
 #. sprintf(
 #. /* translators: %s: JSON decode error message. */
-#. __( 'tracker.json konnte nicht geparst werden: %s', 'training-translation-tracker' ),
+#. __( 'tracker.json could not be parsed: %s', 'training-translation-tracker' ),
 #. json_last_error_msg()
 #. )
 #. );
 #. }
 #. if ( ! is_array( $data ) ) {
-#. return new WP_Error( 'ttt_json_shape', __( 'tracker.json hat unerwartete Struktur (kein Top-Level-Objekt).', 'training-translation-tracker' ) );
+#. return new WP_Error( 'ttt_json_shape', __( 'tracker.json has unexpected structure (no top-level object).', 'training-translation-tracker' ) );
 #. }
 #. return $data;
 #. }
@@ -241,7 +217,7 @@ msgstr ""
 #. 'ttt_schema_mismatch',
 #. sprintf(
 #. /* translators: 1: expected schema version, 2: actual. */
-#. __( 'Schema-Version passt nicht. Erwartet: %1$d, gefunden: %2$s', 'training-translation-tracker' ),
+#. __( 'Schema version mismatch. Expected: %1$d, found: %2$s', 'training-translation-tracker' ),
 #. TTT_TRACKER_SCHEMA_VERSION,
 #. isset( $payload['schema_version'] ) ? (string) $payload['schema_version'] : 'fehlt'
 #. )
@@ -254,7 +230,7 @@ msgstr ""
 #. sprintf(
 #. /* translators: %s: missing field name.
 #: wp-plugin/includes/class-fetcher.php:185
-msgid "Pflichtfeld fehlt in tracker.json: %s"
+msgid "Required field missing in tracker.json: %s"
 msgstr ""
 
 #: wp-plugin/includes/class-renderer.php:786
@@ -265,8 +241,12 @@ msgstr ""
 msgid "Reviewer"
 msgstr ""
 
+#: wp-plugin/includes/class-settings.php:211
+msgid "Save settings"
+msgstr ""
+
 #. translators: %d: HTTP status code. */
-#. __( 'HTTP-Fehler beim Laden der tracker.json: %d', 'training-translation-tracker' ),
+#. __( 'HTTP error while loading tracker.json: %d', 'training-translation-tracker' ),
 #. $code
 #. )
 #. );
@@ -278,13 +258,13 @@ msgstr ""
 #. 'ttt_json_error',
 #. sprintf(
 #. /* translators: %s: JSON decode error message. */
-#. __( 'tracker.json konnte nicht geparst werden: %s', 'training-translation-tracker' ),
+#. __( 'tracker.json could not be parsed: %s', 'training-translation-tracker' ),
 #. json_last_error_msg()
 #. )
 #. );
 #. }
 #. if ( ! is_array( $data ) ) {
-#. return new WP_Error( 'ttt_json_shape', __( 'tracker.json hat unerwartete Struktur (kein Top-Level-Objekt).', 'training-translation-tracker' ) );
+#. return new WP_Error( 'ttt_json_shape', __( 'tracker.json has unexpected structure (no top-level object).', 'training-translation-tracker' ) );
 #. }
 #. return $data;
 #. }
@@ -302,7 +282,15 @@ msgstr ""
 #. sprintf(
 #. /* translators: 1: expected schema version, 2: actual.
 #: wp-plugin/includes/class-fetcher.php:172
-msgid "Schema-Version passt nicht. Erwartet: %1$d, gefunden: %2$s"
+msgid "Schema version mismatch. Expected: %1$d, found: %2$s"
+msgstr ""
+
+#: wp-plugin/includes/class-renderer.php:626
+msgid "Search titles"
+msgstr ""
+
+#: wp-plugin/includes/class-renderer.php:625
+msgid "Search titles (EN or DE)…"
 msgstr ""
 
 #: wp-plugin/includes/class-settings.php:255
@@ -313,16 +301,36 @@ msgstr ""
 msgid "Shortcodes"
 msgstr ""
 
-#: wp-plugin/includes/class-settings.php:286
-msgid "Stats-Header oben ausblenden."
+#: wp-plugin/includes/class-renderer.php:776
+msgid "Show all"
 msgstr ""
 
-#: wp-plugin/includes/class-renderer.php:625
-msgid "Titel suchen (DE oder EN)…"
+#: wp-plugin/includes/class-renderer.php:784
+msgid "Show only Review"
+msgstr ""
+
+#: wp-plugin/includes/class-renderer.php:780
+msgid "Show only done"
+msgstr ""
+
+#: wp-plugin/includes/class-renderer.php:788
+msgid "Show only in progress"
+msgstr ""
+
+#: wp-plugin/includes/class-renderer.php:792
+msgid "Show only open"
+msgstr ""
+
+#: wp-plugin/includes/class-settings.php:296
+msgid "Show only the Training Handbook — typical for a dedicated handbook page."
+msgstr ""
+
+#: wp-plugin/includes/class-settings.php:266
+msgid "Show only the pathway with slug \"user\" (e.g. Start using WordPress)."
 msgstr ""
 
 #: wp-plugin/includes/class-renderer.php:501
-msgid "Tracker-Daten werden vorbereitet. Bitte später erneut prüfen."
+msgid "Tracker data is being prepared. Please check back later."
 msgstr ""
 
 #: wp-plugin/includes/class-renderer.php:1005
@@ -335,32 +343,20 @@ msgstr ""
 msgid "Translation Tracker"
 msgstr ""
 
-#: wp-plugin/includes/class-settings.php:73
-msgid "URL der tracker.json"
-msgstr ""
-
-#: wp-plugin/includes/class-renderer.php:1180
-msgid "Verwaist"
-msgstr ""
-
 #: wp-plugin/includes/class-settings.php:308
-msgid "Werte \"yes/no\", \"true/false\" und \"1/0\" werden alle akzeptiert."
-msgstr ""
-
-#: wp-plugin/includes/class-settings.php:256
-msgid "Wirkung"
+msgid "Values \"yes/no\", \"true/false\", and \"1/0\" are all accepted."
 msgstr ""
 
 #: wp-plugin/includes/class-fetcher.php:193
-msgid "`groups` in tracker.json ist kein Array."
+msgid "`groups` in tracker.json is not an array."
 msgstr ""
 
 #: wp-plugin/includes/class-renderer.php:782
-msgid "fertig"
+msgid "done"
 msgstr ""
 
 #: wp-plugin/includes/class-renderer.php:790
-msgid "in Arbeit"
+msgid "in progress"
 msgstr ""
 
 #: wp-plugin/includes/class-renderer.php:798
@@ -368,19 +364,19 @@ msgid "n/a"
 msgstr ""
 
 #: wp-plugin/includes/class-renderer.php:796
-msgid "n/a — nicht filterbar"
+msgid "n/a — not filterable"
 msgstr ""
 
 #: wp-plugin/includes/class-renderer.php:794
-msgid "offen"
+msgid "open"
 msgstr ""
 
-#: wp-plugin/includes/class-fetcher.php:151
-msgid "tracker.json hat unerwartete Struktur (kein Top-Level-Objekt)."
+#: wp-plugin/includes/class-settings.php:73
+msgid "tracker.json URL"
 msgstr ""
 
 #. translators: %d: HTTP status code. */
-#. __( 'HTTP-Fehler beim Laden der tracker.json: %d', 'training-translation-tracker' ),
+#. __( 'HTTP error while loading tracker.json: %d', 'training-translation-tracker' ),
 #. $code
 #. )
 #. );
@@ -393,6 +389,10 @@ msgstr ""
 #. sprintf(
 #. /* translators: %s: JSON decode error message.
 #: wp-plugin/includes/class-fetcher.php:144
-msgid "tracker.json konnte nicht geparst werden: %s"
+msgid "tracker.json could not be parsed: %s"
+msgstr ""
+
+#: wp-plugin/includes/class-fetcher.php:151
+msgid "tracker.json has unexpected structure (no top-level object)."
 msgstr ""
 

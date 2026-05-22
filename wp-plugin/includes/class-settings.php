@@ -63,14 +63,14 @@ class TTT_Settings {
 
 		add_settings_section(
 			'ttt_section_main',
-			__( 'Datenquelle & Cache', 'training-translation-tracker' ),
+			__( 'Data source & cache', 'training-translation-tracker' ),
 			'__return_null',
 			'training-translation-tracker'
 		);
 
 		add_settings_field(
 			'ttt_tracker_url',
-			__( 'URL der tracker.json', 'training-translation-tracker' ),
+			__( 'tracker.json URL', 'training-translation-tracker' ),
 			array( $this, 'field_tracker_url' ),
 			'training-translation-tracker',
 			'ttt_section_main'
@@ -78,7 +78,7 @@ class TTT_Settings {
 
 		add_settings_field(
 			'ttt_cache_hours',
-			__( 'Cache-Dauer (Stunden)', 'training-translation-tracker' ),
+			__( 'Cache duration (hours)', 'training-translation-tracker' ),
 			array( $this, 'field_cache_hours' ),
 			'training-translation-tracker',
 			'ttt_section_main'
@@ -143,7 +143,7 @@ class TTT_Settings {
 		);
 		echo '<p class="description">';
 		echo esc_html__(
-			'Direkter Link zur tracker.json — typischerweise der raw.githubusercontent.com-Link auf den data-Branch der Inventory-Action.',
+			'Direct link to tracker.json — typically the raw.githubusercontent.com link to the data branch of the Inventory Action.',
 			'training-translation-tracker'
 		);
 		echo '</p>';
@@ -162,7 +162,7 @@ class TTT_Settings {
 			(int) $value
 		);
 		echo ' <span class="description">';
-		echo esc_html__( '1–168 Stunden. Empfohlen: 12 (passt zum Action-Intervall).', 'training-translation-tracker' );
+		echo esc_html__( '1–168 hours. Recommended: 12 (matches the Action interval).', 'training-translation-tracker' );
 		echo '</span>';
 	}
 
@@ -175,7 +175,7 @@ class TTT_Settings {
 	 */
 	public function render_settings_page() {
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_die( esc_html__( 'Keine Berechtigung.', 'training-translation-tracker' ) );
+			wp_die( esc_html__( 'Insufficient permissions.', 'training-translation-tracker' ) );
 		}
 
 		$last_good   = get_transient( TTT_LAST_GOOD_KEY );
@@ -208,20 +208,20 @@ class TTT_Settings {
 				<?php
 				settings_fields( 'ttt_settings_group' );
 				do_settings_sections( 'training-translation-tracker' );
-				submit_button( __( 'Einstellungen speichern', 'training-translation-tracker' ) );
+				submit_button( __( 'Save settings', 'training-translation-tracker' ) );
 				?>
 			</form>
 
 			<hr>
 
-			<h2><?php esc_html_e( 'Cache-Status', 'training-translation-tracker' ); ?></h2>
+			<h2><?php esc_html_e( 'Cache status', 'training-translation-tracker' ); ?></h2>
 			<p>
 				<?php if ( $cache_state ) : ?>
 					<span class="ttt-settings-status-active">●</span>
-					<?php esc_html_e( 'Cache ist aktiv.', 'training-translation-tracker' ); ?>
+					<?php esc_html_e( 'Cache is active.', 'training-translation-tracker' ); ?>
 				<?php else : ?>
 					<span class="ttt-settings-status-inactive">○</span>
-					<?php esc_html_e( 'Cache ist leer — beim nächsten Shortcode-Aufruf wird neu geladen.', 'training-translation-tracker' ); ?>
+					<?php esc_html_e( 'Cache is empty — the next shortcode call will fetch fresh data.', 'training-translation-tracker' ); ?>
 				<?php endif; ?>
 			</p>
 			<?php if ( $generated ) : ?>
@@ -229,7 +229,7 @@ class TTT_Settings {
 					<?php
 					printf(
 						/* translators: %s: UTC timestamp from tracker.json. */
-						esc_html__( 'Letzter erfolgreicher Stand der tracker.json: %s (UTC)', 'training-translation-tracker' ),
+						esc_html__( 'Last successful tracker.json state: %s (UTC)', 'training-translation-tracker' ),
 						'<code>' . esc_html( $generated ) . '</code>'
 					);
 					?>
@@ -238,7 +238,7 @@ class TTT_Settings {
 
 			<p>
 				<button type="button" id="ttt-clear-cache" class="button button-secondary">
-					<?php esc_html_e( 'Cache jetzt leeren', 'training-translation-tracker' ); ?>
+					<?php esc_html_e( 'Clear cache now', 'training-translation-tracker' ); ?>
 				</button>
 				<span id="ttt-clear-cache-msg" class="ttt-settings-clear-msg"></span>
 			</p>
@@ -247,65 +247,65 @@ class TTT_Settings {
 
 			<h2><?php esc_html_e( 'Shortcodes', 'training-translation-tracker' ); ?></h2>
 			<p>
-				<?php esc_html_e( 'Auf einer beliebigen WordPress-Seite einfügen. Mehrere Attribute beliebig kombinierbar.', 'training-translation-tracker' ); ?>
+				<?php esc_html_e( 'Insert on any WordPress page. Multiple attributes can be combined freely.', 'training-translation-tracker' ); ?>
 			</p>
 			<table class="widefat striped ttt-settings-shortcode-table">
 				<thead>
 					<tr>
 						<th><?php esc_html_e( 'Shortcode', 'training-translation-tracker' ); ?></th>
-						<th><?php esc_html_e( 'Wirkung', 'training-translation-tracker' ); ?></th>
+						<th><?php esc_html_e( 'Effect', 'training-translation-tracker' ); ?></th>
 					</tr>
 				</thead>
 				<tbody>
 					<tr>
 						<td><code>[translation_tracker]</code></td>
-						<td><?php esc_html_e( 'Alles — alle Pathways, Handbuch (falls vorhanden), Orphan-Gruppe, Stats-Header.', 'training-translation-tracker' ); ?></td>
+						<td><?php esc_html_e( 'Everything — all pathways, handbook (if any), orphan group, stats header.', 'training-translation-tracker' ); ?></td>
 					</tr>
 					<tr>
 						<td><code>[translation_tracker pathway="user"]</code></td>
-						<td><?php esc_html_e( 'Nur die Pathway mit Slug "user" anzeigen (z. B. Start using WordPress).', 'training-translation-tracker' ); ?></td>
+						<td><?php esc_html_e( 'Show only the pathway with slug "user" (e.g. Start using WordPress).', 'training-translation-tracker' ); ?></td>
 					</tr>
 					<tr>
 						<td><code>[translation_tracker pathway="lesson-plans"]</code></td>
-						<td><?php esc_html_e( 'Nur die Pathway "Lesson Plans".', 'training-translation-tracker' ); ?></td>
+						<td><?php esc_html_e( 'Only the "Lesson Plans" pathway.', 'training-translation-tracker' ); ?></td>
 					</tr>
 					<tr>
 						<td><code>[translation_tracker pathway="user,lesson-plans"]</code></td>
-						<td><?php esc_html_e( 'Mehrere Pathways gleichzeitig — Komma getrennt.', 'training-translation-tracker' ); ?></td>
+						<td><?php esc_html_e( 'Multiple pathways at once — comma-separated.', 'training-translation-tracker' ); ?></td>
 					</tr>
 					<tr>
 						<td><code>[translation_tracker show_orphans="no"]</code></td>
-						<td><?php esc_html_e( 'Orphan-Gruppe ("Sonstige") ausblenden.', 'training-translation-tracker' ); ?></td>
+						<td><?php esc_html_e( 'Hide the orphan group ("Other").', 'training-translation-tracker' ); ?></td>
 					</tr>
 					<tr>
 						<td><code>[translation_tracker show_handbook="no"]</code></td>
-						<td><?php esc_html_e( 'Handbook-Gruppe ausblenden (nützlich sobald Handbook-Inhalte dazukommen).', 'training-translation-tracker' ); ?></td>
+						<td><?php esc_html_e( 'Hide the Handbook group (useful once handbook content is added).', 'training-translation-tracker' ); ?></td>
 					</tr>
 					<tr>
 						<td><code>[translation_tracker show_stats="no"]</code></td>
-						<td><?php esc_html_e( 'Stats-Header oben ausblenden.', 'training-translation-tracker' ); ?></td>
+						<td><?php esc_html_e( 'Hide the stats header at the top.', 'training-translation-tracker' ); ?></td>
 					</tr>
 					<tr>
 						<td><code>[translation_tracker show_pathways="no"]</code></td>
-						<td><?php esc_html_e( 'Alle Pathway-Gruppen ausblenden — übrig bleiben Handbook und Orphan-Gruppe.', 'training-translation-tracker' ); ?></td>
+						<td><?php esc_html_e( 'Hide all pathway groups — Handbook and orphan group remain visible.', 'training-translation-tracker' ); ?></td>
 					</tr>
 					<tr>
 						<td>
 							<code>[translation_tracker show_pathways="no" show_orphans="no"]</code>
 						</td>
-						<td><?php esc_html_e( 'Nur das Training Handbook anzeigen — typisch für eine eigene Handbook-Seite.', 'training-translation-tracker' ); ?></td>
+						<td><?php esc_html_e( 'Show only the Training Handbook — typical for a dedicated handbook page.', 'training-translation-tracker' ); ?></td>
 					</tr>
 					<tr>
 						<td>
 							<code>[translation_tracker pathway="lesson-plans" show_stats="no" show_orphans="no"]</code>
 						</td>
-						<td><?php esc_html_e( 'Kombination: nur Lesson Plans, ohne Stats und ohne Orphans — typisch für eine eigene Lesson-Plans-Seite.', 'training-translation-tracker' ); ?></td>
+						<td><?php esc_html_e( 'Combination: only Lesson Plans, without stats and orphans — typical for a dedicated Lesson Plans page.', 'training-translation-tracker' ); ?></td>
 					</tr>
 				</tbody>
 			</table>
 
 			<p class="ttt-settings-shortcode-note">
-				<?php esc_html_e( 'Werte "yes/no", "true/false" und "1/0" werden alle akzeptiert.', 'training-translation-tracker' ); ?>
+				<?php esc_html_e( 'Values "yes/no", "true/false", and "1/0" are all accepted.', 'training-translation-tracker' ); ?>
 			</p>
 		</div>
 		<?php
@@ -336,7 +336,7 @@ class TTT_Settings {
 
 		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_send_json_error(
-				array( 'message' => __( 'Keine Berechtigung.', 'training-translation-tracker' ) ),
+				array( 'message' => __( 'Insufficient permissions.', 'training-translation-tracker' ) ),
 				403
 			);
 		}
@@ -346,7 +346,7 @@ class TTT_Settings {
 
 		wp_send_json_success(
 			array(
-				'message' => __( 'Cache geleert. Beim nächsten Seitenaufruf wird neu geladen.', 'training-translation-tracker' ),
+				'message' => __( 'Cache cleared. The next page load will fetch fresh data.', 'training-translation-tracker' ),
 			)
 		);
 	}
@@ -376,8 +376,8 @@ class TTT_Settings {
 			array(
 				'ajaxUrl'   => admin_url( 'admin-ajax.php' ),
 				'nonce'     => wp_create_nonce( 'ttt_clear_cache' ),
-				'clearing'  => __( 'Cache wird geleert…', 'training-translation-tracker' ),
-				'errorText' => __( 'Fehler beim Leeren — versuche es nochmal.', 'training-translation-tracker' ),
+				'clearing'  => __( 'Clearing cache…', 'training-translation-tracker' ),
+				'errorText' => __( 'Error while clearing — please try again.', 'training-translation-tracker' ),
 			)
 		);
 	}

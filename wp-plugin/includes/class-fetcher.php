@@ -38,7 +38,7 @@ class TTT_Fetcher {
 
 		$url = TTT_Settings::get( 'tracker_url' );
 		if ( empty( $url ) ) {
-			return self::result( self::get_last_good(), 'last_good', __( 'Keine tracker.json-URL konfiguriert.', 'training-translation-tracker' ) );
+			return self::result( self::get_last_good(), 'last_good', __( 'No tracker.json URL configured.', 'training-translation-tracker' ) );
 		}
 
 		$fetch = self::http_get_json( $url );
@@ -128,7 +128,7 @@ class TTT_Fetcher {
 				'ttt_http_error',
 				sprintf(
 					/* translators: %d: HTTP status code. */
-					__( 'HTTP-Fehler beim Laden der tracker.json: %d', 'training-translation-tracker' ),
+					__( 'HTTP error while loading tracker.json: %d', 'training-translation-tracker' ),
 					$code
 				)
 			);
@@ -141,14 +141,14 @@ class TTT_Fetcher {
 				'ttt_json_error',
 				sprintf(
 					/* translators: %s: JSON decode error message. */
-					__( 'tracker.json konnte nicht geparst werden: %s', 'training-translation-tracker' ),
+					__( 'tracker.json could not be parsed: %s', 'training-translation-tracker' ),
 					json_last_error_msg()
 				)
 			);
 		}
 
 		if ( ! is_array( $data ) ) {
-			return new WP_Error( 'ttt_json_shape', __( 'tracker.json hat unerwartete Struktur (kein Top-Level-Objekt).', 'training-translation-tracker' ) );
+			return new WP_Error( 'ttt_json_shape', __( 'tracker.json has unexpected structure (no top-level object).', 'training-translation-tracker' ) );
 		}
 
 		return $data;
@@ -169,7 +169,7 @@ class TTT_Fetcher {
 				'ttt_schema_mismatch',
 				sprintf(
 					/* translators: 1: expected schema version, 2: actual. */
-					__( 'Schema-Version passt nicht. Erwartet: %1$d, gefunden: %2$s', 'training-translation-tracker' ),
+					__( 'Schema version mismatch. Expected: %1$d, found: %2$s', 'training-translation-tracker' ),
 					TTT_TRACKER_SCHEMA_VERSION,
 					isset( $payload['schema_version'] ) ? (string) $payload['schema_version'] : 'fehlt'
 				)
@@ -182,7 +182,7 @@ class TTT_Fetcher {
 					'ttt_field_missing',
 					sprintf(
 						/* translators: %s: missing field name. */
-						__( 'Pflichtfeld fehlt in tracker.json: %s', 'training-translation-tracker' ),
+						__( 'Required field missing in tracker.json: %s', 'training-translation-tracker' ),
 						$required
 					)
 				);
@@ -190,7 +190,7 @@ class TTT_Fetcher {
 		}
 
 		if ( ! is_array( $payload['groups'] ) ) {
-			return new WP_Error( 'ttt_groups_shape', __( '`groups` in tracker.json ist kein Array.', 'training-translation-tracker' ) );
+			return new WP_Error( 'ttt_groups_shape', __( '`groups` in tracker.json is not an array.', 'training-translation-tracker' ) );
 		}
 
 		return true;
