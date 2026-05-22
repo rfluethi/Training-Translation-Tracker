@@ -276,9 +276,12 @@ class TTT_Renderer {
 	--ttt-color-wip-bg:    #cce5ff;
 	--ttt-color-wip:       #1c7ed6;
 	--ttt-color-wip-border: #007bff;
+	/* Open is highlighted yellow since 0.4.4. Foreground stays neutral
+	   dark gray because the same token is reused for non-status UI
+	   chrome (section titles, dropdown text, collapse-all button). */
 	--ttt-color-open-fg:   #495057;
-	--ttt-color-open-bg:   #f8f9fa;
-	--ttt-color-open:      #adb5bd;
+	--ttt-color-open-bg:   #fef9c3;
+	--ttt-color-open:      #facc15;
 	--ttt-color-na-fg:     #6c757d;
 	--ttt-color-na-bg:     #e9ecef;
 	--ttt-color-na:        #ced4da;
@@ -346,7 +349,9 @@ class TTT_Renderer {
 .ttt-tracker .ttt-search-input { flex: 1 1 220px; max-width: 320px; padding: var(--ttt-space-sm) 0.7rem; border: var(--ttt-border-width) solid var(--ttt-color-border-input); border-radius: var(--ttt-radius-md); font-size: 0.9rem; font-family: inherit; line-height: 1.3; background: var(--ttt-color-bg); color: var(--ttt-color-text-strong); box-sizing: border-box; }
 .ttt-tracker .ttt-search-input:focus { outline: none; border-color: var(--ttt-color-primary); box-shadow: var(--ttt-shadow-focus); }
 .ttt-tracker .ttt-collapse-all-btn { padding: var(--ttt-space-sm) 0.85rem; border: var(--ttt-border-width) solid var(--ttt-color-border-input); background: var(--ttt-color-bg); color: var(--ttt-color-open-fg); border-radius: var(--ttt-radius-md); font-size: var(--ttt-font-size-sm); cursor: pointer; font-family: inherit; line-height: 1.3; transition: background 0.15s ease, border-color 0.15s ease; flex-shrink: 0; }
-.ttt-tracker .ttt-project-status-select { padding: var(--ttt-space-sm) var(--ttt-space-md); border: var(--ttt-border-width) solid var(--ttt-color-border-input); background: var(--ttt-color-bg); color: var(--ttt-color-open-fg); border-radius: var(--ttt-radius-md); font-size: var(--ttt-font-size-sm); cursor: pointer; font-family: inherit; line-height: 1.3; flex-shrink: 0; max-width: 200px; }
+.ttt-tracker .ttt-project-status-select,
+.ttt-tracker .ttt-component-select,
+.ttt-tracker .ttt-component-status-select { padding: var(--ttt-space-sm) var(--ttt-space-md); border: var(--ttt-border-width) solid var(--ttt-color-border-input); background: var(--ttt-color-bg); color: var(--ttt-color-open-fg); border-radius: var(--ttt-radius-md); font-size: var(--ttt-font-size-sm); cursor: pointer; font-family: inherit; line-height: 1.3; flex-shrink: 0; max-width: 200px; }
 .ttt-tracker .ttt-project-status-select:focus { outline: none; border-color: var(--ttt-color-primary); box-shadow: var(--ttt-shadow-focus); }
 .ttt-tracker .ttt-project-status { display: inline-block; padding: 0.05rem 0.5rem; border-radius: var(--ttt-radius-pill); font-size: var(--ttt-font-size-xs); font-weight: 600; background: var(--ttt-color-ps-default-bg); color: var(--ttt-color-ps-default-fg); white-space: nowrap; }
 /* Color variants per status slug. For unknown values the default above applies. */
@@ -394,7 +399,7 @@ class TTT_Renderer {
 .ttt-tracker .ttt-card-footer-right .ttt-comp-icon.ttt-comp-done   { color: var(--ttt-color-done); }
 .ttt-tracker .ttt-card-footer-right .ttt-comp-icon.ttt-comp-review { color: var(--ttt-color-review); }
 .ttt-tracker .ttt-card-footer-right .ttt-comp-icon.ttt-comp-wip    { color: var(--ttt-color-wip); }
-.ttt-tracker .ttt-card-footer-right .ttt-comp-icon.ttt-comp-open   { color: var(--ttt-color-open); opacity: 0.65; }
+.ttt-tracker .ttt-card-footer-right .ttt-comp-icon.ttt-comp-open   { color: var(--ttt-color-open); }
 .ttt-tracker .ttt-card-footer-right .ttt-comp-icon.ttt-comp-na     { color: var(--ttt-color-na); opacity: 0.45; }
 /* Component popover (positioned dynamically by the JS). Always on a higher
    stacking layer than the cards. */
@@ -681,6 +686,30 @@ class TTT_Renderer {
 					<?php endforeach; ?>
 				</select>
 			<?php endif; ?>
+			<select
+				class="ttt-component-select"
+				aria-label="<?php esc_attr_e( 'Filter by component', 'training-translation-tracker' ); ?>"
+			>
+				<option value=""><?php esc_html_e( 'All components', 'training-translation-tracker' ); ?></option>
+				<option value="thumbnails"><?php esc_html_e( 'thumbnails', 'training-translation-tracker' ); ?></option>
+				<option value="text"><?php esc_html_e( 'text', 'training-translation-tracker' ); ?></option>
+				<option value="subtitles"><?php esc_html_e( 'subtitles', 'training-translation-tracker' ); ?></option>
+				<option value="exercise"><?php esc_html_e( 'exercise', 'training-translation-tracker' ); ?></option>
+				<option value="quiz"><?php esc_html_e( 'quiz', 'training-translation-tracker' ); ?></option>
+				<option value="audio"><?php esc_html_e( 'audio', 'training-translation-tracker' ); ?></option>
+				<option value="video"><?php esc_html_e( 'video', 'training-translation-tracker' ); ?></option>
+			</select>
+			<select
+				class="ttt-component-status-select"
+				aria-label="<?php esc_attr_e( 'Filter component by status', 'training-translation-tracker' ); ?>"
+			>
+				<option value=""><?php esc_html_e( 'Any status', 'training-translation-tracker' ); ?></option>
+				<option value="open"><?php esc_html_e( 'open', 'training-translation-tracker' ); ?></option>
+				<option value="wip"><?php esc_html_e( 'in progress', 'training-translation-tracker' ); ?></option>
+				<option value="review"><?php esc_html_e( 'Review', 'training-translation-tracker' ); ?></option>
+				<option value="done"><?php esc_html_e( 'done', 'training-translation-tracker' ); ?></option>
+				<option value="na"><?php esc_html_e( 'n/a', 'training-translation-tracker' ); ?></option>
+			</select>
 			<button
 				type="button"
 				class="ttt-collapse-all-btn"

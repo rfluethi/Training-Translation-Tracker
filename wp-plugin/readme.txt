@@ -4,7 +4,7 @@ Tags: translation, learn-wordpress, tracker, dashboard
 Requires at least: 6.0
 Tested up to: 7.0
 Requires PHP: 8.0
-Stable tag: 0.4.3
+Stable tag: 0.4.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -34,6 +34,29 @@ DACH Team for translating learn.wordpress.org content into German.
 4. Embed the shortcode `[translation_tracker]` on any page.
 
 == Changelog ==
+
+= 0.4.4 =
+* Open component icons are now highlighted yellow (`#facc15` on a pale
+  yellow pill background) instead of muted gray, so that components still
+  needing work jump out visually. The icon opacity dampening on open is
+  removed. Other status colors are unchanged (green for done, gold for
+  review, blue for wip, light gray for n/a).
+* New combined filter in the filter bar: two dropdowns "Filter by
+  component" and "Filter component by status". Selecting only a component
+  shows cards that contain that component. Selecting both shows cards
+  where the chosen component is in the chosen status. Example: pick
+  `text` + `open` to see every item whose text translation is still
+  open. The component status dropdown is ignored when no component is
+  selected (overall-status filtering remains on the stats pills above).
+  The new dropdown choices are persisted via localStorage so they
+  survive page reloads.
+* Stats pill counts now also reflect the combined component filter, so
+  the pill numbers always match the cards visible below.
+* Docs (`docs/User-Guide.md`, `docs/Issue-Templates-DACH.md`): the
+  parser has always accepted GitHub usernames both with and without the
+  `@` prefix (it strips a leading `@`); the documentation now says so
+  explicitly. Both `rfluethi` and `@rfluethi` are valid in the status
+  table.
 
 = 0.4.3 =
 * Maintenance release. Full English translation of the entire repository:

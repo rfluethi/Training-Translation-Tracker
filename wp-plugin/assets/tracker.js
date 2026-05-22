@@ -60,7 +60,9 @@
 		var state = {
 			status: 'all',
 			query: '',
-			projectStatus: '', // empty = all project statuses
+			projectStatus: '',     // empty = all project statuses
+			component: '',         // empty = no component filter
+			componentStatus: '',   // empty = any status (combined with component)
 		};
 
 		// Stats pills are the only filter UI (the pills are <button>, clickable).
@@ -69,6 +71,9 @@
 		var searchInput = root.querySelector('.ttt-search-input');
 		// Project status dropdown (optional, only if items with project_status exist)
 		var projectStatusSelect = root.querySelector('.ttt-project-status-select');
+		// Component + component-status dropdowns (combined filter, 0.4.4)
+		var componentSelect = root.querySelector('.ttt-component-select');
+		var componentStatusSelect = root.querySelector('.ttt-component-status-select');
 
 		// Restore state from localStorage if available.
 		var saved = loadState(trackerId);
@@ -76,11 +81,19 @@
 			state.status = saved.status || 'all';
 			state.query = saved.query || '';
 			state.projectStatus = saved.projectStatus || '';
+			state.component = saved.component || '';
+			state.componentStatus = saved.componentStatus || '';
 			if (searchInput && state.query) {
 				searchInput.value = state.query;
 			}
 			if (projectStatusSelect && state.projectStatus) {
 				projectStatusSelect.value = state.projectStatus;
+			}
+			if (componentSelect && state.component) {
+				componentSelect.value = state.component;
+			}
+			if (componentStatusSelect && state.componentStatus) {
+				componentStatusSelect.value = state.componentStatus;
 			}
 		}
 
@@ -114,6 +127,24 @@
 		if (projectStatusSelect) {
 			projectStatusSelect.addEventListener('change', function (e) {
 				state.projectStatus = e.target.value || '';
+				applyFilters(root, state);
+				saveState(trackerId, state);
+			});
+		}
+
+		// Component dropdown: change event (combined with componentStatus below)
+		if (componentSelect) {
+			componentSelect.addEventListener('change', function (e) {
+				state.component = e.target.value || '';
+				applyFilters(root, state);
+				saveState(trackerId, state);
+			});
+		}
+
+		// Component-status dropdown: change event
+		if (componentStatusSelect) {
+			componentStatusSelect.addEventListener('change', function (e) {
+				state.componentStatus = e.target.value || '';
 				applyFilters(root, state);
 				saveState(trackerId, state);
 			});
@@ -211,7 +242,34 @@
 			// Project status filter (slug match)
 			var matchProjectStatus = (state.projectStatus === '') || (projectStatus === state.projectStatus);
 
-			var visible = matchStatus && matchQuery && matchProjectStatus;
+			// Component (+ optional component-status) filter, 0.4.4.
+			// When `state.component` is empty, no component filter applies and
+			// `state.componentStatus` is ignored (it only makes sense as a
+			// modifier on top of a chosen component).
+			// When both are set: card must contain a `.ttt-comp-icon` whose
+			// data-comp-name matches the component AND whose data-comp-status
+			// matches the chosen component status.
+			// When only the component is set: card must contain that component
+			// (regardless of its status).
+			var matchComponent = true;
+			if (state.component) {
+				var compIcons = card.querySelectorAll(
+					'.ttt-comp-icon[data-comp-name="' + state.component + '"]'
+				);
+				if (compIcons.length === 0) {
+					matchComponent = false;
+				} else if (state.componentStatus) {
+					matchComponent = false;
+					for (var k = 0; k < compIcons.length; k++) {
+						if (compIcons[k].getAttribute('data-comp-status') === state.componentStatus) {
+							matchComponent = true;
+							break;
+						}
+					}
+				}
+			}
+
+			var visible = matchStatus && matchQuery && matchProjectStatus && matchComponent;
 			// Hide via the [hidden] attribute. The associated CSS rule
 			// `.ttt-tracker .ttt-card[hidden] { display: none !important }` has
 			// higher specificity than the card's display rule and wins.
@@ -254,7 +312,29 @@
 			var projectStatus = card.getAttribute('data-project-status') || '';
 			var matchQuery = (state.query === '') || (search.indexOf(state.query) !== -1);
 			var matchProjectStatus = (state.projectStatus === '') || (projectStatus === state.projectStatus);
-			if (!matchQuery || !matchProjectStatus) continue;
+
+			// Mirror the component (+ component-status) filter applied in
+			// applyFilters() so the pill counts reflect what is actually
+			// visible (rather than the unfiltered totals).
+			var matchComponent = true;
+			if (state.component) {
+				var compIcons = card.querySelectorAll(
+					'.ttt-comp-icon[data-comp-name="' + state.component + '"]'
+				);
+				if (compIcons.length === 0) {
+					matchComponent = false;
+				} else if (state.componentStatus) {
+					matchComponent = false;
+					for (var k = 0; k < compIcons.length; k++) {
+						if (compIcons[k].getAttribute('data-comp-status') === state.componentStatus) {
+							matchComponent = true;
+							break;
+						}
+					}
+				}
+			}
+
+			if (!matchQuery || !matchProjectStatus || !matchComponent) continue;
 			var status = card.getAttribute('data-status') || 'open';
 			if (counts.hasOwnProperty(status)) {
 				counts[status]++;

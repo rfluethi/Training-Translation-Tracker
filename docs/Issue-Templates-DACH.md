@@ -37,7 +37,7 @@ Other values are ignored by the parser.
 
 ### Creator / reviewer
 
-GitHub username **without** the `@` prefix (so `rfluethi`, not `@rfluethi`). Separate multiple people with a comma: `rfluethi, Ursha-wp`. Leave empty if nobody is assigned yet.
+GitHub username, with or without the `@` prefix. Both `rfluethi` and `@rfluethi` work, the parser strips the leading `@` automatically. Separate multiple people with a comma: `rfluethi, Ursha-wp` or `@rfluethi, @Ursha-wp`. Leave empty if nobody is assigned yet.
 
 ### One issue per content item and language
 

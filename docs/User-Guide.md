@@ -244,7 +244,7 @@ In the **`WordPress/Learn`** repo, not in the inventory plugin repo. The issue m
 
 ### Creator / reviewer
 
-GitHub username **without** the `@` prefix (so `rfluethi`, not `@rfluethi`). Separate multiple with a comma. Leave empty if nobody is assigned yet.
+GitHub username, with or without the `@` prefix. Both `rfluethi` and `@rfluethi` work, the parser strips the leading `@` automatically. Separate multiple names with a comma. Leave empty if nobody is assigned yet.
 
 ### One issue per content item and language
 
