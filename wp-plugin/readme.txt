@@ -4,7 +4,7 @@ Tags: translation, learn-wordpress, tracker, dashboard
 Requires at least: 6.0
 Tested up to: 6.9
 Requires PHP: 8.0
-Stable tag: 0.3.3
+Stable tag: 0.4.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -34,6 +34,21 @@ DACH Team for translating learn.wordpress.org content into German.
 4. Embed the shortcode `[translation_tracker]` on any page.
 
 == Changelog ==
+
+= 0.4.1 =
+* Smoke test of the new GitHub-based auto-update flow introduced in 0.4.0.
+  No functional changes. A site that already has 0.4.0 installed should
+  see "Update available" in the WordPress admin within 12 hours (or
+  immediately via the standard "Check again" button).
+
+= 0.4.0 =
+* GitHub-based auto-updates: bundled `plugin-update-checker` library (PUC
+  v5.6 by Yahnis Elsts, MIT). The plugin now checks the GitHub Releases
+  API of its own repository for new tags. When a new version is published
+  via the release-plugin.yml workflow, WordPress shows the familiar
+  "Update available" notice in the admin and the user can update with one
+  click. No additional plugin required, no third-party update server,
+  no licensing.
 
 = 0.3.3 =
 * Component icons are now data-driven: the SVG paths live in

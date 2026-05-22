@@ -3,7 +3,7 @@
  * Plugin Name:       Training Translation Tracker
  * Plugin URI:        https://github.com/rfluethi/learn-wp-dach-sitzungen
  * Description:       Dashboard for the translation progress of the Learn WP DACH Team.
- * Version:           0.3.3
+ * Version:           0.4.1
  * Requires at least: 6.0
  * Requires PHP:      8.0
  * Author:            Learn WP DACH Team
@@ -22,7 +22,7 @@ defined( 'ABSPATH' ) || exit;
 // Konstanten
 // -----------------------------------------------------------------------------
 
-define( 'TTT_VERSION', '0.3.3' );
+define( 'TTT_VERSION', '0.4.1' );
 define( 'TTT_PLUGIN_FILE', __FILE__ );
 define( 'TTT_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'TTT_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
@@ -53,6 +53,30 @@ define( 'TTT_LAST_GOOD_KEY', 'ttt_last_good_payload' );
 require_once TTT_PLUGIN_DIR . 'includes/class-settings.php';
 require_once TTT_PLUGIN_DIR . 'includes/class-fetcher.php';
 require_once TTT_PLUGIN_DIR . 'includes/class-renderer.php';
+
+// -----------------------------------------------------------------------------
+// GitHub-basiertes Auto-Update via plugin-update-checker (YahnisElsts, MIT).
+// Die Library liegt unter lib/plugin-update-checker/ und prüft regelmäßig
+// die GitHub-Releases-API auf neue Tags. Wenn ein neuer Tag (z. B. `v0.4.0`)
+// existiert UND die darin enthaltene Plugin-Version höher ist als die
+// installierte, zeigt WordPress den vertrauten "Update verfügbar"-Hinweis.
+// Der Endbenutzer braucht keine zusätzlichen Plugins, der Updater ist
+// Teil des Plugin-ZIPs.
+// -----------------------------------------------------------------------------
+
+require_once TTT_PLUGIN_DIR . 'lib/plugin-update-checker/plugin-update-checker.php';
+
+use YahnisElsts\PluginUpdateChecker\v5\PucFactory;
+
+$ttt_update_checker = PucFactory::buildUpdateChecker(
+	'https://github.com/rfluethi/Training-Translation-Tracker-Inventory-Plugin/',
+	__FILE__,
+	'training-translation-tracker'
+);
+// Wir veröffentlichen Releases als GitHub-Release-Assets (ZIPs vom
+// release-plugin.yml-Workflow). Dadurch lädt PUC die offizielle ZIP statt
+// einen automatisch generierten Tarball, der den falschen Ordnernamen hätte.
+$ttt_update_checker->getVcsApi()->enableReleaseAssets();
 
 // -----------------------------------------------------------------------------
 // Initialisierung
