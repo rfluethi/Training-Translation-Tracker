@@ -4,7 +4,7 @@ Tags: translation, learn-wordpress, tracker, dashboard
 Requires at least: 6.0
 Tested up to: 7.0
 Requires PHP: 8.0
-Stable tag: 0.4.1
+Stable tag: 0.4.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -35,20 +35,30 @@ DACH Team for translating learn.wordpress.org content into German.
 
 == Changelog ==
 
-= 0.4.1 =
-* Smoke test of the new GitHub-based auto-update flow introduced in 0.4.0.
-  No functional changes. A site that already has 0.4.0 installed should
-  see "Update available" in the WordPress admin within 12 hours (or
-  immediately via the standard "Check again" button).
+= 0.4.2 =
+* The auto-update mechanism introduced in 0.4.0 (`plugin-update-checker`
+  by Yahnis Elsts) has been removed. Rationale: the library is itself an
+  update mechanism, which Plugin Check forbids by design ("Plugin updater
+  detected"). Bundling it produced ~80 noise findings that drowned out
+  real review feedback on our own code, making the QA workflow worse.
+  The DACH team is small enough that manual updates (download new ZIP
+  from the GitHub release tab, replace plugin) are no real burden.
+* Fix: escape JSON output for the inline i18n bundle with `JSON_HEX_TAG`
+  so Plugin Check no longer flags `EscapeOutput.OutputNotEscaped`.
+* Fix: `Tested up to: 7.0` so Plugin Check no longer flags outdated.
+* Fix: explicit `phpcs:ignore` annotation on `load_plugin_textdomain()`,
+  with comment explaining why a GitHub-distributed plugin needs the
+  manual call (wp.org auto-load convention does not apply).
+* Fix: release-plugin.yml `unzip | awk | head` chain now disables
+  `pipefail` for that one diagnostic line, so SIGPIPE from head doesn't
+  fail the whole release workflow.
 
-= 0.4.0 =
-* GitHub-based auto-updates: bundled `plugin-update-checker` library (PUC
-  v5.6 by Yahnis Elsts, MIT). The plugin now checks the GitHub Releases
-  API of its own repository for new tags. When a new version is published
-  via the release-plugin.yml workflow, WordPress shows the familiar
-  "Update available" notice in the admin and the user can update with one
-  click. No additional plugin required, no third-party update server,
-  no licensing.
+= 0.4.1, 0.4.0 =
+* Internal iteration on a GitHub-based auto-updater. Removed in 0.4.2,
+  see above. If you installed 0.4.0 or 0.4.1, install 0.4.2 manually
+  (download the ZIP from the GitHub release, deactivate the old plugin,
+  upload the new one). After 0.4.2 the manual flow is the supported one
+  for all future releases.
 
 = 0.3.3 =
 * Component icons are now data-driven: the SVG paths live in
