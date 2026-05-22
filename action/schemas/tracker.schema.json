@@ -27,6 +27,17 @@
       "type": "array",
       "minItems": 0,
       "items": { "$ref": "#/$defs/Group" }
+    },
+    "component_icons": {
+      "description": "Optional mapping from component name to SVG path-d attribute. Lets the plugin render icons from the configuration in component-templates.yml without hardcoding them.",
+      "type": "object",
+      "additionalProperties": {
+        "type": "string",
+        "minLength": 1
+      },
+      "propertyNames": {
+        "pattern": "^[a-z][a-z0-9_]*$"
+      }
     }
   },
 

@@ -4,7 +4,7 @@ Tags: translation, learn-wordpress, tracker, dashboard
 Requires at least: 6.0
 Tested up to: 6.9
 Requires PHP: 8.0
-Stable tag: 0.3.1
+Stable tag: 0.3.3
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -34,6 +34,31 @@ DACH Team for translating learn.wordpress.org content into German.
 4. Embed the shortcode `[translation_tracker]` on any page.
 
 == Changelog ==
+
+= 0.3.3 =
+* Component icons are now data-driven: the SVG paths live in
+  `action/component-templates.yml` (`icons:` block) and are delivered with
+  the tracker.json as an optional top-level `component_icons` field. The
+  plugin reads them, falls back to its hardcoded defaults if not present,
+  and the `ttt_component_icons` filter remains the final override. Adding
+  a new icon to the Action no longer requires a plugin code change.
+
+= 0.3.2 =
+* CSS architecture, single source of truth: the inline `<style>` block in
+  `class-renderer.php` now contains the complete frontend CSS. The external
+  `assets/style.css` has been removed, along with the `wp_enqueue_style`
+  call. No more dual maintenance; one location, one set of rules.
+* Frontend i18n complete: all visible labels (collapse all/expand all,
+  popover headings for component names and status tokens, Creator/Reviewer,
+  not-yet-assigned hint) now go through the translation bundle.
+* Card labels: `Original` and `Translation` are correctly translated to
+  German now (`Original` and `Übersetzung`).
+* Search-field placeholder is locale-neutral: `Search titles…` in English,
+  `Titel suchen…` in German (the previous `(EN or DE)` suffix is gone).
+* Accessibility: keyboard users can now tab through the component popovers
+  cleanly. Tab from the last profile-link in a popover advances to the next
+  component icon. Shift+Tab from the first link closes the popover and
+  returns focus to the icon. Esc closes from any point.
 
 = 0.3.1 =
 * i18n: source language switched from German to English (WordPress convention).

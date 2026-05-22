@@ -21,11 +21,18 @@
 	}
 	window.__tttTrackerInitialized = true;
 
-	// Sprach-Strings für den Collapse-Alle-Button. Müssen VOR init() definiert
-	// sein, weil bei `defer`-Skripten init() synchron läuft, sobald wir den
-	// if/else-Block unten erreichen.
-	var LABEL_COLLAPSE_ALL = 'Alle einklappen';
-	var LABEL_EXPAND_ALL = 'Alle ausklappen';
+	// i18n-Bundle aus PHP via window.tttI18n. Fallbacks für den Fall, dass
+	// das Bundle aus irgendeinem Grund fehlt (z.B. Caching-Plugin entfernt
+	// Inline-Scripts). Die Fallbacks sind die englischen Original-Strings,
+	// damit auch ohne Translation-Bundle nichts kaputt aussieht.
+	var I18N = (window.tttI18n && typeof window.tttI18n === 'object') ? window.tttI18n : {};
+	var LABEL_COLLAPSE_ALL = I18N.collapseAll || 'Collapse all';
+	var LABEL_EXPAND_ALL = I18N.expandAll || 'Expand all';
+	var STATUS_LABELS = (I18N.statusLabels && typeof I18N.statusLabels === 'object') ? I18N.statusLabels : {};
+	var COMPONENT_LABELS = (I18N.componentLabels && typeof I18N.componentLabels === 'object') ? I18N.componentLabels : {};
+	function tr(key, fallback) {
+		return (I18N[key] != null && I18N[key] !== '') ? I18N[key] : fallback;
+	}
 
 	// Eine globale Initialisierung beim DOMContentLoaded — bindet alle Tracker auf
 	// der Seite. Falls der Shortcode mehrfach vorkommt (z.B. einmal pro Pathway),
@@ -328,12 +335,55 @@
 			popover.className = 'ttt-comp-popover';
 			popover.setAttribute('hidden', '');
 			popover.setAttribute('role', 'dialog');
+			popover.setAttribute('aria-label', tr('componentDetails', 'Component details'));
 			// Beim Hover über das Popover selbst nicht schließen — der User
 			// will den Profil-Link anklicken können.
 			popover.addEventListener('mouseenter', function () {
 				if (hideTimer) { clearTimeout(hideTimer); hideTimer = null; }
 			});
 			popover.addEventListener('mouseleave', scheduleHide);
+			// Tastatur-Steuerung im offenen Popover:
+			//   Esc       → schließen + Focus zurück zum Icon
+			//   Tab       → am letzten Element: schließen + Focus zum nächsten Icon
+			//   Shift+Tab → am ersten Element: schließen + Focus zurück zum Icon
+			// Damit kommt der User mit der Tastatur sauber durch alle Komponenten-
+			// Icons einer Karte (sonst würde Tab aus dem Popover hinaus in den
+			// WordPress-Footer springen, weil das Popover-Element am Ende von
+			// .ttt-tracker hängt).
+			popover.addEventListener('keydown', function (e) {
+				if (e.key === 'Escape') {
+					e.preventDefault();
+					hideNow({ returnFocus: true });
+					return;
+				}
+				if (e.key !== 'Tab') return;
+				var focusables = popover.querySelectorAll('a, button, [tabindex]:not([tabindex="-1"])');
+				if (focusables.length === 0) return;
+				var first = focusables[0];
+				var last = focusables[focusables.length - 1];
+				if (e.shiftKey && document.activeElement === first) {
+					// Shift+Tab am ersten Element → schließen, Focus zurück aufs Icon
+					e.preventDefault();
+					hideNow({ returnFocus: true });
+				} else if (!e.shiftKey && document.activeElement === last) {
+					// Tab am letzten Element → zum nächsten Komponenten-Icon
+					e.preventDefault();
+					var icon = currentIcon;
+					hideNow();
+					if (!icon) return;
+					var allIcons = Array.prototype.slice.call(
+						root.querySelectorAll('.ttt-comp-icon')
+					);
+					var idx = allIcons.indexOf(icon);
+					var next = allIcons[idx + 1];
+					if (next) {
+						next.focus();
+					} else {
+						// War das letzte Icon der Karte — Focus auf Icon zurück
+						icon.focus();
+					}
+				}
+			});
 			root.appendChild(popover);
 			return popover;
 		}
@@ -344,20 +394,26 @@
 			var creator = icon.getAttribute('data-comp-creator') || '';
 			var reviewer = icon.getAttribute('data-comp-reviewer') || '';
 
-			var html = '<div class="ttt-comp-popover-header">' + escapeHtml(name) + '</div>';
-			html += '<span class="ttt-comp-popover-status ttt-comp-status-' + escapeAttr(status) + '">' + escapeHtml(status) + '</span>';
+			// Komponenten-Name und Status durch i18n-Mapping schicken, damit
+			// das Popover in der WP-Locale erscheint statt in den rohen
+			// englischen Tokens aus tracker.json.
+			var nameLabel = COMPONENT_LABELS[name] || name;
+			var statusLabel = STATUS_LABELS[status] || status;
+
+			var html = '<div class="ttt-comp-popover-header">' + escapeHtml(nameLabel) + '</div>';
+			html += '<span class="ttt-comp-popover-status ttt-comp-status-' + escapeAttr(status) + '">' + escapeHtml(statusLabel) + '</span>';
 
 			// Beide Personen anzeigen (User-Vorgabe: auch wenn identisch — sollte
 			// nie vorkommen, weil Creator ≠ Reviewer im Workflow). Leere Personen
 			// werden übersprungen — wenn z. B. niemand reviewed hat.
 			if (creator) {
-				html += renderPerson('Creator', creator);
+				html += renderPerson(tr('creator', 'Creator'), creator);
 			}
 			if (reviewer) {
-				html += renderPerson('Reviewer', reviewer);
+				html += renderPerson(tr('reviewer', 'Reviewer'), reviewer);
 			}
 			if (!creator && !reviewer && status !== 'na') {
-				html += '<div style="color:#868e96;font-style:italic;padding:0.3rem 0;">noch nicht zugewiesen</div>';
+				html += '<div class="ttt-comp-popover-unassigned">' + escapeHtml(tr('notAssigned', 'not yet assigned')) + '</div>';
 			}
 
 			popover.innerHTML = html;
@@ -392,7 +448,8 @@
 			popover.style.left = leftPreferred + 'px';
 		}
 
-		function showFor(icon) {
+		function showFor(icon, opts) {
+			opts = opts || {};
 			if (hideTimer) { clearTimeout(hideTimer); hideTimer = null; }
 			if (currentIcon && currentIcon !== icon) {
 				currentIcon.setAttribute('aria-expanded', 'false');
@@ -402,12 +459,32 @@
 			ensurePopover();
 			fillPopover(icon);
 			positionPopover(icon);
+			// Tastatur-A11y: Wenn das Popover via Keyboard (Enter/Space) geöffnet
+			// wurde, Focus in das Popover schicken. Tab erreicht dann die
+			// Profile-Links; Esc schließt und gibt den Focus zurück ans Icon.
+			if (opts.fromKeyboard) {
+				var firstFocusable = popover.querySelector('a, button, [tabindex]:not([tabindex="-1"])');
+				if (firstFocusable) {
+					firstFocusable.focus();
+				} else {
+					// Kein interaktiver Inhalt — Popover selbst fokussierbar machen,
+					// damit Esc auch funktioniert.
+					popover.setAttribute('tabindex', '-1');
+					popover.focus();
+				}
+			}
 		}
 
-		function hideNow() {
+		function hideNow(opts) {
+			opts = opts || {};
 			if (popover) popover.setAttribute('hidden', '');
+			var iconToRefocus = currentIcon;
 			if (currentIcon) currentIcon.setAttribute('aria-expanded', 'false');
 			currentIcon = null;
+			// Focus zurück ans auslösende Icon, wenn von Esc oder Esc-im-Popover.
+			if (opts.returnFocus && iconToRefocus && typeof iconToRefocus.focus === 'function') {
+				iconToRefocus.focus();
+			}
 		}
 
 		function scheduleHide() {
@@ -430,9 +507,9 @@
 			icon.addEventListener('keydown', function (e) {
 				if (e.key === 'Enter' || e.key === ' ') {
 					e.preventDefault();
-					showFor(icon);
+					showFor(icon, { fromKeyboard: true });
 				} else if (e.key === 'Escape') {
-					hideNow();
+					hideNow({ returnFocus: true });
 				}
 			});
 		}

@@ -202,10 +202,12 @@ def _build_tracker(repo_root: Path, output_dir: Path | None, skip_issues: bool) 
 
     # ----------------------------------------------------------------- step 2
     LOG.info("Loading component-templates.yml")
-    component_templates = _load_and_validate_yaml(
+    component_templates_full = _load_and_validate_yaml(
         repo_root / "component-templates.yml",
         repo_root / "schemas" / "component-templates.schema.json",
     )
+    component_icons = component_templates_full.get("icons", {})
+    component_types = component_templates_full.get("types", {})
 
     # ----------------------------------------------------------------- step 3
     # Read inventory from cache (committed to the repo). No live API calls
@@ -245,7 +247,7 @@ def _build_tracker(repo_root: Path, output_dir: Path | None, skip_issues: bool) 
     LOG.info("Joining inventory and issues")
     # The full scope.yml dict carries the pathways hierarchy — that's what the
     # joiner uses to place each inventory item.
-    result = build_groups(inventory_items, issues, component_templates, scope)
+    result = build_groups(inventory_items, issues, component_types, scope)
     warnings = inventory_warnings + result.warnings
 
     # ----------------------------------------------------------------- step 6
@@ -271,6 +273,7 @@ def _build_tracker(repo_root: Path, output_dir: Path | None, skip_issues: bool) 
         stats=stats,
         groups=result.groups,
         warnings=warnings,
+        component_icons=component_icons,
     )
     LOG.info("Wrote %s and %s", tracker_path.name, report_path.name)
 

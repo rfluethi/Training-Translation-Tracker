@@ -1,9 +1,7 @@
-# Operations — Training Translation Tracker
+# Operations, Training Translation Tracker
 
-> **Zielgruppe:** Maintainer und Site-Admins. Wer das Tool **betreibt** — nicht entwickelt, nicht benutzt.
+> **Zielgruppe:** Maintainer und Site-Admins. Wer das Tool **betreibt**, nicht entwickelt, nicht benutzt.
 > **Schwerpunkt:** Releases, Token-Pflege, Action-Trigger, Failure-Recovery, Cache-Verwaltung, Monitoring.
-
----
 
 ## 1. Topologie
 
@@ -15,9 +13,7 @@
 | Plugin-Code | Selbes Repo, Pfad `wp-plugin/` | Maintainer + Contributors |
 | Plugin-Releases | GitHub-Releases im selben Repo | Erstellt automatisch durch `release-plugin.yml` |
 | `GH_PAT_PROJECT_READ` | Repo-Secret im selben Repo | Maintainer |
-| Inventory-Cache | `action/inventory-cache.json` im Repo, Branch `main` | Lokal beim Maintainer aktualisiert + committet |
-
----
+| Inventory-Cache | `action/inventory-cache.json` im Repo, Branch `main` | Lokal aktualisiert und committet |
 
 ## 2. Release-Workflow (Plugin)
 
@@ -31,7 +27,7 @@ Drei Stellen synchron halten (Beispiel `0.2.5`):
 | `wp-plugin/training-translation-tracker.php` | Konstante `TTT_VERSION = '0.2.5'` |
 | `wp-plugin/readme.txt` | `Stable tag: 0.2.5` |
 
-`readme.txt` Changelog mit der neuen Version ergänzen — Format siehe vorhandene Einträge. Items nach „Compliance", „Architektur", „Polish" gruppieren.
+`readme.txt` Changelog mit der neuen Version ergänzen, Format siehe vorhandene Einträge. Items nach „Compliance", „Architektur", „Polish" gruppieren.
 
 ### Release auslösen
 
@@ -61,8 +57,6 @@ Verlauf beobachten unter `Actions → release-plugin.yml`. Bei grünem Workflow:
 
 Geht ohne Tag und ohne GitHub. Nützlich für lokales Testen vor dem Tag-Push.
 
----
-
 ## 3. Action-Workflow (`build.yml`)
 
 ### Drei Auslöser
@@ -79,7 +73,7 @@ In der GitHub-UI: **Actions → Build tracker.json → Run workflow**. Branch `m
 
 ### Was die Action im Log zeigt
 
-- GraphQL-Kosten (`Cost: X / Y points`) — frühwarnung bei Quota-Knappheit.
+- GraphQL-Kosten (`Cost: X / Y points`), frühwarnung bei Quota-Knappheit.
 - Inventory-Lade-Status (aus Cache: X URLs).
 - Parse-Warnungen (Issue # mit fehlerhaftem Body).
 - Schema-Validation-Ergebnis am Ende.
@@ -87,15 +81,13 @@ In der GitHub-UI: **Actions → Build tracker.json → Run workflow**. Branch `m
 
 ### Bei Fehlschlag
 
-Action-Fehler bricht den Lauf ab, **schreibt aber kein** kaputtes `tracker.json` — der bestehende Stand auf dem `data`-Branch bleibt erhalten. Frontend zeigt damit weiter den letzten erfolgreichen Stand.
+Action-Fehler bricht den Lauf ab, **schreibt aber kein** kaputtes `tracker.json`, der bestehende Stand auf dem `data`-Branch bleibt erhalten. Frontend zeigt damit weiter den letzten erfolgreichen Stand.
 
 Maintainer bekommt eine Standard-GitHub-Notification. Erste Diagnose: Action-Log im Repo öffnen.
 
----
-
 ## 4. Inventory-Cache pflegen
 
-Die Action ruft `learn.wordpress.org` **nicht** mehr live an — GitHub-Runner-IPs werden vom WP-CDN aggressiv ratelimitet, in der Praxis kommt fast keine Anfrage durch. Das Inventar lebt als vorberechnete Datei `action/inventory-cache.json` im Repo.
+Die Action ruft `learn.wordpress.org` **nicht** mehr live an, GitHub-Runner-IPs werden vom WP-CDN aggressiv ratelimitet, in der Praxis kommt fast keine Anfrage durch. Das Inventar lebt als vorberechnete Datei `action/inventory-cache.json` im Repo.
 
 ### Wann muss aufgefrischt werden?
 
@@ -113,7 +105,7 @@ python -m src.build --refresh-cache       # nur fehlende URLs holen (Default)
 python -m src.build --refresh-cache --force  # alles neu holen
 ```
 
-Throttle: 1.5 s pro Request, default. URLs, die nicht erreichbar sind, bleiben einfach nicht im Cache — beim nächsten Lauf erneut versuchen. Issues zu diesen URLs landen vorübergehend im Orphan-Bucket.
+Throttle: 1.5 s pro Request, default. URLs, die nicht erreichbar sind, bleiben einfach nicht im Cache, beim nächsten Lauf erneut versuchen. Issues zu diesen URLs landen vorübergehend im Orphan-Bucket.
 
 ### Committen
 
@@ -124,9 +116,7 @@ git commit -m "Refresh inventory cache (n new entries)"
 git push
 ```
 
-Push triggert die Action — neue `tracker.json` wird gebaut.
-
----
+Push triggert die Action, neue `tracker.json` wird gebaut.
 
 ## 5. Token-Pflege
 
@@ -155,19 +145,17 @@ Wenn ein DACH-Team-Account existiert:
 1. Neuer Token mit demselben Scope vom Team-Account aus erstellen.
 2. Im Repo-Secret aktualisieren.
 3. Doku (diese Datei) aktualisieren, Inhaberschaft notieren.
-4. Maintainer-Eintrag im Action-Workflow ggf. anpassen (kein technischer Effekt — `github-actions[bot]` bleibt die Commit-Identität).
-
----
+4. Maintainer-Eintrag im Action-Workflow ggf. anpassen (kein technischer Effekt, `github-actions[bot]` bleibt die Commit-Identität).
 
 ## 6. Plugin-Update auf einer WordPress-Site
 
 ### Über WP-Admin-UI
 
-1. **Plugins → Installierte Plugins** — Translation Tracker deaktivieren (Einstellungen und Cache bleiben erhalten).
+1. **Plugins → Installierte Plugins**, Translation Tracker deaktivieren (Einstellungen und Cache bleiben erhalten).
 2. **Translation Tracker** entfernen (rote Löschen-Aktion).
-3. **Plugins → Plugin hochladen** — ZIP aus dem aktuellen Release-Tab wählen.
+3. **Plugins → Plugin hochladen**, ZIP aus dem aktuellen Release-Tab wählen.
 4. **Jetzt installieren** → **Aktivieren**.
-5. **Einstellungen → Translation Tracker** — URL und Cache-Dauer prüfen.
+5. **Einstellungen → Translation Tracker**, URL und Cache-Dauer prüfen.
 6. **Cache jetzt leeren** drücken.
 7. Test-Seite öffnen, prüfen ob Dashboard erscheint.
 
@@ -183,8 +171,6 @@ wp transient delete ttt_tracker_last_good
 ### Per GitHub-Updater-Plugin (geplant, Phase 4)
 
 GitHub-Updater-Plugin verwaltet das Update direkt vom Repo. Sobald die Variante ausgewählt und konfiguriert ist, läuft der Update-Prozess automatisch über die WordPress-Plugin-Liste.
-
----
 
 ## 7. Cache-Verwaltung
 
@@ -216,8 +202,6 @@ DELETE FROM wp_options WHERE option_name IN (
 );
 ```
 
----
-
 ## 8. Monitoring
 
 ### Action-Status
@@ -236,7 +220,7 @@ URL: `https://github.com/<owner>/Training-Translation-Tracker-Inventory-Plugin/b
 
 ### Plugin-seitig
 
-- **Admin-Hinweis** im Dashboard: bei Fetch-Fehler erscheint ein Span „letzter erfolgreich gespeicherter Stand — aktueller Fetch schlug fehl" im Header.
+- **Admin-Hinweis** im Dashboard: bei Fetch-Fehler erscheint ein Span „letzter erfolgreich gespeicherter Stand, aktueller Fetch schlug fehl" im Header.
 - **`generated_at`-Zeitstempel** in den Plugin-Settings zeigt, wann der aktuelle Cache-Stand gebaut wurde. Älter als 24 h ohne Action-Fehler → Cache hängt.
 
 ### Health-Probes (manuell)
@@ -249,8 +233,6 @@ curl -sf https://raw.githubusercontent.com/<owner>/.../data/tracker.json | jq .s
 # generated_at innerhalb der letzten 13 h?
 curl -sf https://raw.githubusercontent.com/<owner>/.../data/tracker.json | jq .generated_at
 ```
-
----
 
 ## 9. Failure-Recovery
 
@@ -266,7 +248,7 @@ curl -sf https://raw.githubusercontent.com/<owner>/.../data/tracker.json | jq .g
 ### Fall 2: Plugin zeigt nur den alten Stand, obwohl Action grün ist
 
 1. Plugin-Cache leeren (Settings → „Cache jetzt leeren").
-2. Wenn weiter alt: Plugin-Settings prüfen — URL korrekt? Netzwerk-Probleme?
+2. Wenn weiter alt: Plugin-Settings prüfen, URL korrekt? Netzwerk-Probleme?
 3. **WordPress-eigene Caches** prüfen (WP Rocket, LiteSpeed, Object Cache).
 4. Direkt-Probe per `curl` vom WP-Server aus, um Netzwerk-Sperre auszuschließen.
 
@@ -281,14 +263,14 @@ curl -sf https://raw.githubusercontent.com/<owner>/.../data/tracker.json | jq .g
 
 Wenn das Plugin den Last-Good-Stand zeigt, weil der frische Fetch fehlschlägt:
 
-1. URL in den Settings prüfen — Tippfehler?
+1. URL in den Settings prüfen, Tippfehler?
 2. Von der WP-Site aus erreichbar? (Firewall, Proxy, Hosting-Block?)
 3. JSON unter der URL valid? `curl URL | jq .schema_version` (sollte `1` liefern).
 4. Bei Schema-Mismatch: Action-Output checken, ggf. Plugin auf neue Version updaten.
 
 ### Fall 5: `data`-Branch komplett zerschossen
 
-Die `tracker.json` ist aus den GitHub-Issues jederzeit re-generierbar — keine History nötig. Wenn der `data`-Branch verloren geht:
+Die `tracker.json` ist aus den GitHub-Issues jederzeit re-generierbar, keine History nötig. Wenn der `data`-Branch verloren geht:
 
 ```bash
 git checkout --orphan data
@@ -299,9 +281,7 @@ git commit -m "Re-init data branch"
 git push origin data
 ```
 
-Anschließend Action manuell triggern — sie macht den Force-Push und füllt den Branch wieder.
-
----
+Anschließend Action manuell triggern, sie macht den Force-Push und füllt den Branch wieder.
 
 ## 10. Erst-Einrichtung (neues Repo)
 
@@ -316,24 +296,19 @@ Falls ein neues Repo aufgesetzt wird (z. B. anderer Locale-Account):
 7. Workflow `build.yml` manuell triggern.
 8. Plugin auf der WordPress-Site installieren, URL in den Settings auf den neuen `data`-Branch zeigen lassen.
 
----
-
 ## 11. Backup
 
 Im aktuellen Setup nicht nötig: der `data`-Branch ist re-generierbar, der Plugin-Code ist im Mono-Repo, und die Plugin-Konfiguration auf der Site umfasst nur drei Settings (URL, Cache-Stunden, Default).
 
 Wichtig ist nur:
 
-- Repo selbst — wird durch GitHub gehosted.
-- `GH_PAT_PROJECT_READ` — Token-Erstellung dokumentieren (Wer? Wann? Mit welchen Scopes?).
+- Repo selbst, wird durch GitHub gehosted.
+- `GH_PAT_PROJECT_READ`, Token-Erstellung dokumentieren (Wer? Wann? Mit welchen Scopes?).
 
 Wenn das DACH-Team perspektivisch eigenständig wird, sollte mindestens ein zweiter Maintainer-Zugang zu Repo + Token bestehen, damit der Bus-Faktor nicht 1 ist.
-
----
 
 ## Weiterführende Dokumente
 
 - System-Architektur: [Architektur.md](Architektur.md)
 - Code & Erweiterungen: [Developer.md](Developer.md)
 - Benutzersicht (Plugin-Settings, Shortcodes): [User-Guide.md](User-Guide.md)
-- Maintainer-Arbeitsplan (außerhalb des Repos): `../Konzept/Arbeitsplan.md`

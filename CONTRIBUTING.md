@@ -1,10 +1,8 @@
 # Contributing
 
-Schön, dass du mitwirken willst! Dieses Repo enthält zwei Komponenten — eine
+Schön, dass du mitwirken willst! Dieses Repo enthält zwei Komponenten, eine
 GitHub Action in Python und ein WordPress-Plugin in PHP. Je nach dem, was du
 ändern willst, ist der Workflow leicht unterschiedlich.
-
----
 
 ## Inhaltsverzeichnis
 
@@ -12,12 +10,10 @@ GitHub Action in Python und ein WordPress-Plugin in PHP. Je nach dem, was du
 2. [Repo-Setup](#repo-setup)
 3. [Action entwickeln (Python)](#action-entwickeln-python)
 4. [Plugin entwickeln (PHP)](#plugin-entwickeln-php)
-5. [Doku und Konzept](#doku-und-konzept)
+5. [Dokumentation](#dokumentation)
 6. [Pull-Request-Prozess](#pull-request-prozess)
 7. [Andere Locales adaptieren](#andere-locales-adaptieren)
 8. [Verhaltenskodex](#verhaltenskodex)
-
----
 
 ## Was du beitragen kannst
 
@@ -29,8 +25,6 @@ GitHub Action in Python und ein WordPress-Plugin in PHP. Je nach dem, was du
 | Übersetzung | Pull-Request mit `.po`-Datei | `de_DE`, `de_CH`, `en_US` für UI-Strings |
 | Doku | Pull-Request mit README- oder docs-Änderungen | Tippfehler, Klarstellung, Beispiele |
 
----
-
 ## Repo-Setup
 
 ```bash
@@ -40,20 +34,18 @@ cd Training-Translation-Tracker-Inventory-Plugin
 
 Das Repo enthält:
 
-- `action/` — Python-Code für die GitHub Action
-- `wp-plugin/` — WordPress-Plugin
-- `.github/workflows/` — Build- und Release-Workflows
-- `build-plugin-zip.sh` — Plugin-ZIP bauen (lokal)
+- `action/`, Python-Code für die GitHub Action
+- `wp-plugin/`, WordPress-Plugin
+- `.github/workflows/`, Build- und Release-Workflows
+- `build-plugin-zip.sh`, Plugin-ZIP bauen (lokal)
 
 Doku-Suite (komponentenübergreifend):
 
-- [docs/Architektur.md](docs/Architektur.md) — System-Architektur und Designentscheidungen
-- [docs/Developer.md](docs/Developer.md) — Code-Setup, Tests, Erweiterungen
-- [docs/Operations.md](docs/Operations.md) — Releases, Token-Pflege, Failure-Recovery
-- [docs/User-Guide.md](docs/User-Guide.md) — Plugin-Bedienung und Issue-Pflege
-- [action/README.md](action/README.md) — kurze Action-spezifische Notizen
-
----
+- [docs/Architektur.md](docs/Architektur.md), System-Architektur und Designentscheidungen
+- [docs/Developer.md](docs/Developer.md), Code-Setup, Tests, Erweiterungen
+- [docs/Operations.md](docs/Operations.md), Releases, Token-Pflege, Failure-Recovery
+- [docs/User-Guide.md](docs/User-Guide.md), Plugin-Bedienung und Issue-Pflege
+- [action/README.md](action/README.md), kurze Action-spezifische Notizen
 
 ## Action entwickeln (Python)
 
@@ -82,11 +74,11 @@ cd action
 python -m src.build --skip-issues   # baut tracker.json aus inventory-cache.json, ohne Issues
 ```
 
-Das produziert `tracker.json`, `last-run.md` und `data-hygiene.md` lokal — alle drei Files liegen unter `.gitignore` und werden nie committed.
+Das produziert `tracker.json`, `last-run.md` und `data-hygiene.md` lokal, alle drei Files liegen unter `.gitignore` und werden nie committed.
 
 ### Inventory-Cache nachziehen
 
-Wenn du neue URLs in `scope.yml` einträgst, musst du den Inventory-Cache lokal aktualisieren (die Action selbst macht das nicht — wäre zu rate-limited auf den GitHub-Runner-IPs):
+Wenn du neue URLs in `scope.yml` einträgst, musst du den Inventory-Cache lokal aktualisieren (die Action selbst macht das nicht, wäre zu rate-limited auf den GitHub-Runner-IPs):
 
 ```bash
 cd action
@@ -101,8 +93,6 @@ git commit -m "Scope: neue URLs"
 - Ruff für Linting (`ruff check src tests`)
 - Type-Hints überall möglichst verwenden
 - Tests parallel zum Code anlegen (`tests/test_<modul>.py`)
-
----
 
 ## Plugin entwickeln (PHP)
 
@@ -131,9 +121,9 @@ Oder bei jedem Test ein ZIP bauen:
 
 Bei jeder Änderung, die ein Release rechtfertigt, drei Stellen synchron updaten:
 
-1. `wp-plugin/training-translation-tracker.php` — `Version:` im Header
-2. `wp-plugin/training-translation-tracker.php` — `TTT_VERSION`-Konstante
-3. `wp-plugin/readme.txt` — `Stable tag:`
+1. `wp-plugin/training-translation-tracker.php`, `Version:` im Header
+2. `wp-plugin/training-translation-tracker.php`, `TTT_VERSION`-Konstante
+3. `wp-plugin/readme.txt`, `Stable tag:`
 
 Plus Eintrag im Changelog (`wp-plugin/readme.txt`).
 
@@ -147,21 +137,17 @@ git push --tags
 Der Release-Workflow baut automatisch das ZIP und veröffentlicht es als
 GitHub-Release.
 
----
-
-## Doku und Konzept
+## Dokumentation
 
 Die Dokumentation liegt auf Top-Level unter `docs/`:
 
-- `Architektur.md` — System-Architektur, Datenmodell, Entscheidungen
-- `Developer.md` — Code-Setup, Module, Tests, Erweiterungspunkte
-- `Operations.md` — Releases, Token, Failure-Recovery
-- `User-Guide.md` — Plugin-Settings, Shortcodes, Frontend-Bedienung, Issue-Pflege
-- `Issue-Vorlagen-DACH.md` — Vorlagen fürs Anlegen von Übersetzungs-Issues (Lesson, Handbook-Text, Handbook-Video)
+- `Architektur.md`, System-Architektur, Datenmodell, Entscheidungen
+- `Developer.md`, Code-Setup, Module, Tests, Erweiterungspunkte
+- `Operations.md`, Releases, Token, Failure-Recovery
+- `User-Guide.md`, Plugin-Settings, Shortcodes, Frontend-Bedienung, Issue-Pflege
+- `Issue-Vorlagen-DACH.md`, Vorlagen fürs Anlegen von Übersetzungs-Issues (Lesson, Handbook-Text, Handbook-Video)
 
-Doku-Beiträge sind willkommen — Tippfehler-Fixes, klarere Erklärungen, Beispiele.
-
----
+Doku-Beiträge sind willkommen, Tippfehler-Fixes, klarere Erklärungen, Beispiele.
 
 ## Pull-Request-Prozess
 
@@ -170,7 +156,7 @@ Doku-Beiträge sind willkommen — Tippfehler-Fixes, klarere Erklärungen, Beisp
    - `fix/popover-positioning`
    - `feat/csv-export`
    - `docs/contributing-guide`
-3. **Commits** mit klaren Nachrichten — Imperativ, kurz:
+3. **Commits** mit klaren Nachrichten, Imperativ, kurz:
    - „Fix: Popover wird abgeschnitten am rechten Bildschirmrand"
    - „Add: CSV-Export für Tracker-Items"
 4. **Tests** laufen lassen (Action: `pytest`, Plugin: manueller Smoke-Test)
@@ -178,9 +164,7 @@ Doku-Beiträge sind willkommen — Tippfehler-Fixes, klarere Erklärungen, Beisp
    - Was wird geändert?
    - Warum?
    - Wie getestet?
-6. Bei Review-Feedback iterieren — keine Force-Pushes auf den PR-Branch wenn schon Review begonnen wurde.
-
----
+6. Bei Review-Feedback iterieren, keine Force-Pushes auf den PR-Branch wenn schon Review begonnen wurde.
 
 ## Andere Locales adaptieren
 
@@ -196,9 +180,7 @@ Andere Sprachräume können diesen Tracker für ihre eigene Locale nutzen:
 7. Texte in `docs/` und alle Locale-Bezugs-Strings übersetzen
 8. Plugin-ZIP bauen und in der eigenen Site installieren
 
-Pull-Requests, die generische Verbesserungen zurückgeben (z. B. neue Inventory-Sources, neue Shortcode-Optionen), sind willkommen — Locale-spezifische Änderungen aber bitte im eigenen Fork lassen.
-
----
+Pull-Requests, die generische Verbesserungen zurückgeben (z. B. neue Inventory-Sources, neue Shortcode-Optionen), sind willkommen, Locale-spezifische Änderungen aber bitte im eigenen Fork lassen.
 
 ## Verhaltenskodex
 

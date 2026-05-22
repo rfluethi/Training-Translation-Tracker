@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Training Translation Tracker 0.3.1\n"
 "Report-Msgid-Bugs-To: https://github.com/rfluethi/Training-Translation-Tracker-Inventory-Plugin/issues\n"
-"POT-Creation-Date: 2026-05-22 11:16+0000\n"
+"POT-Creation-Date: 2026-05-22 12:00+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -13,7 +13,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Domain: training-translation-tracker\n"
 
-#: wp-plugin/includes/class-renderer.php:596
+#: wp-plugin/includes/class-renderer.php:643
 msgid "(last successfully cached state — current fetch failed)"
 msgstr ""
 
@@ -21,7 +21,7 @@ msgstr ""
 msgid "1–168 hours. Recommended: 12 (matches the Action interval)."
 msgstr ""
 
-#: wp-plugin/includes/class-renderer.php:633
+#: wp-plugin/includes/class-renderer.php:680
 msgid "All statuses"
 msgstr ""
 
@@ -53,11 +53,12 @@ msgstr ""
 msgid "Clearing cache…"
 msgstr ""
 
-#: wp-plugin/includes/class-renderer.php:644
+#: wp-plugin/includes/class-renderer.php:207
+#: wp-plugin/includes/class-renderer.php:691
 msgid "Collapse all"
 msgstr ""
 
-#: wp-plugin/includes/class-renderer.php:643
+#: wp-plugin/includes/class-renderer.php:690
 msgid "Collapse or expand all sections"
 msgstr ""
 
@@ -65,7 +66,12 @@ msgstr ""
 msgid "Combination: only Lesson Plans, without stats and orphans — typical for a dedicated Lesson Plans page."
 msgstr ""
 
-#: wp-plugin/includes/class-renderer.php:1096
+#: wp-plugin/includes/class-renderer.php:212
+msgid "Component details"
+msgstr ""
+
+#: wp-plugin/includes/class-renderer.php:1143
+#: wp-plugin/includes/class-renderer.php:209
 msgid "Creator"
 msgstr ""
 
@@ -77,7 +83,7 @@ msgstr ""
 msgid "Direct link to tracker.json — typically the raw.githubusercontent.com link to the data branch of the Inventory Action."
 msgstr ""
 
-#: wp-plugin/includes/class-renderer.php:1187
+#: wp-plugin/includes/class-renderer.php:1234
 msgid "Duplicate"
 msgstr ""
 
@@ -90,7 +96,7 @@ msgid "Error while clearing — please try again."
 msgstr ""
 
 #. translators: %s: error message.
-#: wp-plugin/includes/class-renderer.php:512
+#: wp-plugin/includes/class-renderer.php:559
 msgid "Error: %s"
 msgstr ""
 
@@ -98,7 +104,11 @@ msgstr ""
 msgid "Everything — all pathways, handbook (if any), orphan group, stats header."
 msgstr ""
 
-#: wp-plugin/includes/class-renderer.php:631
+#: wp-plugin/includes/class-renderer.php:208
+msgid "Expand all"
+msgstr ""
+
+#: wp-plugin/includes/class-renderer.php:678
 msgid "Filter by Project status"
 msgstr ""
 
@@ -132,7 +142,7 @@ msgstr ""
 msgid "Insufficient permissions."
 msgstr ""
 
-#: wp-plugin/includes/class-renderer.php:778
+#: wp-plugin/includes/class-renderer.php:825
 msgid "Items"
 msgstr ""
 
@@ -145,15 +155,15 @@ msgstr ""
 msgid "Multiple pathways at once — comma-separated."
 msgstr ""
 
-#: wp-plugin/includes/class-renderer.php:922
+#: wp-plugin/includes/class-renderer.php:969
 msgid "No items in this group."
 msgstr ""
 
-#: wp-plugin/includes/class-renderer.php:606
+#: wp-plugin/includes/class-renderer.php:653
 msgid "No results for the current filter/search combination."
 msgstr ""
 
-#: wp-plugin/includes/class-renderer.php:1167
+#: wp-plugin/includes/class-renderer.php:1214
 msgid "No table"
 msgstr ""
 
@@ -165,19 +175,19 @@ msgstr ""
 msgid "Only the \"Lesson Plans\" pathway."
 msgstr ""
 
-#: wp-plugin/includes/class-renderer.php:992
+#: wp-plugin/includes/class-renderer.php:1039
 msgid "Original"
 msgstr ""
 
-#: wp-plugin/includes/class-renderer.php:1194
+#: wp-plugin/includes/class-renderer.php:1241
 msgid "Original draft"
 msgstr ""
 
-#: wp-plugin/includes/class-renderer.php:1180
+#: wp-plugin/includes/class-renderer.php:1227
 msgid "Orphaned"
 msgstr ""
 
-#: wp-plugin/includes/class-renderer.php:1175
+#: wp-plugin/includes/class-renderer.php:1222
 msgid "Outside scope"
 msgstr ""
 
@@ -233,11 +243,13 @@ msgstr ""
 msgid "Required field missing in tracker.json: %s"
 msgstr ""
 
-#: wp-plugin/includes/class-renderer.php:786
+#: wp-plugin/includes/class-renderer.php:215
+#: wp-plugin/includes/class-renderer.php:833
 msgid "Review"
 msgstr ""
 
-#: wp-plugin/includes/class-renderer.php:1099
+#: wp-plugin/includes/class-renderer.php:1146
+#: wp-plugin/includes/class-renderer.php:210
 msgid "Reviewer"
 msgstr ""
 
@@ -285,12 +297,12 @@ msgstr ""
 msgid "Schema version mismatch. Expected: %1$d, found: %2$s"
 msgstr ""
 
-#: wp-plugin/includes/class-renderer.php:626
+#: wp-plugin/includes/class-renderer.php:673
 msgid "Search titles"
 msgstr ""
 
-#: wp-plugin/includes/class-renderer.php:625
-msgid "Search titles (EN or DE)…"
+#: wp-plugin/includes/class-renderer.php:672
+msgid "Search titles…"
 msgstr ""
 
 #: wp-plugin/includes/class-settings.php:255
@@ -301,23 +313,23 @@ msgstr ""
 msgid "Shortcodes"
 msgstr ""
 
-#: wp-plugin/includes/class-renderer.php:776
+#: wp-plugin/includes/class-renderer.php:823
 msgid "Show all"
 msgstr ""
 
-#: wp-plugin/includes/class-renderer.php:784
+#: wp-plugin/includes/class-renderer.php:831
 msgid "Show only Review"
 msgstr ""
 
-#: wp-plugin/includes/class-renderer.php:780
+#: wp-plugin/includes/class-renderer.php:827
 msgid "Show only done"
 msgstr ""
 
-#: wp-plugin/includes/class-renderer.php:788
+#: wp-plugin/includes/class-renderer.php:835
 msgid "Show only in progress"
 msgstr ""
 
-#: wp-plugin/includes/class-renderer.php:792
+#: wp-plugin/includes/class-renderer.php:839
 msgid "Show only open"
 msgstr ""
 
@@ -329,11 +341,11 @@ msgstr ""
 msgid "Show only the pathway with slug \"user\" (e.g. Start using WordPress)."
 msgstr ""
 
-#: wp-plugin/includes/class-renderer.php:501
+#: wp-plugin/includes/class-renderer.php:548
 msgid "Tracker data is being prepared. Please check back later."
 msgstr ""
 
-#: wp-plugin/includes/class-renderer.php:1005
+#: wp-plugin/includes/class-renderer.php:1052
 msgid "Translation"
 msgstr ""
 
@@ -351,24 +363,56 @@ msgstr ""
 msgid "`groups` in tracker.json is not an array."
 msgstr ""
 
-#: wp-plugin/includes/class-renderer.php:782
+#: wp-plugin/includes/class-renderer.php:227
+msgid "audio"
+msgstr ""
+
+#: wp-plugin/includes/class-renderer.php:214
+#: wp-plugin/includes/class-renderer.php:829
 msgid "done"
 msgstr ""
 
-#: wp-plugin/includes/class-renderer.php:790
+#: wp-plugin/includes/class-renderer.php:225
+msgid "exercise"
+msgstr ""
+
+#: wp-plugin/includes/class-renderer.php:216
+#: wp-plugin/includes/class-renderer.php:837
 msgid "in progress"
 msgstr ""
 
-#: wp-plugin/includes/class-renderer.php:798
+#: wp-plugin/includes/class-renderer.php:218
+#: wp-plugin/includes/class-renderer.php:845
 msgid "n/a"
 msgstr ""
 
-#: wp-plugin/includes/class-renderer.php:796
+#: wp-plugin/includes/class-renderer.php:843
 msgid "n/a — not filterable"
 msgstr ""
 
-#: wp-plugin/includes/class-renderer.php:794
+#: wp-plugin/includes/class-renderer.php:211
+msgid "not yet assigned"
+msgstr ""
+
+#: wp-plugin/includes/class-renderer.php:217
+#: wp-plugin/includes/class-renderer.php:841
 msgid "open"
+msgstr ""
+
+#: wp-plugin/includes/class-renderer.php:226
+msgid "quiz"
+msgstr ""
+
+#: wp-plugin/includes/class-renderer.php:224
+msgid "subtitles"
+msgstr ""
+
+#: wp-plugin/includes/class-renderer.php:221
+msgid "text"
+msgstr ""
+
+#: wp-plugin/includes/class-renderer.php:222
+msgid "thumbnails"
 msgstr ""
 
 #: wp-plugin/includes/class-settings.php:73
@@ -394,5 +438,9 @@ msgstr ""
 
 #: wp-plugin/includes/class-fetcher.php:151
 msgid "tracker.json has unexpected structure (no top-level object)."
+msgstr ""
+
+#: wp-plugin/includes/class-renderer.php:223
+msgid "video"
 msgstr ""
 

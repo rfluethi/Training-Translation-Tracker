@@ -8,17 +8,15 @@
 >
 > Die gemeinsamen Regeln stehen oben, die typ-spezifischen Vorlagen unten.
 
----
-
 ## Gemeinsame Regeln (gelten für ALLE Vorlagen)
 
 ### Pflicht-Anforderungen
 
 Damit ein Issue korrekt im Tracker erscheint, müssen drei Dinge stimmen:
 
-1. **Original-URL in kanonischer Form** — siehe nächster Abschnitt.
-2. **Locale-Markierung im Projekt-Board** — Issue im DACH-Projekt-Board mit `Locale = German` taggen. Sonst sieht die Action das Issue nicht.
-3. **Status-Tabelle mit HTML-Markern** — Markdown-Tabelle zwischen `<!-- TRANSLATION-STATUS-START -->` und `<!-- TRANSLATION-STATUS-END -->`. 1:1 aus der Vorlage übernehmen, sonst kein Status-Parsing.
+1. **Original-URL in kanonischer Form**, siehe nächster Abschnitt.
+2. **Locale-Markierung im Projekt-Board**, Issue im DACH-Projekt-Board mit `Locale = German` taggen. Sonst sieht die Action das Issue nicht.
+3. **Status-Tabelle mit HTML-Markern**, Markdown-Tabelle zwischen `<!-- TRANSLATION-STATUS-START -->` und `<!-- TRANSLATION-STATUS-END -->`. 1:1 aus der Vorlage übernehmen, sonst kein Status-Parsing.
 
 ### URL-Form (kanonisch)
 
@@ -45,15 +43,15 @@ Andere Werte werden vom Parser ignoriert.
 
 ### Ein Issue pro Inhalt und Sprache
 
-Pro Original-URL und Sprache existiert nur **ein** Issue. Wenn aus Versehen zwei entstehen, markiert der Tracker beide mit einem Warnsymbol „mehrfaches Issue" — die Bereinigung erfolgt manuell durch das Team.
+Pro Original-URL und Sprache existiert nur **ein** Issue. Wenn aus Versehen zwei entstehen, markiert der Tracker beide mit einem Warnsymbol „mehrfaches Issue", die Bereinigung erfolgt manuell durch das Team.
 
 ### Felder, die *nicht* mehr ins Issue gehören
 
 Diese Felder kommen heute automatisch aus dem Inventar bzw. dem Project-V2-Board:
 
-- **Original-Titel** (`Original title:`) — wird aus learn.wordpress.org / dem Handbook gezogen.
-- **Sortier-Reihenfolge** (`Order:`) — ergibt sich aus `scope.yml`.
-- **Pathway / Course / Section** — wird automatisch zugeordnet.
+- **Original-Titel** (`Original title:`), wird aus learn.wordpress.org / dem Handbook gezogen.
+- **Sortier-Reihenfolge** (`Order:`), ergibt sich aus `scope.yml`.
+- **Pathway / Course / Section**, wird automatisch zugeordnet.
 
 Wer alte Issues migriert: die Felder dürfen drinbleiben, der Parser ignoriert sie still.
 
@@ -71,9 +69,7 @@ Die Status-Tabelle braucht nur die Zeilen, die für den Typ relevant sind. Defin
 
 Nicht zutreffende Komponenten als `na` markieren oder die Zeile weglassen.
 
----
-
-## Vorlage 1 — Lessons / Lesson-Plans / Tutorials
+## Vorlage 1, Lessons / Lesson-Plans / Tutorials
 
 Diese Vorlage erweitert die offizielle `WordPress/Learn`-Translation-Vorlage. Der offizielle Block (`# Details`) wird 1:1 übernommen, darunter folgen die DACH-spezifischen Felder.
 
@@ -123,7 +119,7 @@ issue, and request a [translation review](https://make.wordpress.org/training/ha
 
 ### Was offiziell vs. DACH-Erweiterung ist
 
-Vom offiziellen `# Details`-Block nutzt der Tracker nur **ein** Feld: `Link to original content` (Pflicht — Matching gegen `scope.yml`). Der Rest ist Mensch-zu-Mensch-Information.
+Vom offiziellen `# Details`-Block nutzt der Tracker nur **ein** Feld: `Link to original content` (Pflicht, Matching gegen `scope.yml`). Der Rest ist Mensch-zu-Mensch-Information.
 
 Der `# Translation Details`-Block ist die DACH-Erweiterung. Alle Felder sind optional außer dem Format selbst:
 
@@ -144,9 +140,7 @@ Der Parser akzeptiert mehrere Schreibvarianten:
 - `Link to WordPress.tv recording:` (ohne *original/translated*) → wird als **deutsche** Aufnahme interpretiert (Backwards-Compat).
 - Format-egal: `- Field: value` (offiziell) **und** `**Field:** value` (DACH-Bold-Stil) werden erkannt.
 
----
-
-## Vorlage 2 — Handbook (`handbook_text`, reine Text-Seite)
+## Vorlage 2, Handbook (`handbook_text`, reine Text-Seite)
 
 Für Handbook-Inhalte unter `https://make.wordpress.org/training/handbook/...`, die **keine** Video-Aufnahme haben.
 
@@ -166,11 +160,9 @@ Für Handbook-Inhalte unter `https://make.wordpress.org/training/handbook/...`, 
 <!-- TRANSLATION-STATUS-END -->
 ```
 
-Das ist das Minimum. `Link to translated content` und `German title` dürfen leer bleiben — werden ergänzt, sobald eine deutsche Version steht.
+Das ist das Minimum. `Link to translated content` und `German title` dürfen leer bleiben, werden ergänzt, sobald eine deutsche Version steht.
 
----
-
-## Vorlage 3 — Handbook (`handbook_video`, mit Video-Aufnahme)
+## Vorlage 3, Handbook (`handbook_video`, mit Video-Aufnahme)
 
 Für Handbook-Seiten mit eingebettetem Video.
 
@@ -197,17 +189,13 @@ Für Handbook-Seiten mit eingebettetem Video.
 <!-- TRANSLATION-STATUS-END -->
 ```
 
----
-
 ## Was bei Handbook anders ist als bei Lessons
 
 - **Keine Pathway/Course-Zuordnung.** Handbook-Items werden automatisch in einer eigenen Top-Level-Gruppe „Training Handbook" angezeigt, unterteilt nach ihrem Top-Level-Section-Slug (`about`, `getting-started`, …). Die Action ermittelt diese Hierarchie selbst über den `parent`-Field der Handbook-REST-API.
-- **Keine `quiz`/`exercise`/`audio`-Komponenten.** Wer doch eines dieser Komponenten-Typen für Handbook braucht, fügt sie einfach in die Tabelle ein — die Action akzeptiert beliebige Komponenten-Namen (das Frontend rendert nur bekannte Icons, unbekannte ignoriert).
+- **Keine `quiz`/`exercise`/`audio`-Komponenten.** Wer doch eines dieser Komponenten-Typen für Handbook braucht, fügt sie einfach in die Tabelle ein, die Action akzeptiert beliebige Komponenten-Namen (das Frontend rendert nur bekannte Icons, unbekannte ignoriert).
 - **Kompakteres Format.** Statt `# Details` / `# Translation Details`-Blöcken reicht `**Field:** value`-Syntax. Der Parser erkennt beide Stile.
 
----
-
-## Vollständiges Beispiel — gepflegtes Lesson-Issue
+## Vollständiges Beispiel, gepflegtes Lesson-Issue
 
 ```markdown
 <!--
@@ -251,9 +239,7 @@ Once translated, please link or upload your translated files in a comment on thi
 issue, and request a [translation review](https://make.wordpress.org/training/handbook/content-localization/#translation-review).
 ```
 
----
-
-## Vollständiges Beispiel — gepflegtes Handbook-Issue
+## Vollständiges Beispiel, gepflegtes Handbook-Issue
 
 ```markdown
 **Link to original content:** https://make.wordpress.org/training/handbook/about/team-values/
@@ -269,12 +255,9 @@ issue, and request a [translation review](https://make.wordpress.org/training/ha
 <!-- TRANSLATION-STATUS-END -->
 ```
 
----
-
 ## Bezug zu anderen Dokumenten
 
 - Architektur und Entscheidungen: [Architektur.md](Architektur.md)
 - Plugin-Bedienung und Issue-Workflow: [User-Guide.md](User-Guide.md)
-- Kompakte Team-Demo (1 A4, beim Maintainer außerhalb des Repos): `../Konzept/Team-Uebersicht.md`
 - Komponenten-Templates (Source-of-Truth): `action/component-templates.yml`
 - Scope-Konfiguration: `action/scope.yml`

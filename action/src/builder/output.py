@@ -25,6 +25,7 @@ def write_outputs(
     stats: dict[str, int],
     groups: list[dict[str, Any]],
     warnings: list[str],
+    component_icons: dict[str, str] | None = None,
 ) -> tuple[Path, Path]:
     """Write tracker.json and last-run.md into output_dir. Returns their paths."""
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -39,6 +40,8 @@ def write_outputs(
     }
     if scope_version:
         payload["scope_version"] = scope_version
+    if component_icons:
+        payload["component_icons"] = component_icons
 
     tracker_path = output_dir / "tracker.json"
     tracker_path.write_text(

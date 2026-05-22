@@ -1,10 +1,8 @@
-# Developer — Training Translation Tracker
+# Developer, Training Translation Tracker
 
-> **Zielgruppe:** Entwickler:innen, die am Code arbeiten — Action (Python) und/oder Plugin (PHP/JS/CSS) warten, erweitern oder für andere Locales adaptieren.
-> **Voraussetzung:** Architektur grob verstanden — siehe [Architektur.md](Architektur.md).
+> **Zielgruppe:** Entwickler:innen, die am Code arbeiten, Action (Python) und/oder Plugin (PHP/JS/CSS) warten, erweitern oder für andere Locales adaptieren.
+> **Voraussetzung:** Architektur grob verstanden, siehe [Architektur.md](Architektur.md).
 > **Setup:** Linux/macOS mit Python 3.10+, Node optional für JS-Linting, lokale WordPress-Installation oder WP-Playground für Plugin-Tests.
-
----
 
 ## 1. Lokale Entwicklungs-Umgebung
 
@@ -42,7 +40,7 @@ Cache aufbauen / aktualisieren (live gegen learn.wordpress.org):
 python -m src.build --refresh-cache
 ```
 
-`--refresh-cache` macht **keinen** Issue-Fetch und schreibt **kein** `tracker.json` — es aktualisiert nur `inventory-cache.json`. Default: nur fehlende URLs werden geholt. Mit `--force` werden alle neu gefetcht.
+`--refresh-cache` macht **keinen** Issue-Fetch und schreibt **kein** `tracker.json`, es aktualisiert nur `inventory-cache.json`. Default: nur fehlende URLs werden geholt. Mit `--force` werden alle neu gefetcht.
 
 ### Plugin (PHP)
 
@@ -61,8 +59,6 @@ Alternativ ein lokales ZIP bauen und über die WP-Admin-UI hochladen:
 ```
 
 PHPUnit-Tests existieren aktuell nicht (Stand 0.3.0). Plugin wird per Sichtprüfung in einer lokalen Instanz oder im [WP-Playground](https://playground.wordpress.net/) verifiziert.
-
----
 
 ## 2. Action-Code (Python)
 
@@ -90,7 +86,7 @@ action/src/
     └── writer.py           # tracker.json + last-run.md schreiben
 ```
 
-Jedes Modul hat eine klare Verantwortung — keine Zyklen zwischen den Untermodulen.
+Jedes Modul hat eine klare Verantwortung, keine Zyklen zwischen den Untermodulen.
 
 ### InventorySource-Schnittstelle
 
@@ -110,7 +106,7 @@ Neue Inhaltsquelle anschließen:
 
 ### Issue-Parser
 
-`src/github/parser.py` ist strikt: er verlangt die HTML-Marker `<!-- TRANSLATION-STATUS-START -->` / `<!-- TRANSLATION-STATUS-END -->`. Issues ohne Marker werden mit Default-Komponenten und ohne `parse_error` aufgenommen — das Markdown-Tabellen-Parsing wird einfach übersprungen.
+`src/github/parser.py` ist strikt: er verlangt die HTML-Marker `<!-- TRANSLATION-STATUS-START -->` / `<!-- TRANSLATION-STATUS-END -->`. Issues ohne Marker werden mit Default-Komponenten und ohne `parse_error` aufgenommen, das Markdown-Tabellen-Parsing wird einfach übersprungen.
 
 Akzeptierte URL-Field-Namen (tolerant):
 
@@ -128,14 +124,12 @@ pytest tests/
 
 Tests decken ab:
 
-- `tests/test_github_parser.py` — 8 Fixtures (sauber, broken, single row, at-prefix, unknown status, …).
-- `tests/test_inventory_*.py` — pro Source-Modul mit gemockter API.
-- `tests/test_builder_joiner.py` — Matching-Logik, Duplicate-Handling, Orphan-Klassifikation.
-- `tests/test_url_normalizer.py` — alle Varianten der URL-Normalisierung.
+- `tests/test_github_parser.py`, 8 Fixtures (sauber, broken, single row, at-prefix, unknown status, …).
+- `tests/test_inventory_*.py`, pro Source-Modul mit gemockter API.
+- `tests/test_builder_joiner.py`, Matching-Logik, Duplicate-Handling, Orphan-Klassifikation.
+- `tests/test_url_normalizer.py`, alle Varianten der URL-Normalisierung.
 
 Linting via Ruff: `ruff check src/ tests/`.
-
----
 
 ## 3. Plugin-Code (PHP)
 
@@ -161,7 +155,7 @@ Definiert Konstanten, lädt Klassen, registriert Init-Hooks.
 - AJAX-Endpoint `ttt_clear_cache` mit Nonce + Capability-Check (`manage_options`).
 - Shortcode-Beispiel-Liste mit Copy-Button (via `admin.js`).
 
-Konfiguration liegt in **einer** WP-Option (`ttt_settings`) als assoziatives Array — vermeidet das Aufblähen der `wp_options`-Tabelle.
+Konfiguration liegt in **einer** WP-Option (`ttt_settings`) als assoziatives Array, vermeidet das Aufblähen der `wp_options`-Tabelle.
 
 ```php
 TTT_Settings::get( 'tracker_url' );
@@ -192,7 +186,7 @@ get()
 └── Store + 'fresh' return
 ```
 
-Schema-Validation prüft nur `schema_version === TTT_TRACKER_SCHEMA_VERSION`. Tiefere Validation übernimmt die Action — Plugin vertraut darauf.
+Schema-Validation prüft nur `schema_version === TTT_TRACKER_SCHEMA_VERSION`. Tiefere Validation übernimmt die Action, Plugin vertraut darauf.
 
 ### `class-renderer.php`
 
@@ -214,8 +208,8 @@ Größte Klasse. Verantwortlich für die HTML-Erzeugung.
 
 Konstanten:
 
-- `COMPONENT_ICONS` — Material-Icons-SVG-Paths pro Komponente.
-- `COMPONENT_ORDER` — Reihenfolge der Icons im Footer.
+- `COMPONENT_ICONS`, Material-Icons-SVG-Paths pro Komponente.
+- `COMPONENT_ORDER`, Reihenfolge der Icons im Footer.
 
 ### Frontend-HTML-Hierarchie
 
@@ -266,17 +260,15 @@ Alle Klassen tragen `.ttt-`-Prefix. Wichtige Status-Modifier:
 
 ### Data-Attribute (vom JS verwendet)
 
-- `.ttt-tracker[data-tracker-id]` — eindeutige Instanz-ID.
-- `.ttt-stat[data-filter-status]` — `all|done|review|wip|open|na`.
-- `.ttt-card[data-status]` — `overall_status` für JS-Filter.
-- `.ttt-card[data-search]` — Lowercase-Suchstring (EN-Titel + DE-Titel + Issue-Nummer).
-- `.ttt-section[data-section-key]` — Schlüssel für localStorage (Collapse-State).
-
----
+- `.ttt-tracker[data-tracker-id]`, eindeutige Instanz-ID.
+- `.ttt-stat[data-filter-status]`, `all|done|review|wip|open|na`.
+- `.ttt-card[data-status]`, `overall_status` für JS-Filter.
+- `.ttt-card[data-search]`, Lowercase-Suchstring (EN-Titel + DE-Titel + Issue-Nummer).
+- `.ttt-section[data-section-key]`, Schlüssel für localStorage (Collapse-State).
 
 ## 4. JavaScript
 
-`assets/tracker.js` — Vanilla ES5+ als IIFE, kein jQuery, ~270 Zeilen.
+`assets/tracker.js`, Vanilla ES5+ als IIFE, kein jQuery, ~270 Zeilen.
 
 ### Initialisierung
 
@@ -326,32 +318,30 @@ var matchQuery  = (state.query === '') || (card.dataset.search.indexOf(state.que
 if (matchStatus && matchQuery) show(card); else hide(card);
 ```
 
-Danach `hideEmptyContainers()` — Sections/Courses/Groups ohne sichtbare Karten werden zugeklappt. Stats-Pillen werden aus den gefilterten Karten live neu berechnet (Stats-Live-Update).
-
----
+Danach `hideEmptyContainers()`, Sections/Courses/Groups ohne sichtbare Karten werden zugeklappt. Stats-Pillen werden aus den gefilterten Karten live neu berechnet (Stats-Live-Update).
 
 ## 5. CSS-Strategie
 
-### Inline-First
+### Single Source of Truth (ab 0.3.2)
 
-In WordPress-Umgebungen mit Page-Buildern (Elementor, Divi, Beaver Builder) und/oder Caching-Plugins (WP Rocket, LiteSpeed Cache) lädt eine via `wp_enqueue_style` registrierte externe CSS-Datei **nicht zuverlässig**. `has_shortcode( $post->post_content, … )` versagt, wenn der Shortcode in einem Builder-eigenen Meta-Feld liegt statt im klassischen `post_content`.
+Das gesamte Frontend-CSS lebt im Inline-`<style id="ttt-inline-critical">`-Block, der von `TTT_Renderer::render_inline_styles()` ausgegeben wird. Es gibt keine externe `assets/style.css` mehr, kein `wp_enqueue_style`, keine Doppelpflege.
 
-Lösung: alle Styles werden inline als `<style id="ttt-inline-critical">`-Block direkt am Anfang der Shortcode-Ausgabe geschrieben (siehe `TTT_Renderer::render_inline_styles()`). Die externe `assets/style.css` wird zusätzlich enqueued — sie deckt Edge-Cases ab.
+Grund für Inline statt extern: In WordPress-Umgebungen mit Page-Buildern (Elementor, Divi, Beaver Builder) und/oder Caching-Plugins (WP Rocket, LiteSpeed Cache) lädt eine via `wp_enqueue_style` registrierte externe CSS-Datei nicht zuverlässig. `has_shortcode( $post->post_content, … )` versagt, wenn der Shortcode in einem Builder-eigenen Meta-Feld liegt. Inline-Styles im Shortcode-Output umgehen das vollständig.
 
-Wegen der bewussten Abweichung von `wp_enqueue_style()` umklammern beide `<style>`-Tags einen `phpcs:disable WordPress.WP.EnqueuedResources.NonEnqueuedStylesheet`-Block.
+Wegen der bewussten Abweichung von `wp_enqueue_style()` umklammert der `<style>`-Tag einen `phpcs:disable WordPress.WP.EnqueuedResources.NonEnqueuedStylesheet`-Block.
 
-### Design-Tokens (ab v0.2.4)
+### Design-Tokens
 
-Farben, Spacings, Schriftgrößen, Borders und Icon-Größen sind als CSS-Custom-Properties am `.ttt-tracker`-Root definiert. `assets/style.css` und `render_inline_styles()` deklarieren das gleiche Token-Set.
+Farben, Spacings, Schriftgrößen, Borders und Icon-Größen sind als CSS-Custom-Properties am `.ttt-tracker`-Root definiert:
 
 ```css
 .ttt-tracker {
-    /* Brand-Farben — via theme.json überschreibbar */
+    /* Brand-Farben, via theme.json überschreibbar */
     --ttt-color-primary: var(--wp--preset--color--primary, #2271b1);
     --ttt-color-text:    var(--wp--preset--color--foreground, #222);
     --ttt-color-bg:      var(--wp--preset--color--base, #fff);
 
-    /* Status-Semantik — Plugin-fix, NICHT überschreibbar */
+    /* Status-Semantik, Plugin-fix, NICHT überschreibbar */
     --ttt-color-done:    #28a745;
     --ttt-color-review:  #d4a017;
     --ttt-color-wip:     #1c7ed6;
@@ -364,17 +354,11 @@ Farben, Spacings, Schriftgrößen, Borders und Icon-Größen sind als CSS-Custom
 }
 ```
 
-**Override am Theme** — eigene Token-Werte am `.ttt-tracker`-Selektor im Child-Theme oder Customizer-CSS setzen. Status-Farben bleiben Plugin-fix (semantische Konsistenz).
+**Override am Theme**: eigene Token-Werte am `.ttt-tracker`-Selektor im Child-Theme oder Customizer-CSS setzen. Status-Farben bleiben Plugin-fix (semantische Konsistenz).
 
 ### Specificity
 
-Alle Plugin-Regeln tragen den `.ttt-tracker`-Parent-Prefix für höhere Specificity gegen Theme-Rules. Wo Themes Standard-`!important`-Regeln haben (z. B. `svg { max-width: 100% !important }`), gewinnt das Plugin mit eigenen `!important`-Rules auf den entscheidenden Properties — z. B. `.ttt-tracker .ttt-card-cols { display: grid !important; }`.
-
-### Doppelpflege (heute akzeptiert)
-
-Solange CSS-Stufe 3 (gemeinsame Token-Quelle aus PHP-Array generieren) nicht implementiert ist, müssen Änderungen am Token-Set in **beiden** Quellen gespiegelt werden. Sanity-Check als Python-Snippet, siehe Sektion 10.
-
----
+Alle Plugin-Regeln tragen den `.ttt-tracker`-Parent-Prefix für höhere Specificity gegen Theme-Rules. Wo Themes Standard-`!important`-Regeln haben (z. B. `svg { max-width: 100% !important }`), gewinnt das Plugin mit eigenen `!important`-Rules auf den entscheidenden Properties, z. B. `.ttt-tracker .ttt-card-cols { display: grid !important; }`.
 
 ## 6. Barrierefreiheit (A11y)
 
@@ -383,8 +367,8 @@ Stand 0.3.0: keine formaler Audit, aber semantische Grundstruktur und alle Quick
 ### Was umgesetzt ist
 
 - Stats-Filter sind echte `<button>`-Elemente.
-- **Section-Toggles sind echte `<button>` innerhalb eines `<h4>`** — semantisch korrekt, native Tastatur-Bedienung (`Enter`/`Leertaste`), `aria-expanded` reflektiert den Zustand. (Refactor in 0.3.0.)
-- **Komponenten-Icon-Trigger tragen `aria-haspopup="dialog"` + `aria-expanded`** — JS pflegt den Zustand beim Öffnen/Schließen. (Neu in 0.3.0.)
+- **Section-Toggles sind echte `<button>` innerhalb eines `<h4>`**, semantisch korrekt, native Tastatur-Bedienung (`Enter`/`Leertaste`), `aria-expanded` reflektiert den Zustand. (Refactor in 0.3.0.)
+- **Komponenten-Icon-Trigger tragen `aria-haspopup="dialog"` + `aria-expanded`**, JS pflegt den Zustand beim Öffnen/Schließen. (Neu in 0.3.0.)
 - Komponenten-Popover ist click/tap-tauglich (zusätzlich zu hover), `Enter`/`Leertaste` öffnet, `Esc` schließt.
 - Such-Input ist semantisch `<input type="search">` mit `aria-label`.
 - SVG-Icons tragen `aria-hidden="true"` + `focusable="false"`; die semantische Info sitzt im Wrapper-`aria-label`.
@@ -393,7 +377,7 @@ Stand 0.3.0: keine formaler Audit, aber semantische Grundstruktur und alle Quick
 
 ### Was noch offen ist
 
-1. **Kontrast `--ttt-color-review`.** `#d4a017` (amber) auf weiß ergibt ~2.4:1 — unter WCAG-AA-Schwelle für Icons (3:1). Brand-Designentscheidung; bei einem formalen Audit nachjustieren (z. B. auf `#b8860b` / DarkGoldenrod → ~3.3:1).
+1. **Kontrast `--ttt-color-review`.** `#d4a017` (amber) auf weiß ergibt ~2.4:1, unter WCAG-AA-Schwelle für Icons (3:1). Brand-Designentscheidung; bei einem formalen Audit nachjustieren (z. B. auf `#b8860b` / DarkGoldenrod → ~3.3:1).
 2. **Audit-Lauf.** Lighthouse-A11y + axe-core auf einer Test-Seite laufen lassen, Findings als Iteration nachziehen. Bislang nur manuelle Sichtprüfung.
 
 ### Test-Anleitung
@@ -401,11 +385,9 @@ Stand 0.3.0: keine formaler Audit, aber semantische Grundstruktur und alle Quick
 Manueller Smoketest:
 
 - **Tab-Navigation:** Mit `Tab`/`Shift+Tab` durch die Seite. Jedes interaktive Element muss erreichbar sein, mit sichtbarem Focus-Ring.
-- **Keyboard-Bedienung:** Stats-Filter, Section-Collapse, Such-Input — alles mit `Enter`/`Leertaste` bedienbar.
+- **Keyboard-Bedienung:** Stats-Filter, Section-Collapse, Such-Input, alles mit `Enter`/`Leertaste` bedienbar.
 - **Screenreader-Stichprobe:** VoiceOver (macOS) oder NVDA (Windows) eine Karte vorlesen lassen. Komponenten-Status klar erkennbar?
 - **Browser-Tool:** F12 → Lighthouse-Tab → „Accessibility"-Run.
-
----
 
 ## 7. Erweiterungspunkte
 
@@ -429,17 +411,17 @@ add_filter( 'ttt_component_icons', function( $icons ) {
 
 Was übergeben wird ist das `d`-Attribut des SVG-Pfads (kein vollständiger SVG-Tag), weil das Plugin um die Pfad-Daten den `<svg>`-Wrapper baut (`viewBox="0 0 24 24"`, `fill="currentColor"`, `aria-hidden="true"`).
 
-Mittelfristige Alternative: Icons direkt in `component-templates.yml` definieren und in `tracker.json` mitliefern. Dann ist das Plugin komplett konfigurations-getrieben — sinnvoll erst, wenn mehrere Locales eigene Icon-Sätze brauchen.
+Mittelfristige Alternative: Icons direkt in `component-templates.yml` definieren und in `tracker.json` mitliefern. Dann ist das Plugin komplett konfigurations-getrieben, sinnvoll erst, wenn mehrere Locales eigene Icon-Sätze brauchen.
 
 ### Neue Item-Typen / Komponenten
 
-1. **Action** — neuen Typ in `component-templates.yml` definieren.
+1. **Action**, neuen Typ in `component-templates.yml` definieren.
 2. **Plugin** `class-renderer.php`:
    - In `COMPONENT_ICONS` einen Material-Icons-SVG-Path ergänzen.
    - In `COMPONENT_ORDER` die Position in der Footer-Zeile festlegen.
 3. **Inline-CSS** in `render_inline_styles()`: Farb-Klasse `.ttt-comp-newtype` ergänzen (falls eigene Farbe gewünscht).
 
-Plugin behandelt unbekannte Komponenten defensiv — funktioniert auch ohne Plugin-Update, nur ohne Icon.
+Plugin behandelt unbekannte Komponenten defensiv, funktioniert auch ohne Plugin-Update, nur ohne Icon.
 
 ### Andere Locales (z. B. `it_IT`, `fr_FR`)
 
@@ -465,14 +447,11 @@ Im Child-Theme oder Customizer-Custom-CSS:
 }
 ```
 
-Das überschreibt automatisch alle Stellen, die `var(--ttt-color-primary)` etc. lesen — ohne `!important`-Krieg.
+Das überschreibt automatisch alle Stellen, die `var(--ttt-color-primary)` etc. lesen, ohne `!important`-Krieg.
 
 Bei Layout-Properties (`display: grid` etc.) muss Custom-CSS mit `!important` arbeiten, weil die Inline-Styles `!important` tragen.
 
----
-
 ## 8. Versionierung
-
 
 Drei Stellen pro Release synchron halten (Beispiel `0.3.0`):
 
@@ -486,53 +465,44 @@ Der CI-Workflow `release-plugin.yml` verifiziert die Konsistenz beim Tag-Push un
 
 Beta-Schema `0.x.y`:
 
-- `0.2.x` — laufende Beta-Iteration, gleiches `schema_version=1`.
-- `0.3.0` — geplanter nächster Minor mit neuen Features.
-- `1.0.0` — erstes stabiles Release, wenn Plugin produktiv-ready ist.
+- `0.2.x`, laufende Beta-Iteration, gleiches `schema_version=1`.
+- `0.3.0`, geplanter nächster Minor mit neuen Features.
+- `1.0.0`, erstes stabiles Release, wenn Plugin produktiv-ready ist.
 
 Schema-Versionierung des Datenmodells: `tracker.json schema_version`-Sprung → Plugin lehnt alte Daten ab.
-
----
 
 ## 9. Bekannte technische Schulden
 
 | # | Thema | Status |
 |---|---|---|
-| 1 | Keine PHPUnit-Tests fürs Plugin | offen — bei größeren Refactorings nachziehen |
-| 2 | CSS-Doppelpflege `style.css` ↔ Inline-Block | Stufe 3 (gemeinsame Quelle aus PHP-Array) noch nicht umgesetzt — akzeptable Doppelpflege |
+| 1 | Keine PHPUnit-Tests fürs Plugin | offen, bei größeren Refactorings nachziehen |
+| 2 | (gelöst in 0.3.2: Inline-Block ist Single Source of Truth, keine externe `style.css` mehr) | erledigt |
 | 3 | Settings-Status-Hinweis nutzt fixe Hex-Werte | konsistenter wäre auch hier Token-System |
 | 4 | A11y nie formal auditiert | Pre-1.0 Lighthouse + axe-core durchlaufen, Findings nachziehen (siehe § 6) |
 | 5 | Komponenten-Icons nur per Filter-Hook überschreibbar | längerfristig: Icons aus `component-templates.yml` in `tracker.json` mitliefern |
 
-Priorisierte Roadmap liegt im Arbeitsplan beim Maintainer (Teil C, außerhalb des Repos).
 
----
+## 10. Sanity-Check für CSS-Token-Konsistenz
 
-## 10. Sanity-Check für CSS-Token-Sync
+Alle verwendeten `var(--ttt-*)`-Tokens müssen im Inline-Block auch definiert sein, sonst rendert das Layout kaputt.
 
 ```bash
 python3 - <<'EOF'
 import re
 
-def check(label, c):
-    used = set(re.findall(r'var\(--ttt-[\w-]+', c))
-    defined = set(f'var({n}' for n in re.findall(r'(--ttt-[\w-]+):', c))
-    print(f'{label}: used={len(used)} defined={len(defined)} '
-          f'missing={sorted(used - defined)} unused={sorted(defined - used)}')
-
-with open('wp-plugin/assets/style.css') as f:
-    check('style.css', f.read())
-
 with open('wp-plugin/includes/class-renderer.php') as f:
     m = re.search(r'<style id="ttt-inline-critical">(.*?)</style>', f.read(), re.DOTALL)
-    if m:
-        check('inline   ', m.group(1))
+if not m:
+    raise SystemExit('no inline style block found')
+c = m.group(1)
+used = set(re.findall(r'var\(--ttt-[\w-]+', c))
+defined = set(f'var({n}' for n in re.findall(r'(--ttt-[\w-]+):', c))
+print(f'used={len(used)} defined={len(defined)} '
+      f'missing={sorted(used - defined)} unused={sorted(defined - used)}')
 EOF
 ```
 
-Erwartet: keine `missing` und keine `unused` Tokens in beiden Quellen.
-
----
+Erwartet: keine `missing` und keine `unused` Tokens.
 
 ## Weiterführende Dokumente
 

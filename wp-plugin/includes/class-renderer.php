@@ -50,42 +50,25 @@ class TTT_Renderer {
 	private static $instance_counter = 0;
 
 	/**
-	 * Konstruktor: Shortcode + Frontend-CSS registrieren.
+	 * Cached Icon-Mapping pro Render-Cycle.
 	 *
-	 * Hinweis: Das CSS wird nicht mehr über `wp_enqueue_scripts` und
-	 * `has_shortcode()` enqueued, sondern direkt im Shortcode-Handler.
-	 * Grund: Page-Builder wie Elementor/Divi/Beaver speichern den
-	 * Shortcode nicht in `post_content`, sondern in eigenen Meta-Feldern.
-	 * `has_shortcode($post->post_content)` liefert dann false und das CSS
-	 * wird nie geladen, obwohl der Shortcode tatsächlich rendert.
+	 * Wird in render_payload() aus payload['component_icons'] gefüllt (falls
+	 * vorhanden) und in render_component_icon() ausgelesen. So müssen wir den
+	 * Filter `ttt_component_icons` nicht pro Icon-Render erneut anwenden.
+	 *
+	 * @var array<string,string>|null
+	 */
+	private $icon_map = null;
+
+	/**
+	 * Konstruktor: Shortcode registrieren.
+	 *
+	 * Das gesamte CSS wird seit 0.3.2 ausschließlich inline mit dem Shortcode-
+	 * Output ausgegeben (siehe `render_inline_styles`). Damit gibt es nur noch
+	 * eine CSS-Quelle, keine Doppelpflege mit einer externen `style.css`.
 	 */
 	public function __construct() {
 		add_shortcode( 'translation_tracker', array( $this, 'render_shortcode' ) );
-	}
-
-	/**
-	 * Lädt das Frontend-Stylesheet. Wird vom Shortcode-Handler aufgerufen,
-	 * sobald wir wissen, dass der Shortcode tatsächlich rendert.
-	 *
-	 * WordPress dedupliziert die enqueue automatisch — auch wenn der
-	 * Shortcode mehrfach auf einer Seite vorkommt, wird die CSS nur einmal
-	 * geladen.
-	 *
-	 * @return void
-	 */
-	public function enqueue_frontend_assets() {
-		// Externes CSS bleibt als Backup enqueued. Die kritischen Layout-Styles
-		// werden zusätzlich inline ausgegeben (siehe render_inline_styles), damit
-		// das Layout auch bei Page-Buildern und Cache-Plugins garantiert greift.
-		// Das JS wird ebenfalls inline ausgegeben, NICHT mehr enqueued, weil
-		// Page-Builder oft wp_footer() nicht aufrufen und das Skript sonst nie
-		// lädt.
-		wp_enqueue_style(
-			'ttt-frontend',
-			TTT_PLUGIN_URL . 'assets/style.css',
-			array(),
-			TTT_VERSION
-		);
 	}
 
 	/**
@@ -107,12 +90,11 @@ class TTT_Renderer {
 	 * @return string
 	 */
 	public function render_shortcode( $atts = array() ) {
-		// CSS immer dann laden, wenn der Shortcode tatsächlich ausgeführt wird —
-		// unabhängig davon, ob er in post_content steht oder in einem Page-Builder-Meta.
-		// Zusätzlich werden die kritischen Layout-Styles inline ausgegeben, damit
-		// das Layout auch bei Page-Caches / Theme-Override / externen Style-Loaders
-		// garantiert greift.
-		$this->enqueue_frontend_assets();
+		// CSS wird komplett inline mit dem Shortcode-Output ausgegeben
+		// (render_inline_styles), kein separates wp_enqueue_style mehr.
+		// Begründung: Page-Builder / Cache-Plugins laden externe Stylesheets
+		// unzuverlässig, und seit 0.3.2 ist der Inline-Block die einzige
+		// CSS-Quelle (Single Source of Truth).
 
 		// Was der User explizit gesetzt hat — *bevor* shortcode_atts die Defaults
 		// einsetzt. Wird unten verwendet, um zu entscheiden, ob `show_orphans`
@@ -172,6 +154,16 @@ class TTT_Renderer {
 		}
 		$already_printed = true;
 
+		// i18n-Daten ans Frontend: alle vom JS angezeigten Strings als globales
+		// Objekt window.tttI18n. Muss VOR dem tracker.js-Script-Tag stehen,
+		// damit das JS die Werte beim DOMContentLoaded schon lesen kann.
+		// Konzeptionell wie wp_localize_script(), aber ohne wp_enqueue_script()
+		// (siehe untern Kommentar zum <script src>-Tag).
+		$i18n = wp_json_encode( $this->get_frontend_i18n() );
+		// phpcs:disable WordPress.WP.EnqueuedResources.NonEnqueuedScript
+		echo '<script id="ttt-i18n">window.tttI18n=' . $i18n . ';</script>';
+		// phpcs:enable WordPress.WP.EnqueuedResources.NonEnqueuedScript
+
 		$src = TTT_PLUGIN_URL . 'assets/tracker.js?ver=' . rawurlencode( TTT_VERSION );
 		// Bewusste Abweichung von wp_enqueue_script():
 		// Der Standard-Weg über `wp_enqueue_scripts`-Hook + has_shortcode()-Check
@@ -184,14 +176,50 @@ class TTT_Renderer {
 	}
 
 	/**
+	 * Liefert alle vom Frontend-JS benötigten i18n-Strings als Array.
+	 *
+	 * Wird als window.tttI18n ans JS übergeben. Statt im JS einzelne
+	 * Hardcoded-Strings stehen zu haben, leitet das JS alle anzeigbaren
+	 * Strings hier durch — damit sind sie via .po/.mo übersetzbar.
+	 *
+	 * @return array
+	 */
+	private function get_frontend_i18n() {
+		return array(
+			'collapseAll'      => __( 'Collapse all', 'training-translation-tracker' ),
+			'expandAll'        => __( 'Expand all', 'training-translation-tracker' ),
+			'creator'          => __( 'Creator', 'training-translation-tracker' ),
+			'reviewer'         => __( 'Reviewer', 'training-translation-tracker' ),
+			'notAssigned'      => __( 'not yet assigned', 'training-translation-tracker' ),
+			'componentDetails' => __( 'Component details', 'training-translation-tracker' ),
+			'statusLabels'    => array(
+				'done'   => __( 'done', 'training-translation-tracker' ),
+				'review' => __( 'Review', 'training-translation-tracker' ),
+				'wip'    => __( 'in progress', 'training-translation-tracker' ),
+				'open'   => __( 'open', 'training-translation-tracker' ),
+				'na'     => __( 'n/a', 'training-translation-tracker' ),
+			),
+			'componentLabels' => array(
+				'text'       => __( 'text', 'training-translation-tracker' ),
+				'thumbnails' => __( 'thumbnails', 'training-translation-tracker' ),
+				'video'      => __( 'video', 'training-translation-tracker' ),
+				'subtitles'  => __( 'subtitles', 'training-translation-tracker' ),
+				'exercise'   => __( 'exercise', 'training-translation-tracker' ),
+				'quiz'       => __( 'quiz', 'training-translation-tracker' ),
+				'audio'      => __( 'audio', 'training-translation-tracker' ),
+			),
+		);
+	}
+
+	/**
 	 * Gibt die kritischen Layout-Styles als Inline-`<style>`-Block aus.
 	 *
 	 * Hintergrund: Externe CSS-Dateien laden nicht zuverlässig, wenn der
 	 * Shortcode aus einem Page-Builder, Custom-Block oder caching-Plugin
 	 * gerendert wird. Inline-Styles im Output umgehen das komplett.
 	 *
-	 * Bewusst nur die "structural"-Styles (Grid, Flex, Größen) — alles
-	 * andere (Farben, Pillen, Hover) kommt weiterhin aus assets/style.css.
+	 * Single Source of Truth: Seit 0.3.2 enthält dieser Block das vollständige
+	 * Frontend-CSS, es gibt keine externe assets/style.css mehr.
 	 *
 	 * @return void
 	 */
@@ -200,20 +228,20 @@ class TTT_Renderer {
 		// und manche Theme-Setups laden externe Stylesheets nicht zuverlässig,
 		// wenn der Shortcode aus einem Builder-Meta-Feld kommt statt aus
 		// $post->post_content. Ein Inline-<style>-Tag im Shortcode-Output
-		// umgeht das komplett — selbe Begründung wie beim <script src>-Tag
+		// umgeht das komplett, selbe Begründung wie beim <script src>-Tag
 		// in render_inline_script().
 		// phpcs:disable WordPress.WP.EnqueuedResources.NonEnqueuedStylesheet
 		?>
 <style id="ttt-inline-critical">
-/* Training Translation Tracker — Critical Inline Styles (<?php echo esc_html( TTT_VERSION ); ?>)
+/* Training Translation Tracker, Inline Styles (<?php echo esc_html( TTT_VERSION ); ?>)
  *
- * Spiegelt assets/style.css als Inline-Block, damit Page-Builder/Cache-Plugins
- * das Layout nicht abräumen können. Beide Quellen nutzen das gleiche Token-Set
- * (--ttt-*), Pflege passiert also über die Token-Werte oben — nicht über
- * zig verstreute Regeln.
+ * Single Source of Truth fürs Frontend-CSS. Pflege passiert hier, nirgends
+ * sonst. Tokens (--ttt-*) sind oben definiert, Pflege erfolgt über die
+ * Token-Werte, nicht über zig verstreute Regeln.
  *
  * Brand-Farben fallen auf theme.json-Variablen zurück, Status-Farben sind
- * bewusst fix (Semantik), siehe Header-Kommentar in style.css. */
+ * bewusst fix (Semantik).
+ */
 
 .ttt-tracker {
 	/* --- Brand-Farben (vom Theme überschreibbar) --- */
@@ -381,6 +409,7 @@ class TTT_Renderer {
 .ttt-tracker .ttt-comp-popover-username { font-weight: 600; }
 .ttt-tracker .ttt-comp-popover-username a { color: var(--ttt-color-primary); text-decoration: none; }
 .ttt-tracker .ttt-comp-popover-username a:hover { text-decoration: underline; }
+.ttt-tracker .ttt-comp-popover-unassigned { color: var(--ttt-color-text-subtle); font-style: italic; padding: 0.3rem 0; font-size: 0.85rem; }
 .ttt-tracker .ttt-card-footer-right .ttt-comp-icon { position: relative; }
 .ttt-tracker .ttt-issue-number { color: var(--ttt-color-primary); text-decoration: none; font-weight: 600; }
 .ttt-tracker .ttt-issue-state { display: inline-block; padding: 0.05rem 0.45rem; border-radius: var(--ttt-radius-pill); font-size: var(--ttt-font-size-xs); background: var(--ttt-color-na-bg); color: var(--ttt-color-open-fg); }
@@ -531,6 +560,17 @@ class TTT_Renderer {
 		$generated = isset( $payload['generated_at'] ) ? (string) $payload['generated_at'] : '';
 		$groups    = isset( $payload['groups'] ) && is_array( $payload['groups'] ) ? $payload['groups'] : array();
 
+		// Icon-Mapping pro Render-Cycle vorberechnen.
+		// Priorität (von niedrig nach hoch): COMPONENT_ICONS (PHP-Fallback)
+		// < payload['component_icons'] (aus tracker.json) < Filter-Hook
+		// `ttt_component_icons` (finaler Override durch Theme oder Plugin).
+		$from_payload = isset( $payload['component_icons'] ) && is_array( $payload['component_icons'] )
+			? $payload['component_icons']
+			: array();
+		$merged       = array_merge( self::COMPONENT_ICONS, $from_payload );
+		/** This filter is documented in render_component_icon(). */
+		$this->icon_map = apply_filters( 'ttt_component_icons', $merged );
+
 		$pathway_filter = $this->parse_pathway_filter( $atts['pathway'] ?? '' );
 		$has_pathway    = null !== $pathway_filter;
 		$explicit       = isset( $atts['_explicit'] ) && is_array( $atts['_explicit'] ) ? $atts['_explicit'] : array();
@@ -622,7 +662,7 @@ class TTT_Renderer {
 			<input
 				type="search"
 				class="ttt-search-input"
-				placeholder="<?php esc_attr_e( 'Search titles (EN or DE)…', 'training-translation-tracker' ); ?>"
+				placeholder="<?php esc_attr_e( 'Search titles…', 'training-translation-tracker' ); ?>"
 				aria-label="<?php esc_attr_e( 'Search titles', 'training-translation-tracker' ); ?>"
 			/>
 			<?php if ( ! empty( $project_status_values ) ) : ?>
@@ -1103,7 +1143,7 @@ class TTT_Renderer {
 		 * Filter: ttt_component_icons.
 		 *
 		 * Erlaubt Themes und Companion-Plugins, die Icon-SVG-Path-Daten pro
-		 * Komponente zu überschreiben — ohne den Plugin-Code anzufassen.
+		 * Komponente zu überschreiben, ohne den Plugin-Code anzufassen.
 		 *
 		 * Beispiel im Theme:
 		 *
@@ -1113,6 +1153,10 @@ class TTT_Renderer {
 		 *         return $icons;
 		 *     } );
 		 *
+		 * Priorität: COMPONENT_ICONS (Fallback) wird durch das `component_icons`
+		 * aus der `tracker.json` überschrieben, das wiederum durch diesen
+		 * Filter überschrieben werden kann. Filter ist die letzte Instanz.
+		 *
 		 * Unbekannte Komponenten-Namen werden defensiv ignoriert; ungültige
 		 * SVG-Path-Daten erzeugen kein Render-Error, sondern nur eine leere
 		 * SVG-Form.
@@ -1121,7 +1165,13 @@ class TTT_Renderer {
 		 *
 		 * @param array<string,string> $icons Map: Komponenten-Name → SVG-Pfad-d-Attribut.
 		 */
-		$icons = apply_filters( 'ttt_component_icons', self::COMPONENT_ICONS );
+		if ( null !== $this->icon_map ) {
+			$icons = $this->icon_map;
+		} else {
+			// Defensive Fallback: render_component_icon wird normalerweise nur
+			// von render_payload aus aufgerufen, wo icon_map gefüllt wird.
+			$icons = apply_filters( 'ttt_component_icons', self::COMPONENT_ICONS );
+		}
 
 		$icon_path = isset( $icons[ $name ] ) ? (string) $icons[ $name ] : '';
 		if ( '' === $icon_path ) {

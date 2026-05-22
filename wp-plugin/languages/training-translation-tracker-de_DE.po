@@ -5,8 +5,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Training Translation Tracker 0.3.1\n"
 "Report-Msgid-Bugs-To: https://github.com/rfluethi/Training-Translation-Tracker-Inventory-Plugin/issues\n"
-"POT-Creation-Date: 2026-05-22 11:15+0000\n"
-"PO-Revision-Date: 2026-05-22 11:15+0000\n"
+"POT-Creation-Date: 2026-05-22 12:00+0000\n"
+"PO-Revision-Date: 2026-05-22 12:00+0000\n"
 "Last-Translator: Rico Lüthi <mail@rfluethi.com>\n"
 "Language-Team: German <de@li.org>\n"
 "Language: de_DE\n"
@@ -17,10 +17,10 @@ msgstr ""
 "X-Domain: training-translation-tracker\n"
 
 msgid "(last successfully cached state — current fetch failed)"
-msgstr "(letzter erfolgreich gespeicherter Stand — aktueller Fetch schlug fehl)"
+msgstr "(letzter erfolgreich gespeicherter Stand, aktueller Fetch schlug fehl)"
 
 msgid "1–168 hours. Recommended: 12 (matches the Action interval)."
-msgstr "1–168 Stunden. Empfohlen: 12 (passt zum Action-Intervall)."
+msgstr "1 bis 168 Stunden. Empfohlen: 12 (passt zum Action-Intervall)."
 
 msgid "All statuses"
 msgstr "Alle Status"
@@ -35,7 +35,7 @@ msgid "Cache is active."
 msgstr "Cache ist aktiv."
 
 msgid "Cache is empty — the next shortcode call will fetch fresh data."
-msgstr "Cache ist leer — beim nächsten Shortcode-Aufruf wird neu geladen."
+msgstr "Cache ist leer, beim nächsten Shortcode-Aufruf wird neu geladen."
 
 msgid "Cache status"
 msgstr "Cache-Status"
@@ -53,16 +53,19 @@ msgid "Collapse or expand all sections"
 msgstr "Alle Sections einklappen oder ausklappen"
 
 msgid "Combination: only Lesson Plans, without stats and orphans — typical for a dedicated Lesson Plans page."
-msgstr "Kombination: nur Lesson Plans, ohne Stats und ohne Orphans — typisch für eine eigene Lesson-Plans-Seite."
+msgstr "Kombination: nur Lesson Plans, ohne Stats und Orphans, typisch für eine eigene Lesson-Plans-Seite."
+
+msgid "Component details"
+msgstr "Komponenten-Details"
 
 msgid "Creator"
 msgstr "Creator"
 
 msgid "Data source & cache"
-msgstr "Datenquelle & Cache"
+msgstr "Datenquelle und Cache"
 
 msgid "Direct link to tracker.json — typically the raw.githubusercontent.com link to the data branch of the Inventory Action."
-msgstr "Direkter Link zur tracker.json — typischerweise der raw.githubusercontent.com-Link auf den data-Branch der Inventory-Action."
+msgstr "Direkter Link zur tracker.json, typischerweise der raw.githubusercontent.com-Link auf den data-Branch der Inventory-Action."
 
 msgid "Duplicate"
 msgstr "Doppelt"
@@ -71,13 +74,16 @@ msgid "Effect"
 msgstr "Wirkung"
 
 msgid "Error while clearing — please try again."
-msgstr "Fehler beim Leeren — versuche es nochmal."
+msgstr "Fehler beim Leeren, bitte erneut versuchen."
 
 msgid "Error: %s"
 msgstr "Fehler: %s"
 
 msgid "Everything — all pathways, handbook (if any), orphan group, stats header."
-msgstr "Alles — alle Pathways, Handbuch (falls vorhanden), Orphan-Gruppe, Stats-Header."
+msgstr "Alles: alle Pathways, Handbuch (falls vorhanden), Orphan-Gruppe, Stats-Header."
+
+msgid "Expand all"
+msgstr "Alle ausklappen"
 
 msgid "Filter by Project status"
 msgstr "Nach Project-Status filtern"
@@ -86,7 +92,7 @@ msgid "HTTP error while loading tracker.json: %d"
 msgstr "HTTP-Fehler beim Laden der tracker.json: %d"
 
 msgid "Hide all pathway groups — Handbook and orphan group remain visible."
-msgstr "Alle Pathway-Gruppen ausblenden — übrig bleiben Handbook und Orphan-Gruppe."
+msgstr "Alle Pathway-Gruppen ausblenden, Handbook und Orphan-Gruppe bleiben sichtbar."
 
 msgid "Hide the Handbook group (useful once handbook content is added)."
 msgstr "Handbook-Gruppe ausblenden (nützlich sobald Handbook-Inhalte dazukommen)."
@@ -110,13 +116,13 @@ msgid "Last successful tracker.json state: %s (UTC)"
 msgstr "Letzter erfolgreicher Stand der tracker.json: %s (UTC)"
 
 msgid "Multiple pathways at once — comma-separated."
-msgstr "Mehrere Pathways gleichzeitig — Komma getrennt."
+msgstr "Mehrere Pathways gleichzeitig, Komma getrennt."
 
 msgid "No items in this group."
 msgstr "Keine Items in dieser Gruppe."
 
 msgid "No results for the current filter/search combination."
-msgstr "Keine Treffer für die aktuelle Filter-/Suchkombination."
+msgstr "Keine Treffer für die aktuelle Filter- und Suchkombination."
 
 msgid "No table"
 msgstr "Keine Tabelle"
@@ -131,7 +137,7 @@ msgid "Original"
 msgstr "Original"
 
 msgid "Original draft"
-msgstr "Original Entwurf"
+msgstr "Original im Entwurf"
 
 msgid "Orphaned"
 msgstr "Verwaist"
@@ -157,8 +163,8 @@ msgstr "Schema-Version passt nicht. Erwartet: %1$d, gefunden: %2$s"
 msgid "Search titles"
 msgstr "In Titeln suchen"
 
-msgid "Search titles (EN or DE)…"
-msgstr "Titel suchen (DE oder EN)…"
+msgid "Search titles…"
+msgstr "Titel suchen…"
 
 msgid "Shortcode"
 msgstr "Shortcode"
@@ -182,7 +188,7 @@ msgid "Show only open"
 msgstr "Nur offene anzeigen"
 
 msgid "Show only the Training Handbook — typical for a dedicated handbook page."
-msgstr "Nur das Training Handbook anzeigen — typisch für eine eigene Handbook-Seite."
+msgstr "Nur das Training Handbook anzeigen, typisch für eine eigene Handbook-Seite."
 
 msgid "Show only the pathway with slug \"user\" (e.g. Start using WordPress)."
 msgstr "Nur die Pathway mit Slug \"user\" anzeigen (z. B. Start using WordPress)."
@@ -191,7 +197,7 @@ msgid "Tracker data is being prepared. Please check back later."
 msgstr "Tracker-Daten werden vorbereitet. Bitte später erneut prüfen."
 
 msgid "Translation"
-msgstr "Translation"
+msgstr "Übersetzung"
 
 msgid "Translation Tracker"
 msgstr "Translation Tracker"
@@ -202,8 +208,14 @@ msgstr "Werte \"yes/no\", \"true/false\" und \"1/0\" werden alle akzeptiert."
 msgid "`groups` in tracker.json is not an array."
 msgstr "`groups` in tracker.json ist kein Array."
 
+msgid "audio"
+msgstr "Audio"
+
 msgid "done"
 msgstr "fertig"
+
+msgid "exercise"
+msgstr "Übung"
 
 msgid "in progress"
 msgstr "in Arbeit"
@@ -212,10 +224,25 @@ msgid "n/a"
 msgstr "n/a"
 
 msgid "n/a — not filterable"
-msgstr "n/a — nicht filterbar"
+msgstr "n/a, nicht filterbar"
+
+msgid "not yet assigned"
+msgstr "noch nicht zugewiesen"
 
 msgid "open"
 msgstr "offen"
+
+msgid "quiz"
+msgstr "Quiz"
+
+msgid "subtitles"
+msgstr "Untertitel"
+
+msgid "text"
+msgstr "Text"
+
+msgid "thumbnails"
+msgstr "Thumbnails"
 
 msgid "tracker.json URL"
 msgstr "URL der tracker.json"
@@ -225,4 +252,7 @@ msgstr "tracker.json konnte nicht geparst werden: %s"
 
 msgid "tracker.json has unexpected structure (no top-level object)."
 msgstr "tracker.json hat unerwartete Struktur (kein Top-Level-Objekt)."
+
+msgid "video"
+msgstr "Video"
 

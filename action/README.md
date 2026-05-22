@@ -1,7 +1,7 @@
-# Action — Translation-Tracker-Datenpipeline
+# Action, Translation-Tracker-Datenpipeline
 
 > Python-basierte GitHub Action, die `tracker.json` für den DACH-Tracker baut.
-> Teil des Mono-Repos — das WordPress-Plugin liegt unter `../wp-plugin/`.
+> Teil des Mono-Repos, das WordPress-Plugin liegt unter `../wp-plugin/`.
 > Übersicht: [Top-Level-README](../README.md).
 
 ## Was hier passiert
@@ -62,7 +62,7 @@ data branch
 
 1. Repo auf GitHub anlegen (öffentlich): `<owner>/Training-Translation-Tracker-Inventory-Plugin`.
 2. Default-Branch `main` (wird beim Push automatisch erzeugt).
-3. Zweiten Branch `data` anlegen — leer reicht, wird vom Workflow überschrieben:
+3. Zweiten Branch `data` anlegen, leer reicht, wird vom Workflow überschrieben:
 
    ```bash
    git checkout --orphan data
@@ -82,7 +82,7 @@ data branch
 
 ## Inventar-Cache
 
-Die Action ruft `learn.wordpress.org` **nicht** mehr live an — die
+Die Action ruft `learn.wordpress.org` **nicht** mehr live an, die
 GitHub-Runner-IPs werden vom WP-CDN aggressiv ratelimitet, in der Praxis
 kommt fast keine Anfrage durch. Stattdessen lebt das Inventar als
 vorberechnete Datei `inventory-cache.json` im Repo. Die Action liest diese
@@ -105,7 +105,7 @@ default-mäßig) und schreibt die InventoryItems in `inventory-cache.json`.
 Es macht **keinen** Issue-Fetch und schreibt **kein** `tracker.json`.
 
 URLs, die beim Refresh nicht erreichbar sind, bleiben einfach nicht im
-Cache — beim nächsten lokalen Lauf erneut versuchen. Issues zu diesen
+Cache, beim nächsten lokalen Lauf erneut versuchen. Issues zu diesen
 URLs landen dann eben (vorübergehend) im Orphan-Bucket.
 
 ## Lokale Entwicklung
@@ -128,4 +128,4 @@ python -m src.build --refresh-cache
 
 ## Lizenz
 
-GPL-2.0-or-later — siehe `LICENSE`.
+GPL-2.0-or-later, siehe `LICENSE`.

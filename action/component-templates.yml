@@ -1,35 +1,50 @@
-# Default-Komponenten pro Item-Typ.
+# Komponenten-Definition: Icons (zentral) und Default-Mengen pro Item-Typ.
 #
-# Wenn ein Item KEIN GitHub-Issue hat, bekommen alle hier gelisteten
-# Komponenten den Status "open" und werden so im Tracker angezeigt.
-# Sobald ein Issue da ist, gewinnt dessen Status-Tabelle.
+# `icons` listet pro Komponenten-Name das SVG-`path d`-Attribut. Das Plugin
+# baut um diesen Pfad das `<svg viewBox="0 0 24 24" aria-hidden="true">` herum.
+# Quellsystem: Material Icons, 24x24 viewBox.
 #
-# Validierung gegen schemas/component-templates.schema.json
+# `types` listet pro Item-Typ die Default-Komponenten (in Reihenfolge). Wenn
+# ein Item KEIN GitHub-Issue hat, bekommen alle hier gelisteten Komponenten
+# den Status "open" und werden so im Tracker angezeigt. Sobald ein Issue da
+# ist, gewinnt dessen Status-Tabelle.
+#
+# Validierung gegen schemas/component-templates.schema.json.
 
-lesson:
-  - thumbnails
-  - text
-  - subtitles
-  - exercise
-  - quiz
-  - audio
-  - video
+icons:
+  text:       "M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"
+  thumbnails: "M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"
+  video:      "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"
+  subtitles:  "M19 4H5c-1.11 0-2 .9-2 2v12c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zM11 11H9.5v-.5h-2v3h2V13H11v1c0 .55-.45 1-1 1H7c-.55 0-1-.45-1-1v-4c0-.55.45-1 1-1h3c.55 0 1 .45 1 1v1zm7 0h-1.5v-.5h-2v3h2V13H18v1c0 .55-.45 1-1 1h-3c-.55 0-1-.45-1-1v-4c0-.55.45-1 1-1h3c.55 0 1 .45 1 1v1z"
+  quiz:       "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"
+  exercise:   "M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"
+  audio:      "M12 14c1.66 0 2.99-1.34 2.99-3L15 5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.48 6-3.3 6-6.72h-1.7z"
 
-lesson_plan:
-  - thumbnails
-  - text
+types:
+  lesson:
+    - thumbnails
+    - text
+    - subtitles
+    - exercise
+    - quiz
+    - audio
+    - video
 
-tutorial:
-  - thumbnails
-  - text
-  - subtitles
-  - video
+  lesson_plan:
+    - thumbnails
+    - text
 
-handbook_text:
-  - text
+  tutorial:
+    - thumbnails
+    - text
+    - subtitles
+    - video
 
-handbook_video:
-  - thumbnails
-  - text
-  - subtitles
-  - video
+  handbook_text:
+    - text
+
+  handbook_video:
+    - thumbnails
+    - text
+    - subtitles
+    - video

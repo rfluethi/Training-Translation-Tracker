@@ -1,9 +1,7 @@
-# User-Guide — Training Translation Tracker
+# User-Guide, Training Translation Tracker
 
 > **Zielgruppe:** WordPress-Site-Admins, die den Tracker auf einer Seite einbinden, sowie Übersetzer:innen, die das Dashboard nutzen.
 > **Voraussetzung:** Keine PHP-Kenntnisse nötig. Du brauchst Schreibrechte am WordPress-Admin und (für Issue-Pflege) einen GitHub-Account.
-
----
 
 ## 1. Was macht der Tracker?
 
@@ -21,8 +19,6 @@ Die Daten kommen nicht aus der WordPress-Site selbst, sondern aus einer **GitHub
 
 Du arbeitest hauptsächlich mit den GitHub-Issues (Status pflegen) und siehst das Ergebnis im Dashboard.
 
----
-
 ## 2. Installation
 
 ### Voraussetzungen
@@ -35,7 +31,7 @@ Du arbeitest hauptsächlich mit den GitHub-Issues (Status pflegen) und siehst da
 
 ### Installations-Schritte
 
-1. **ZIP herunterladen** — aktuelles `training-translation-tracker.zip` aus dem [Release-Tab des GitHub-Repos](https://github.com/rfluethi/Training-Translation-Tracker-Inventory-Plugin/releases) holen.
+1. **ZIP herunterladen**, aktuelles `training-translation-tracker.zip` aus dem [Release-Tab des GitHub-Repos](https://github.com/rfluethi/Training-Translation-Tracker-Inventory-Plugin/releases) holen.
 2. Im WP-Admin **Plugins → Installieren** klicken.
 3. Oben auf **Plugin hochladen**, dann die ZIP-Datei auswählen.
 4. **Jetzt installieren** klicken.
@@ -46,8 +42,6 @@ Falls bereits eine ältere Version installiert ist, **zuerst die alte Version de
 ### Verifikation
 
 Nach der Installation steht in der Plugin-Liste ein Eintrag „**Training Translation Tracker**" mit Versionsnummer. Im Menü **Einstellungen** gibt es einen neuen Unterpunkt „**Translation Tracker**".
-
----
 
 ## 3. Plugin-Einstellungen
 
@@ -65,12 +59,12 @@ Diese URL nur ändern, wenn das Action-Repo umzieht oder eine andere Datenquelle
 
 ### Cache-Dauer (Stunden)
 
-Wie lange die geladene JSON im WordPress-Transient-Cache liegt, bevor neu geladen wird. Default ist 12 Stunden — passend zum 12-h-Rhythmus der Action.
+Wie lange die geladene JSON im WordPress-Transient-Cache liegt, bevor neu geladen wird. Default ist 12 Stunden, passend zum 12-h-Rhythmus der Action.
 
 - **Kürzer setzen** (z. B. 1 Stunde) während Test-Phasen oder wenn schnelle Updates gebraucht werden.
 - **Länger setzen** (z. B. 24 Stunden) wenn die Datenquelle stabil ist und der HTTP-Traffic minimiert werden soll.
 
-Erlaubter Bereich: 1 – 168 Stunden (also bis zu eine Woche).
+Erlaubter Bereich: 1 bis 168 Stunden (also bis zu eine Woche).
 
 ### Knopf „Cache jetzt leeren"
 
@@ -78,13 +72,11 @@ Erzwingt einen frischen Fetch beim nächsten Seitenaufruf. Nützlich, wenn gerad
 
 ### Anzeige „Stand: …"
 
-Zeigt den `generated_at`-Zeitstempel aus dem aktuellen Cache. Daran sieht man, wann die Action den jetzt gecachten Datenstand zuletzt gebaut hat. Steht dort ein älteres Datum als erwartet, ist der Cache veraltet — entweder „Cache leeren" drücken oder die Action manuell triggern (siehe Abschnitt 6).
+Zeigt den `generated_at`-Zeitstempel aus dem aktuellen Cache. Daran sieht man, wann die Action den jetzt gecachten Datenstand zuletzt gebaut hat. Steht dort ein älteres Datum als erwartet, ist der Cache veraltet, entweder „Cache leeren" drücken oder die Action manuell triggern (siehe Abschnitt 6).
 
 ### Shortcode-Beispiele
 
 Direkt unter den Settings-Feldern listet das Plugin Shortcode-Beispiele mit „Kopieren"-Buttons. Damit kann man sich häufig benutzte Varianten direkt mitnehmen, ohne sie aus diesem Dokument abzutippen.
-
----
 
 ## 4. Den Tracker auf einer Seite einbauen
 
@@ -171,20 +163,18 @@ Alle drei matchen dieselbe Pathway-Gruppe. Groß-/Kleinschreibung ist egal.
 
 Das explizite `show_handbook="yes"` überschreibt das Smart-Default-Verhalten.
 
----
-
 ## 5. Den Tracker im Frontend bedienen
 
 ### Stats-Pillen oben
 
 Zeigen die Gesamtzahlen pro Status:
 
-- **Items** — alle Items zusammen
-- **fertig** (grün) — `overall_status = done`
-- **Review** (gelb) — `overall_status = review`
-- **in Arbeit** (blau) — `overall_status = wip`
-- **offen** (grau) — `overall_status = open`
-- **n/a** (hellgrau) — `overall_status = na`
+- **Items**, alle Items zusammen
+- **fertig** (grün), `overall_status = done`
+- **Review** (gelb), `overall_status = review`
+- **in Arbeit** (blau), `overall_status = wip`
+- **offen** (grau), `overall_status = open`
+- **n/a** (hellgrau), `overall_status = na`
 
 Klick auf eine Pille filtert die Karten auf diesen Status. Erneuter Klick auf „Items" setzt den Filter zurück.
 
@@ -205,9 +195,7 @@ Live-Suche im Header. Tippen filtert die Karten, deren Titel (deutsch oder engli
 
 ### Sections ein-/ausklappen
 
-Klick auf den Titel einer Section (z. B. „Get Started With WordPress") klappt die Karten darunter zu. Der ▾-Pfeil wird zu ▸. Erneuter Klick klappt sie wieder auf. Der Zustand wird im Browser gespeichert — beim nächsten Seitenaufruf bleiben sie wie zuletzt.
-
----
+Klick auf den Titel einer Section (z. B. „Get Started With WordPress") klappt die Karten darunter zu. Der ▾-Pfeil wird zu ▸. Erneuter Klick klappt sie wieder auf. Der Zustand wird im Browser gespeichert, beim nächsten Seitenaufruf bleiben sie wie zuletzt.
 
 ## 6. Daten aktualisieren
 
@@ -219,7 +207,7 @@ Die GitHub Action läuft per Cron und veröffentlicht eine neue `tracker.json`. 
 
 ### 2. „Cache jetzt leeren" im Plugin
 
-In den Plugin-Einstellungen den Knopf drücken. Beim nächsten Seitenaufruf holt das Plugin frische Daten — sofern die Action zwischenzeitlich neu gebaut hat.
+In den Plugin-Einstellungen den Knopf drücken. Beim nächsten Seitenaufruf holt das Plugin frische Daten, sofern die Action zwischenzeitlich neu gebaut hat.
 
 ### 3. Action manuell triggern
 
@@ -229,19 +217,17 @@ Wer Schreibrechte am Action-Repo hat, kann den Workflow „Build tracker.json" �
 2. Im Plugin „Cache jetzt leeren" drücken.
 3. Seite neu laden.
 
----
-
 ## 7. Issues für neue Übersetzungen anlegen
 
 Die vollständige Vorlage steht in [Issue-Vorlagen-DACH.md](Issue-Vorlagen-DACH.md). Hier nur die wichtigsten Punkte:
 
 ### Wo anlegen
 
-Im Repo **`WordPress/Learn`** — nicht im Inventory-Plugin-Repo. Das Issue muss im DACH-Projekt-Board mit Custom-Field `Locale = German` markiert sein.
+Im Repo **`WordPress/Learn`**, nicht im Inventory-Plugin-Repo. Das Issue muss im DACH-Projekt-Board mit Custom-Field `Locale = German` markiert sein.
 
 ### Drei Pflicht-Punkte
 
-1. **Original-URL kanonisch** — `https://`, lowercase, Trailing-Slash, ohne Query/Fragment, ohne `www.`.
+1. **Original-URL kanonisch**, `https://`, lowercase, Trailing-Slash, ohne Query/Fragment, ohne `www.`.
 
    Korrekt: `https://learn.wordpress.org/lesson/wordpress-essentials-domains-and-hosting/`
 
@@ -249,7 +235,7 @@ Im Repo **`WordPress/Learn`** — nicht im Inventory-Plugin-Repo. Das Issue muss
 
 2. **Locale-Markierung** im DACH-Projekt-Board (`Locale = German`).
 
-3. **Status-Tabelle mit HTML-Markern** — Markdown-Tabelle zwischen `<!-- TRANSLATION-STATUS-START -->` und `<!-- TRANSLATION-STATUS-END -->`. 1:1 aus der Vorlage übernehmen.
+3. **Status-Tabelle mit HTML-Markern**, Markdown-Tabelle zwischen `<!-- TRANSLATION-STATUS-START -->` und `<!-- TRANSLATION-STATUS-END -->`. 1:1 aus der Vorlage übernehmen.
 
 ### Statuswerte
 
@@ -261,9 +247,7 @@ GitHub-Benutzername **ohne** `@`-Präfix (also `rfluethi`, nicht `@rfluethi`). M
 
 ### Pro Inhalt und Sprache nur ein Issue
 
-Wenn aus Versehen zwei Issues zur gleichen URL angelegt werden, zeigt der Tracker beide mit einem Warnsymbol „mehrfaches Issue". Bereinigung manuell — eines schließen oder umwidmen.
-
----
+Wenn aus Versehen zwei Issues zur gleichen URL angelegt werden, zeigt der Tracker beide mit einem Warnsymbol „mehrfaches Issue". Bereinigung manuell, eines schließen oder umwidmen.
 
 ## 8. Häufige Probleme
 
@@ -271,7 +255,7 @@ Wenn aus Versehen zwei Issues zur gleichen URL angelegt werden, zeigt der Tracke
 
 Ursachen:
 
-- Die JSON-Datei wurde noch nie erfolgreich geladen — passiert beim allerersten Mal, bevor die erste Action durchgelaufen ist.
+- Die JSON-Datei wurde noch nie erfolgreich geladen, passiert beim allerersten Mal, bevor die erste Action durchgelaufen ist.
 - Die JSON-URL in den Settings ist falsch oder nicht erreichbar.
 - Die Site hat keinen Internet-Zugriff auf `raw.githubusercontent.com`.
 
@@ -283,7 +267,7 @@ Der Cache ist noch nicht abgelaufen. Entweder warten oder „Cache leeren" drüc
 
 ### Eine Übersetzung fehlt im Dashboard
 
-- Issue-Nummer im DACH-GitHub-Projekt prüfen — gibt es das Issue überhaupt?
+- Issue-Nummer im DACH-GitHub-Projekt prüfen, gibt es das Issue überhaupt?
 - Issue muss das Label `Locale=German` haben.
 - Der Original-URL im Issue muss exakt der Inventory-URL entsprechen (lowercase, mit Trailing-Slash, ohne Query-Parameter).
 - Falls alles passt, läuft die nächste Action und das Item erscheint beim nächsten Cache-Update.
@@ -291,17 +275,15 @@ Der Cache ist noch nicht abgelaufen. Entweder warten oder „Cache leeren" drüc
 ### Eine Karte zeigt „Verwaist" oder „Außerhalb Scope"
 
 - **Verwaist:** das Issue verweist auf eine URL, die im Inventory (learn.wordpress.org) nicht mehr existiert (umbenannt, gelöscht).
-- **Außerhalb Scope:** das Issue ist zwar gültig, aber die URL steht nicht in der `scope.yml` der Action — bewusste Auswahl, welche Inhalte ins Dashboard kommen.
+- **Außerhalb Scope:** das Issue ist zwar gültig, aber die URL steht nicht in der `scope.yml` der Action, bewusste Auswahl, welche Inhalte ins Dashboard kommen.
 
 In beiden Fällen ist Handlungsbedarf entweder am Issue (URL korrigieren) oder am Scope (Item in `scope.yml` aufnehmen, siehe Developer-Doku).
 
 ### Status-Filter und Suche reagieren nicht
 
-In bestimmten Theme/Page-Builder-Kombinationen lädt das JavaScript für die Interaktion nicht zuverlässig. **Workaround:** statt Filter zu klicken, einen Shortcode mit `pathway=`-Attribut auf einer eigenen Seite verwenden — das filtert serverseitig und funktioniert immer.
+In bestimmten Theme/Page-Builder-Kombinationen lädt das JavaScript für die Interaktion nicht zuverlässig. **Workaround:** statt Filter zu klicken, einen Shortcode mit `pathway=`-Attribut auf einer eigenen Seite verwenden, das filtert serverseitig und funktioniert immer.
 
 Diagnose: Browser-Konsole öffnen (F12 → Console + Network) und prüfen, ob `tracker.js` mit HTTP 200 geladen wird. Wenn nicht, hat der Page-Builder den `<script src>`-Tag aus dem Output entfernt.
-
----
 
 ## 9. Einen Bug melden
 
@@ -311,18 +293,15 @@ Bevor du einen Bug meldest, bitte folgendes notieren:
 2. **WordPress-Version** und ggf. **Page-Builder / Theme**.
 3. **Welcher Shortcode** auf der Seite verwendet wurde.
 4. **Was du erwartet hast** und **was tatsächlich passiert ist**.
-5. **Screenshot** der Seite — am besten Browser-Vollbild.
-6. **Browser-Konsole** (F12 → Console-Tab) — alle roten Fehler kopieren.
+5. **Screenshot** der Seite, am besten Browser-Vollbild.
+6. **Browser-Konsole** (F12 → Console-Tab), alle roten Fehler kopieren.
 
 Issue im Action-Repo öffnen: <https://github.com/rfluethi/Training-Translation-Tracker-Inventory-Plugin/issues>
 
 Oder direkt per E-Mail an den Maintainer (siehe Plugin-Header).
 
----
-
 ## Weiterführende Dokumente
 
-- 1-Seiten-Demo fürs Team: `Team-Uebersicht.md` (liegt lokal beim Maintainer, außerhalb des Repos)
 - System-Architektur: [Architektur.md](Architektur.md)
 - Betrieb (Releases, Token, Recovery): [Operations.md](Operations.md)
 - Code & Erweiterungen: [Developer.md](Developer.md)
