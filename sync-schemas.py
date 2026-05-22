@@ -1,24 +1,30 @@
 #!/usr/bin/env python3
-"""Keep Konzept/schemas/ and action/schemas/ in sync.
+"""Keep ../Konzept/schemas/ and action/schemas/ in sync.
 
 The JSON Schemata live in two physical places:
 
-  Konzept/schemas/   →  authoritative specification (Phase-0 deliverables)
-  action/schemas/    →  runtime copy that ships with the GitHub Action
+  ../Konzept/schemas/   →  authoritative specification (Phase-0 deliverables)
+  action/schemas/       →  runtime copy that ships with the GitHub Action
 
-Konzept/ is workspace-local and is NOT pushed to GitHub. The runtime copy
-must therefore exist as a separate file, but must match the spec
-byte-for-byte. This script enforces that invariant.
+Konzept/ is workspace-local and lives ONE LEVEL ABOVE the cloned repo
+(maintainer convention: the repo sits in a ``GitHub/`` sub-folder, and
+``Konzept/`` is its sibling — see README "Maintainer-Arbeitsordner").
+Contributors who clone the repo standalone will not have a Konzept/
+folder and don't need this script — they edit ``action/schemas/``
+directly.
+
+The runtime copy must match the spec byte-for-byte. This script
+enforces that invariant.
 
 Usage
 -----
 
   python sync-schemas.py             # check only; exit 1 on drift
-  python sync-schemas.py --apply     # overwrite action/schemas/ from Konzept/schemas/
+  python sync-schemas.py --apply     # overwrite action/schemas/ from ../Konzept/schemas/
 
-Run the check before pushing changes to the GitHub repo. Run with --apply
-whenever you edit a schema in Konzept/schemas/ (which is the only place
-that should be edited by hand).
+Run the check before pushing changes. Run with --apply whenever you
+edit a schema in ../Konzept/schemas/ (which is the only place that
+should be edited by hand).
 """
 
 from __future__ import annotations
@@ -29,7 +35,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
-SPEC = ROOT / "Konzept" / "schemas"
+SPEC = ROOT.parent / "Konzept" / "schemas"
 RUNTIME = ROOT / "action" / "schemas"
 
 
@@ -107,12 +113,12 @@ def apply_spec(spec: Path, runtime: Path) -> list[str]:
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
-        description="Check or fix the sync between Konzept/schemas/ and action/schemas/.",
+        description="Check or fix the sync between ../Konzept/schemas/ and action/schemas/.",
     )
     parser.add_argument(
         "--apply",
         action="store_true",
-        help="Overwrite action/schemas/ from Konzept/schemas/ (Konzept is authoritative).",
+        help="Overwrite action/schemas/ from ../Konzept/schemas/ (Konzept is authoritative).",
     )
     parser.add_argument(
         "--quiet",
@@ -122,7 +128,15 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
 
     if not SPEC.exists():
-        print(f"ERROR: {_rel(SPEC)} does not exist", file=sys.stderr)
+        print(
+            f"ERROR: {_rel(SPEC)} does not exist.\n"
+            f"\n"
+            f"This script expects the maintainer's local Konzept/-folder one\n"
+            f"level above the cloned repo (sibling of GitHub/). If you cloned\n"
+            f"the repo standalone, you don't need this script — edit\n"
+            f"action/schemas/ directly.",
+            file=sys.stderr,
+        )
         return 2
     if not RUNTIME.exists() and not args.apply:
         print(f"ERROR: {_rel(RUNTIME)} does not exist (run with --apply to create)", file=sys.stderr)
@@ -168,7 +182,7 @@ def main(argv: list[str] | None = None) -> int:
         for p in diff:
             print(f"    - {p}")
     print()
-    print("Fix: edit in Konzept/schemas/ first, then run `python sync-schemas.py --apply`.")
+    print("Fix: edit in ../Konzept/schemas/ first, then run `python sync-schemas.py --apply`.")
     return 1
 
 
@@ -176,7 +190,12 @@ def _rel(path: Path) -> str:
     try:
         return str(path.relative_to(ROOT))
     except ValueError:
-        return str(path)
+        # Path lies outside the repo (e.g. ../Konzept/...). Render with
+        # an explicit `../` prefix relative to the repo root.
+        try:
+            return "../" + str(path.relative_to(ROOT.parent))
+        except ValueError:
+            return str(path)
 
 
 if __name__ == "__main__":

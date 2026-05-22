@@ -22,9 +22,11 @@ Das resultierende `tracker.json` ist anschließend statisch unter `https://raw.g
 Siehe [Top-Level-README](../README.md) für die Drei-Komponenten-Pipeline
 (Issues → Action → Plugin) und das komplette Repo-Layout.
 
-Format und Pflege der DACH-Übersetzungs-Issues sind im Benutzerhandbuch des
-Plugins beschrieben:
-[wp-plugin/docs/Benutzerhandbuch.md → Issues für neue Übersetzungen anlegen](../wp-plugin/docs/Benutzerhandbuch.md#issues-für-neue-übersetzungen-anlegen).
+Format und Pflege der DACH-Übersetzungs-Issues sind im User-Guide
+beschrieben: [docs/User-Guide.md → Issues für neue Übersetzungen anlegen](../docs/User-Guide.md#7-issues-für-neue-übersetzungen-anlegen).
+
+Architektur-Hintergrund (Komponenten, Datenfluss, Designentscheidungen):
+[docs/Architektur.md](../docs/Architektur.md).
 
 ## Repository-Struktur
 

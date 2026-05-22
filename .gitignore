@@ -1,13 +1,12 @@
 # Top-Level .gitignore — Mono-Repo (Action + Plugin)
+#
+# Maintainer-Konvention: Beim Maintainer liegt dieser Repo-Ordner in einem
+# Wrapper namens `GitHub/`, daneben liegt `../Konzept/` (lokale
+# Arbeitsfläche). Dadurch ist Konzept gar nicht Teil dieses Verzeichnis-
+# Baums und braucht keinen Ignore-Eintrag. Siehe README.md.
 
 # ----------------------------------------------------------
-# Konzept-Doku bleibt LOKAL beim Maintainer (Architektur-Diskussion,
-# Issue-Vorlagen, Schema-Original). NICHT ins Repo committen.
-# ----------------------------------------------------------
-/Konzept/
-
-# ----------------------------------------------------------
-# macOS / OS-Metadata
+# macOS / OS-Metadata (Sicherheitsnetz)
 # ----------------------------------------------------------
 .DS_Store
 Thumbs.db
@@ -18,8 +17,6 @@ Thumbs.db
 # ----------------------------------------------------------
 training-translation-tracker.zip
 *.zip
-tracker-phase3-preview.json
-tracker-preview*.json
 
 # ----------------------------------------------------------
 # Python (action/-Ordner)

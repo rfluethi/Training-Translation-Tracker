@@ -45,10 +45,13 @@ Das Repo enthält:
 - `.github/workflows/` — Build- und Release-Workflows
 - `build-plugin-zip.sh` — Plugin-ZIP bauen (lokal)
 
-Komponenten-spezifische READMEs:
+Doku-Suite (komponentenübergreifend):
 
-- [action/README.md](action/README.md)
-- [wp-plugin/docs/README.md](wp-plugin/docs/README.md)
+- [docs/Architektur.md](docs/Architektur.md) — System-Architektur und Designentscheidungen
+- [docs/Developer.md](docs/Developer.md) — Code-Setup, Tests, Erweiterungen
+- [docs/Operations.md](docs/Operations.md) — Releases, Token-Pflege, Failure-Recovery
+- [docs/User-Guide.md](docs/User-Guide.md) — Plugin-Bedienung und Issue-Pflege
+- [action/README.md](action/README.md) — kurze Action-spezifische Notizen
 
 ---
 
@@ -148,12 +151,15 @@ GitHub-Release.
 
 ## Doku und Konzept
 
-Die Plugin-Dokumentation liegt unter `wp-plugin/docs/`:
+Die Dokumentation liegt auf Top-Level unter `docs/`:
 
-- `Benutzerhandbuch.md` — End-User-Sicht
-- `Entwickler-Dokumentation.md` — Architektur und Code-Struktur
+- `Architektur.md` — System-Architektur, Datenmodell, Entscheidungen
+- `Developer.md` — Code-Setup, Module, Tests, Erweiterungspunkte
+- `Operations.md` — Releases, Token, Failure-Recovery
+- `User-Guide.md` — Plugin-Settings, Shortcodes, Frontend-Bedienung, Issue-Pflege
+- `Issue-Vorlagen-DACH.md` — Vorlagen fürs Anlegen von Übersetzungs-Issues (Lesson, Handbook-Text, Handbook-Video)
 
-Doku-Beiträge sind willkommen — typo-Fixes, klarere Erklärungen, Beispiele.
+Doku-Beiträge sind willkommen — Tippfehler-Fixes, klarere Erklärungen, Beispiele.
 
 ---
 
@@ -187,7 +193,7 @@ Andere Sprachräume können diesen Tracker für ihre eigene Locale nutzen:
 5. GitHub-Secret `GH_PAT_PROJECT_READ` mit eigenem PAT setzen (Project-V2-Read-Scope)
 6. Plugin-Header in `wp-plugin/training-translation-tracker.php` anpassen
    (eigener Plugin-Name, Author, Project-URI)
-7. `wp-plugin/docs/` und alle Locale-Bezugs-Strings übersetzen
+7. Texte in `docs/` und alle Locale-Bezugs-Strings übersetzen
 8. Plugin-ZIP bauen und in der eigenen Site installieren
 
 Pull-Requests, die generische Verbesserungen zurückgeben (z. B. neue Inventory-Sources, neue Shortcode-Optionen), sind willkommen — Locale-spezifische Änderungen aber bitte im eigenen Fork lassen.
