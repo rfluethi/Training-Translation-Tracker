@@ -392,12 +392,14 @@ class TTT_Renderer {
 .ttt-tracker .ttt-course { margin: var(--ttt-space-2xl) 0; }
 .ttt-tracker .ttt-course-title { font-size: var(--ttt-font-size-lg); margin: 0 0 var(--ttt-space-lg); color: var(--ttt-color-primary); }
 .ttt-tracker .ttt-section { margin: var(--ttt-space-xl) 0; }
-.ttt-tracker .ttt-section-title { font-size: var(--ttt-font-size-md); margin: 0 0 var(--ttt-space-md); color: var(--ttt-color-open-fg); font-weight: 600; cursor: pointer; user-select: none; display: flex; align-items: center; gap: var(--ttt-space-sm); }
+.ttt-tracker .ttt-section-heading { margin: 0 0 var(--ttt-space-md); font-size: var(--ttt-font-size-md); font-weight: 600; line-height: 1.3; }
+.ttt-tracker .ttt-section-title { font: inherit; color: var(--ttt-color-open-fg); background: none; border: 0; padding: 0; margin: 0; cursor: pointer; user-select: none; display: flex; align-items: center; gap: var(--ttt-space-sm); text-align: left; width: 100%; }
 .ttt-tracker .ttt-section-title:hover { color: var(--ttt-color-primary); }
-.ttt-tracker .ttt-section-title:focus { outline: 2px solid var(--ttt-color-primary); outline-offset: 2px; }
+.ttt-tracker .ttt-section-title:focus-visible { outline: 2px solid var(--ttt-color-primary); outline-offset: 2px; border-radius: 2px; }
 .ttt-tracker .ttt-section-toggle { display: inline-block; width: 1em; color: var(--ttt-color-text-subtle); font-size: 0.9em; transition: transform 0.15s ease; }
 .ttt-tracker .ttt-section-collapsed .ttt-section-body { display: none !important; }
 .ttt-tracker .ttt-section-collapsed .ttt-section-title { color: var(--ttt-color-text-subtle); }
+.ttt-tracker .ttt-section-collapsed .ttt-section-toggle { transform: rotate(-90deg); }
 @media (max-width: 480px) {
   .ttt-tracker .ttt-card-cols { grid-template-columns: 1fr !important; gap: var(--ttt-space-md); }
   .ttt-tracker .ttt-card-col-de { padding-top: var(--ttt-space-sm); border-top: var(--ttt-border-width) dashed var(--ttt-color-border-subtle); }
@@ -893,11 +895,14 @@ class TTT_Renderer {
 		// (siehe render_course), damit nicht drei Stufen denselben Namen tragen.
 		echo '<div class="ttt-section" data-section-key="' . esc_attr( $key ) . '">';
 		if ( $label ) {
-			// Klickbarer Section-Titel zum Auf-/Zuklappen. role="button" + tabindex
-			// macht ihn keyboard-zugänglich, aria-expanded zeigt den Zustand an.
-			echo '<h4 class="ttt-section-title" role="button" tabindex="0" aria-expanded="true">';
+			// Section-Header: Heading-Hierarchie via <h4> + echtes <button>
+			// als Toggle-Element. aria-expanded reflektiert den Collapse-Zustand
+			// und wird vom JS gepflegt.
+			echo '<h4 class="ttt-section-heading">';
+			echo '<button type="button" class="ttt-section-title" aria-expanded="true">';
 			echo '<span class="ttt-section-toggle" aria-hidden="true">▾</span> ';
 			echo esc_html( $label );
+			echo '</button>';
 			echo '</h4>';
 		}
 		echo '<div class="ttt-section-body">';
@@ -1094,7 +1099,31 @@ class TTT_Renderer {
 			$tooltip .= ' · ' . __( 'Reviewer', 'training-translation-tracker' ) . ': ' . $reviewer;
 		}
 
-		$icon_path = self::COMPONENT_ICONS[ $name ] ?? '';
+		/**
+		 * Filter: ttt_component_icons.
+		 *
+		 * Erlaubt Themes und Companion-Plugins, die Icon-SVG-Path-Daten pro
+		 * Komponente zu überschreiben — ohne den Plugin-Code anzufassen.
+		 *
+		 * Beispiel im Theme:
+		 *
+		 *     add_filter( 'ttt_component_icons', function( $icons ) {
+		 *         $icons['text']  = 'M3 5h18v2H3V5...'; // eigener SVG-Pfad
+		 *         $icons['video'] = 'M8 5v14l11-7...';
+		 *         return $icons;
+		 *     } );
+		 *
+		 * Unbekannte Komponenten-Namen werden defensiv ignoriert; ungültige
+		 * SVG-Path-Daten erzeugen kein Render-Error, sondern nur eine leere
+		 * SVG-Form.
+		 *
+		 * @since 0.3.0
+		 *
+		 * @param array<string,string> $icons Map: Komponenten-Name → SVG-Pfad-d-Attribut.
+		 */
+		$icons = apply_filters( 'ttt_component_icons', self::COMPONENT_ICONS );
+
+		$icon_path = isset( $icons[ $name ] ) ? (string) $icons[ $name ] : '';
 		if ( '' === $icon_path ) {
 			return;
 		}
@@ -1112,6 +1141,7 @@ class TTT_Renderer {
 		echo ' title="' . esc_attr( $tooltip ) . '"';
 		echo ' aria-label="' . esc_attr( $tooltip ) . '"';
 		echo ' role="button" tabindex="0"';
+		echo ' aria-haspopup="dialog" aria-expanded="false"';
 		echo ' data-comp-name="' . esc_attr( $name ) . '"';
 		echo ' data-comp-status="' . esc_attr( $status ) . '"';
 		echo ' data-comp-creator="' . esc_attr( $creator ) . '"';

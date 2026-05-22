@@ -1,0 +1,398 @@
+# Copyright (C) 2026 Rico Lüthi
+# This file is distributed under the GPL-2.0-or-later license.
+msgid ""
+msgstr ""
+"Project-Id-Version: Training Translation Tracker 0.3.0\n"
+"Report-Msgid-Bugs-To: https://github.com/rfluethi/Training-Translation-Tracker-Inventory-Plugin/issues\n"
+"POT-Creation-Date: 2026-05-22 10:37+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Domain: training-translation-tracker\n"
+
+#: wp-plugin/includes/class-renderer.php:596
+msgid "(letzter erfolgreich gespeicherter Stand — aktueller Fetch schlug fehl)"
+msgstr ""
+
+#: wp-plugin/includes/class-settings.php:165
+msgid "1–168 Stunden. Empfohlen: 12 (passt zum Action-Intervall)."
+msgstr ""
+
+#: wp-plugin/includes/class-settings.php:290
+msgid "Alle Pathway-Gruppen ausblenden — übrig bleiben Handbook und Orphan-Gruppe."
+msgstr ""
+
+#: wp-plugin/includes/class-renderer.php:643
+msgid "Alle Sections einklappen oder ausklappen"
+msgstr ""
+
+#: wp-plugin/includes/class-renderer.php:633
+msgid "Alle Status"
+msgstr ""
+
+#: wp-plugin/includes/class-renderer.php:776
+msgid "Alle anzeigen"
+msgstr ""
+
+#: wp-plugin/includes/class-renderer.php:644
+msgid "Alle einklappen"
+msgstr ""
+
+#: wp-plugin/includes/class-settings.php:262
+msgid "Alles — alle Pathways, Handbuch (falls vorhanden), Orphan-Gruppe, Stats-Header."
+msgstr ""
+
+#: wp-plugin/includes/class-settings.php:250
+msgid "Auf einer beliebigen WordPress-Seite einfügen. Mehrere Attribute beliebig kombinierbar."
+msgstr ""
+
+#: wp-plugin/includes/class-renderer.php:1175
+msgid "Außerhalb Scope"
+msgstr ""
+
+#: wp-plugin/includes/class-settings.php:349
+msgid "Cache geleert. Beim nächsten Seitenaufruf wird neu geladen."
+msgstr ""
+
+#: wp-plugin/includes/class-settings.php:221
+msgid "Cache ist aktiv."
+msgstr ""
+
+#: wp-plugin/includes/class-settings.php:224
+msgid "Cache ist leer — beim nächsten Shortcode-Aufruf wird neu geladen."
+msgstr ""
+
+#: wp-plugin/includes/class-settings.php:241
+msgid "Cache jetzt leeren"
+msgstr ""
+
+#: wp-plugin/includes/class-settings.php:379
+msgid "Cache wird geleert…"
+msgstr ""
+
+#: wp-plugin/includes/class-settings.php:81
+msgid "Cache-Dauer (Stunden)"
+msgstr ""
+
+#: wp-plugin/includes/class-settings.php:217
+msgid "Cache-Status"
+msgstr ""
+
+#: wp-plugin/includes/class-renderer.php:1096
+msgid "Creator"
+msgstr ""
+
+#: wp-plugin/includes/class-settings.php:66
+msgid "Datenquelle & Cache"
+msgstr ""
+
+#: wp-plugin/includes/class-settings.php:145
+msgid "Direkter Link zur tracker.json — typischerweise der raw.githubusercontent.com-Link auf den data-Branch der Inventory-Action."
+msgstr ""
+
+#: wp-plugin/includes/class-renderer.php:1187
+msgid "Doppelt"
+msgstr ""
+
+#: wp-plugin/includes/class-settings.php:211
+msgid "Einstellungen speichern"
+msgstr ""
+
+#: wp-plugin/includes/class-settings.php:380
+msgid "Fehler beim Leeren — versuche es nochmal."
+msgstr ""
+
+#. translators: %s: error message.
+#: wp-plugin/includes/class-renderer.php:512
+msgid "Fehler: %s"
+msgstr ""
+
+#. translators: %d: HTTP status code.
+#: wp-plugin/includes/class-fetcher.php:131
+msgid "HTTP-Fehler beim Laden der tracker.json: %d"
+msgstr ""
+
+#: wp-plugin/includes/class-settings.php:282
+msgid "Handbook-Gruppe ausblenden (nützlich sobald Handbook-Inhalte dazukommen)."
+msgstr ""
+
+#: wp-plugin/includes/class-renderer.php:626
+msgid "In Titeln suchen"
+msgstr ""
+
+#: wp-plugin/includes/class-renderer.php:778
+msgid "Items"
+msgstr ""
+
+#: wp-plugin/includes/class-settings.php:178
+#: wp-plugin/includes/class-settings.php:339
+msgid "Keine Berechtigung."
+msgstr ""
+
+#: wp-plugin/includes/class-renderer.php:922
+msgid "Keine Items in dieser Gruppe."
+msgstr ""
+
+#: wp-plugin/includes/class-renderer.php:1167
+msgid "Keine Tabelle"
+msgstr ""
+
+#: wp-plugin/includes/class-renderer.php:606
+msgid "Keine Treffer für die aktuelle Filter-/Suchkombination."
+msgstr ""
+
+#: wp-plugin/includes/class-fetcher.php:41
+msgid "Keine tracker.json-URL konfiguriert."
+msgstr ""
+
+#: wp-plugin/includes/class-settings.php:302
+msgid "Kombination: nur Lesson Plans, ohne Stats und ohne Orphans — typisch für eine eigene Lesson-Plans-Seite."
+msgstr ""
+
+#. translators: %s: UTC timestamp from tracker.json.
+#: wp-plugin/includes/class-settings.php:232
+msgid "Letzter erfolgreicher Stand der tracker.json: %s (UTC)"
+msgstr ""
+
+#: wp-plugin/includes/class-settings.php:274
+msgid "Mehrere Pathways gleichzeitig — Komma getrennt."
+msgstr ""
+
+#: wp-plugin/includes/class-renderer.php:631
+msgid "Nach Project-Status filtern"
+msgstr ""
+
+#: wp-plugin/includes/class-renderer.php:784
+msgid "Nur Review anzeigen"
+msgstr ""
+
+#: wp-plugin/includes/class-settings.php:296
+msgid "Nur das Training Handbook anzeigen — typisch für eine eigene Handbook-Seite."
+msgstr ""
+
+#: wp-plugin/includes/class-settings.php:270
+msgid "Nur die Pathway \"Lesson Plans\"."
+msgstr ""
+
+#: wp-plugin/includes/class-settings.php:266
+msgid "Nur die Pathway mit Slug \"user\" anzeigen (z. B. Start using WordPress)."
+msgstr ""
+
+#: wp-plugin/includes/class-renderer.php:780
+msgid "Nur fertige anzeigen"
+msgstr ""
+
+#: wp-plugin/includes/class-renderer.php:788
+msgid "Nur in Arbeit anzeigen"
+msgstr ""
+
+#: wp-plugin/includes/class-renderer.php:792
+msgid "Nur offene anzeigen"
+msgstr ""
+
+#: wp-plugin/includes/class-renderer.php:992
+msgid "Original"
+msgstr ""
+
+#: wp-plugin/includes/class-renderer.php:1194
+msgid "Original Entwurf"
+msgstr ""
+
+#: wp-plugin/includes/class-settings.php:278
+msgid "Orphan-Gruppe (\"Sonstige\") ausblenden."
+msgstr ""
+
+#. translators: %d: HTTP status code. */
+#. __( 'HTTP-Fehler beim Laden der tracker.json: %d', 'training-translation-tracker' ),
+#. $code
+#. )
+#. );
+#. }
+#. $body = wp_remote_retrieve_body( $response );
+#. $data = json_decode( $body, true );
+#. if ( null === $data && JSON_ERROR_NONE !== json_last_error() ) {
+#. return new WP_Error(
+#. 'ttt_json_error',
+#. sprintf(
+#. /* translators: %s: JSON decode error message. */
+#. __( 'tracker.json konnte nicht geparst werden: %s', 'training-translation-tracker' ),
+#. json_last_error_msg()
+#. )
+#. );
+#. }
+#. if ( ! is_array( $data ) ) {
+#. return new WP_Error( 'ttt_json_shape', __( 'tracker.json hat unerwartete Struktur (kein Top-Level-Objekt).', 'training-translation-tracker' ) );
+#. }
+#. return $data;
+#. }
+#. // ------------------------------------------------------------------ schema
+#. /**
+#. Validiert die wichtigsten Pflichtfelder. Keine vollständige JSON-Schema-Validation —
+#. der Builder validiert ohnehin schon vor dem Commit.
+#. @param array $payload Decoded JSON.
+#. @return true|WP_Error
+#. /
+#. private static function validate_payload( $payload ) {
+#. if ( ! isset( $payload['schema_version'] ) || (int) $payload['schema_version'] !== TTT_TRACKER_SCHEMA_VERSION ) {
+#. return new WP_Error(
+#. 'ttt_schema_mismatch',
+#. sprintf(
+#. /* translators: 1: expected schema version, 2: actual. */
+#. __( 'Schema-Version passt nicht. Erwartet: %1$d, gefunden: %2$s', 'training-translation-tracker' ),
+#. TTT_TRACKER_SCHEMA_VERSION,
+#. isset( $payload['schema_version'] ) ? (string) $payload['schema_version'] : 'fehlt'
+#. )
+#. );
+#. }
+#. foreach ( array( 'generated_at', 'stats', 'groups' ) as $required ) {
+#. if ( ! isset( $payload[ $required ] ) ) {
+#. return new WP_Error(
+#. 'ttt_field_missing',
+#. sprintf(
+#. /* translators: %s: missing field name.
+#: wp-plugin/includes/class-fetcher.php:185
+msgid "Pflichtfeld fehlt in tracker.json: %s"
+msgstr ""
+
+#: wp-plugin/includes/class-renderer.php:786
+msgid "Review"
+msgstr ""
+
+#: wp-plugin/includes/class-renderer.php:1099
+msgid "Reviewer"
+msgstr ""
+
+#. translators: %d: HTTP status code. */
+#. __( 'HTTP-Fehler beim Laden der tracker.json: %d', 'training-translation-tracker' ),
+#. $code
+#. )
+#. );
+#. }
+#. $body = wp_remote_retrieve_body( $response );
+#. $data = json_decode( $body, true );
+#. if ( null === $data && JSON_ERROR_NONE !== json_last_error() ) {
+#. return new WP_Error(
+#. 'ttt_json_error',
+#. sprintf(
+#. /* translators: %s: JSON decode error message. */
+#. __( 'tracker.json konnte nicht geparst werden: %s', 'training-translation-tracker' ),
+#. json_last_error_msg()
+#. )
+#. );
+#. }
+#. if ( ! is_array( $data ) ) {
+#. return new WP_Error( 'ttt_json_shape', __( 'tracker.json hat unerwartete Struktur (kein Top-Level-Objekt).', 'training-translation-tracker' ) );
+#. }
+#. return $data;
+#. }
+#. // ------------------------------------------------------------------ schema
+#. /**
+#. Validiert die wichtigsten Pflichtfelder. Keine vollständige JSON-Schema-Validation —
+#. der Builder validiert ohnehin schon vor dem Commit.
+#. @param array $payload Decoded JSON.
+#. @return true|WP_Error
+#. /
+#. private static function validate_payload( $payload ) {
+#. if ( ! isset( $payload['schema_version'] ) || (int) $payload['schema_version'] !== TTT_TRACKER_SCHEMA_VERSION ) {
+#. return new WP_Error(
+#. 'ttt_schema_mismatch',
+#. sprintf(
+#. /* translators: 1: expected schema version, 2: actual.
+#: wp-plugin/includes/class-fetcher.php:172
+msgid "Schema-Version passt nicht. Erwartet: %1$d, gefunden: %2$s"
+msgstr ""
+
+#: wp-plugin/includes/class-settings.php:255
+msgid "Shortcode"
+msgstr ""
+
+#: wp-plugin/includes/class-settings.php:248
+msgid "Shortcodes"
+msgstr ""
+
+#: wp-plugin/includes/class-settings.php:286
+msgid "Stats-Header oben ausblenden."
+msgstr ""
+
+#: wp-plugin/includes/class-renderer.php:625
+msgid "Titel suchen (DE oder EN)…"
+msgstr ""
+
+#: wp-plugin/includes/class-renderer.php:501
+msgid "Tracker-Daten werden vorbereitet. Bitte später erneut prüfen."
+msgstr ""
+
+#: wp-plugin/includes/class-renderer.php:1005
+msgid "Translation"
+msgstr ""
+
+#: wp-plugin/includes/class-settings.php:205
+#: wp-plugin/includes/class-settings.php:37
+#: wp-plugin/includes/class-settings.php:38
+msgid "Translation Tracker"
+msgstr ""
+
+#: wp-plugin/includes/class-settings.php:73
+msgid "URL der tracker.json"
+msgstr ""
+
+#: wp-plugin/includes/class-renderer.php:1180
+msgid "Verwaist"
+msgstr ""
+
+#: wp-plugin/includes/class-settings.php:308
+msgid "Werte \"yes/no\", \"true/false\" und \"1/0\" werden alle akzeptiert."
+msgstr ""
+
+#: wp-plugin/includes/class-settings.php:256
+msgid "Wirkung"
+msgstr ""
+
+#: wp-plugin/includes/class-fetcher.php:193
+msgid "`groups` in tracker.json ist kein Array."
+msgstr ""
+
+#: wp-plugin/includes/class-renderer.php:782
+msgid "fertig"
+msgstr ""
+
+#: wp-plugin/includes/class-renderer.php:790
+msgid "in Arbeit"
+msgstr ""
+
+#: wp-plugin/includes/class-renderer.php:798
+msgid "n/a"
+msgstr ""
+
+#: wp-plugin/includes/class-renderer.php:796
+msgid "n/a — nicht filterbar"
+msgstr ""
+
+#: wp-plugin/includes/class-renderer.php:794
+msgid "offen"
+msgstr ""
+
+#: wp-plugin/includes/class-fetcher.php:151
+msgid "tracker.json hat unerwartete Struktur (kein Top-Level-Objekt)."
+msgstr ""
+
+#. translators: %d: HTTP status code. */
+#. __( 'HTTP-Fehler beim Laden der tracker.json: %d', 'training-translation-tracker' ),
+#. $code
+#. )
+#. );
+#. }
+#. $body = wp_remote_retrieve_body( $response );
+#. $data = json_decode( $body, true );
+#. if ( null === $data && JSON_ERROR_NONE !== json_last_error() ) {
+#. return new WP_Error(
+#. 'ttt_json_error',
+#. sprintf(
+#. /* translators: %s: JSON decode error message.
+#: wp-plugin/includes/class-fetcher.php:144
+msgid "tracker.json konnte nicht geparst werden: %s"
+msgstr ""
+

@@ -3,7 +3,7 @@
  * Plugin Name:       Training Translation Tracker
  * Plugin URI:        https://github.com/rfluethi/learn-wp-dach-sitzungen
  * Description:       Dashboard für den Übersetzungsfortschritt des Learn WP DACH Teams.
- * Version:           0.2.4
+ * Version:           0.3.0
  * Requires at least: 6.0
  * Requires PHP:      8.0
  * Author:            Learn WP DACH Team
@@ -21,7 +21,7 @@ defined( 'ABSPATH' ) || exit;
 // Konstanten
 // -----------------------------------------------------------------------------
 
-define( 'TTT_VERSION', '0.2.4' );
+define( 'TTT_VERSION', '0.3.0' );
 define( 'TTT_PLUGIN_FILE', __FILE__ );
 define( 'TTT_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'TTT_PLUGIN_URL', plugin_dir_url( __FILE__ ) );

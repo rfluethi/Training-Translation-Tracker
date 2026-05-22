@@ -60,7 +60,7 @@ Alternativ ein lokales ZIP bauen und über die WP-Admin-UI hochladen:
 # → ~/Desktop/training-translation-tracker.zip
 ```
 
-PHPUnit-Tests existieren aktuell nicht (Stand 0.2.4). Plugin wird per Sichtprüfung in einer lokalen Instanz oder im [WP-Playground](https://playground.wordpress.net/) verifiziert.
+PHPUnit-Tests existieren aktuell nicht (Stand 0.3.0). Plugin wird per Sichtprüfung in einer lokalen Instanz oder im [WP-Playground](https://playground.wordpress.net/) verifiziert.
 
 ---
 
@@ -378,24 +378,23 @@ Solange CSS-Stufe 3 (gemeinsame Token-Quelle aus PHP-Array generieren) nicht imp
 
 ## 6. Barrierefreiheit (A11y)
 
-Stand 0.2.4: kein formaler Audit, aber semantische Grundstruktur ist da.
+Stand 0.3.0: keine formaler Audit, aber semantische Grundstruktur und alle Quick-Wins umgesetzt.
 
-### Was schon umgesetzt ist
+### Was umgesetzt ist
 
-- Stats-Filter sind echte `<button>`-Elemente — Tastatur erreichbar, Screenreader liest „button".
-- Section-Toggles tragen `role="button"`, `tabindex="0"` und `aria-expanded` — Keyboard-bedienbar (Enter/Leertaste).
-- Search-Input ist semantisch `<input type="search">`.
-- Status wird mehrfach kodiert: Farbe + Icon + Text-Pille — nicht nur Farbe.
-- `defer`-Attribut auf dem Tracker-Script — blockiert kein Rendering.
+- Stats-Filter sind echte `<button>`-Elemente.
+- **Section-Toggles sind echte `<button>` innerhalb eines `<h4>`** — semantisch korrekt, native Tastatur-Bedienung (`Enter`/`Leertaste`), `aria-expanded` reflektiert den Zustand. (Refactor in 0.3.0.)
+- **Komponenten-Icon-Trigger tragen `aria-haspopup="dialog"` + `aria-expanded`** — JS pflegt den Zustand beim Öffnen/Schließen. (Neu in 0.3.0.)
+- Komponenten-Popover ist click/tap-tauglich (zusätzlich zu hover), `Enter`/`Leertaste` öffnet, `Esc` schließt.
+- Such-Input ist semantisch `<input type="search">` mit `aria-label`.
+- SVG-Icons tragen `aria-hidden="true"` + `focusable="false"`; die semantische Info sitzt im Wrapper-`aria-label`.
+- Status wird mehrfach kodiert: Farbe + Icon + Text-Pille.
+- `defer`-Attribut auf dem Tracker-Script.
 
-### Offene Punkte (vor 1.0 angehen)
+### Was noch offen ist
 
-1. **Hover-only Komponenten-Popover.** Aktuell öffnet das Detail-Popover beim Hovern. Touch- und Tastatur-User kommen schwer an die Detail-Info (Creator, Reviewer). → Zusätzlich auf Click/Tap und Focus reagieren, `aria-haspopup="dialog"` + `aria-expanded` setzen.
-2. **SVG-Icons ohne Label.** Komponenten- und Marker-Icons haben kein `<title>` oder `aria-label`. Heute sitzt die Info im `title`-Attribut des Wrappers — nicht 100 % screenreader-zuverlässig. → `aria-hidden="true"` auf dem reinen Deko-SVG; semantische Info als `<span class="screen-reader-text">…</span>` oder via `aria-label` am Wrapper.
-3. **Kontrast der Status-Farben.** Nie mit WCAG-Tool gemessen. Insbesondere `--ttt-color-review` (`#d4a017` / amber) auf weiß ist grenzwertig. → Lighthouse / axe-core durchlaufen lassen und ggf. Token-Werte nachjustieren.
-4. **Search-Input ohne sichtbares Label.** Heute nur Placeholder. → `<label for>` (visually-hidden für Layout, aber screenreader-aktiv) oder `aria-label="Suche"`.
-5. **Section-Titel als `role="button"`.** Funktioniert, aber semantisch ist `<button>` korrekter. → Bei Refactoring auf echtes `<button>` umstellen.
-6. **Audit-Lauf.** Pre-1.0 einmal Lighthouse-A11y + axe-core auf einer Test-Seite laufen lassen, Findings als Iteration nachziehen.
+1. **Kontrast `--ttt-color-review`.** `#d4a017` (amber) auf weiß ergibt ~2.4:1 — unter WCAG-AA-Schwelle für Icons (3:1). Brand-Designentscheidung; bei einem formalen Audit nachjustieren (z. B. auf `#b8860b` / DarkGoldenrod → ~3.3:1).
+2. **Audit-Lauf.** Lighthouse-A11y + axe-core auf einer Test-Seite laufen lassen, Findings als Iteration nachziehen. Bislang nur manuelle Sichtprüfung.
 
 ### Test-Anleitung
 
@@ -410,26 +409,25 @@ Manueller Smoketest:
 
 ## 7. Erweiterungspunkte
 
-### Komponenten-Icons austauschen (Filter-Hook — geplant)
+### Komponenten-Icons austauschen (Filter-Hook)
 
-Heute sind die Icons als SVG-Path-Daten in der PHP-Konstante `COMPONENT_ICONS` hardcoded. Für einen einfachen Override-Mechanismus wird in einer kommenden Version ein Filter eingeführt:
+Verfügbar seit 0.3.0. In `class-renderer.php` filtern wir die Icon-Tabelle:
 
 ```php
-// In class-renderer.php — render_component_icon():
 $icons = apply_filters( 'ttt_component_icons', self::COMPONENT_ICONS );
 ```
 
-Themes oder ein kleines Companion-Plugin können dann ohne Plugin-Code-Änderung Icons überschreiben:
+Themes oder ein kleines Companion-Plugin können Icons ohne Plugin-Code-Änderung überschreiben:
 
 ```php
 add_filter( 'ttt_component_icons', function( $icons ) {
-    $icons['text']  = '<svg viewBox="0 0 24 24"><path d="…"/></svg>';
-    $icons['video'] = '<svg viewBox="0 0 24 24"><path d="…"/></svg>';
+    $icons['text']  = 'M3 5h18v2H3V5z...'; // eigener SVG path-d
+    $icons['video'] = 'M8 5v14l11-7L8 5z...';
     return $icons;
 } );
 ```
 
-Status: ist als kleiner Refactor in der Roadmap (Arbeitsplan beim Maintainer, Teil C).
+Was übergeben wird ist das `d`-Attribut des SVG-Pfads (kein vollständiger SVG-Tag), weil das Plugin um die Pfad-Daten den `<svg>`-Wrapper baut (`viewBox="0 0 24 24"`, `fill="currentColor"`, `aria-hidden="true"`).
 
 Mittelfristige Alternative: Icons direkt in `component-templates.yml` definieren und in `tracker.json` mitliefern. Dann ist das Plugin komplett konfigurations-getrieben — sinnvoll erst, wenn mehrere Locales eigene Icon-Sätze brauchen.
 
@@ -476,13 +474,13 @@ Bei Layout-Properties (`display: grid` etc.) muss Custom-CSS mit `!important` ar
 ## 8. Versionierung
 
 
-Drei Stellen pro Release synchron halten (Beispiel `0.2.4`):
+Drei Stellen pro Release synchron halten (Beispiel `0.3.0`):
 
 | Datei | Wert |
 |---|---|
-| `wp-plugin/training-translation-tracker.php` Plugin-Header `Version:` | `0.2.4` |
-| `wp-plugin/training-translation-tracker.php` Konstante `TTT_VERSION` | `0.2.4` |
-| `wp-plugin/readme.txt` `Stable tag:` | `0.2.4` |
+| `wp-plugin/training-translation-tracker.php` Plugin-Header `Version:` | `0.3.0` |
+| `wp-plugin/training-translation-tracker.php` Konstante `TTT_VERSION` | `0.3.0` |
+| `wp-plugin/readme.txt` `Stable tag:` | `0.3.0` |
 
 Der CI-Workflow `release-plugin.yml` verifiziert die Konsistenz beim Tag-Push und bricht ab, wenn sie auseinanderlaufen.
 
@@ -501,11 +499,10 @@ Schema-Versionierung des Datenmodells: `tracker.json schema_version`-Sprung → 
 | # | Thema | Status |
 |---|---|---|
 | 1 | Keine PHPUnit-Tests fürs Plugin | offen — bei größeren Refactorings nachziehen |
-| 2 | i18n unvollständig (`.pot` fehlt) | nächster Schritt: `wp i18n make-pot wp-plugin/ wp-plugin/languages/training-translation-tracker.pot` |
-| 3 | CSS-Doppelpflege `style.css` ↔ Inline-Block | Stufe 3 (gemeinsame Quelle aus PHP-Array) noch nicht umgesetzt — akzeptable Doppelpflege |
-| 4 | Komponenten-Icons hardcodiert ohne Filter-Hook | Quick-Win: `ttt_component_icons`-Filter einführen (siehe § 7) |
-| 5 | Settings-Status-Hinweis nutzt fixe Hex-Werte | konsistenter wäre auch hier Token-System |
-| 6 | A11y nie formal auditiert | Pre-1.0 Lighthouse + axe-core durchlaufen, Findings nachziehen (siehe § 6) |
+| 2 | CSS-Doppelpflege `style.css` ↔ Inline-Block | Stufe 3 (gemeinsame Quelle aus PHP-Array) noch nicht umgesetzt — akzeptable Doppelpflege |
+| 3 | Settings-Status-Hinweis nutzt fixe Hex-Werte | konsistenter wäre auch hier Token-System |
+| 4 | A11y nie formal auditiert | Pre-1.0 Lighthouse + axe-core durchlaufen, Findings nachziehen (siehe § 6) |
+| 5 | Komponenten-Icons nur per Filter-Hook überschreibbar | längerfristig: Icons aus `component-templates.yml` in `tracker.json` mitliefern |
 
 Priorisierte Roadmap liegt im Arbeitsplan beim Maintainer (Teil C, außerhalb des Repos).
 

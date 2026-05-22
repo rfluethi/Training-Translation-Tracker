@@ -394,18 +394,25 @@
 
 		function showFor(icon) {
 			if (hideTimer) { clearTimeout(hideTimer); hideTimer = null; }
+			if (currentIcon && currentIcon !== icon) {
+				currentIcon.setAttribute('aria-expanded', 'false');
+			}
 			currentIcon = icon;
+			icon.setAttribute('aria-expanded', 'true');
 			ensurePopover();
 			fillPopover(icon);
 			positionPopover(icon);
 		}
 
+		function hideNow() {
+			if (popover) popover.setAttribute('hidden', '');
+			if (currentIcon) currentIcon.setAttribute('aria-expanded', 'false');
+			currentIcon = null;
+		}
+
 		function scheduleHide() {
 			if (hideTimer) clearTimeout(hideTimer);
-			hideTimer = setTimeout(function () {
-				if (popover) popover.setAttribute('hidden', '');
-				currentIcon = null;
-			}, 200);
+			hideTimer = setTimeout(hideNow, 200);
 		}
 
 		function bindIcon(icon) {
@@ -415,8 +422,7 @@
 			icon.addEventListener('click', function (e) {
 				e.preventDefault();
 				if (currentIcon === icon && popover && !popover.hasAttribute('hidden')) {
-					popover.setAttribute('hidden', '');
-					currentIcon = null;
+					hideNow();
 				} else {
 					showFor(icon);
 				}
@@ -426,8 +432,7 @@
 					e.preventDefault();
 					showFor(icon);
 				} else if (e.key === 'Escape') {
-					if (popover) popover.setAttribute('hidden', '');
-					currentIcon = null;
+					hideNow();
 				}
 			});
 		}
@@ -443,8 +448,7 @@
 			// Wenn auf ein Icon im selben Tracker geklickt wurde, lass den
 			// Icon-Handler die Arbeit machen.
 			if (e.target.closest && e.target.closest('.ttt-comp-icon')) return;
-			popover.setAttribute('hidden', '');
-			currentIcon = null;
+			hideNow();
 		});
 	}
 
@@ -459,7 +463,7 @@
 	}
 
 	function setupCollapse(root, trackerId) {
-		var titles = root.querySelectorAll('.ttt-section-title[role="button"]');
+		var titles = root.querySelectorAll('.ttt-section-title');
 		for (var i = 0; i < titles.length; i++) {
 			var title = titles[i];
 			var section = title.closest('.ttt-section');

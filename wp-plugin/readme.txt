@@ -4,7 +4,7 @@ Tags: translation, learn-wordpress, tracker, dashboard
 Requires at least: 6.0
 Tested up to: 6.9
 Requires PHP: 8.0
-Stable tag: 0.2.4
+Stable tag: 0.3.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -34,6 +34,21 @@ DACH Team for translating learn.wordpress.org content into German.
 4. Embed the shortcode `[translation_tracker]` on any page.
 
 == Changelog ==
+
+= 0.3.0 =
+* Accessibility: section toggles are now real `<button>` elements (instead
+  of `<h4 role="button">`) — semantically correct and natively
+  keyboard-friendly. Component icons gained `aria-haspopup="dialog"` and
+  `aria-expanded` state, kept in sync by the JS when the popover opens/closes.
+* New filter hook `ttt_component_icons` — themes and companion plugins can
+  override SVG icon paths per component without modifying plugin code. See
+  developer docs.
+* i18n: full `.pot` file shipped in `languages/training-translation-tracker.pot`
+  (70 strings, 6 translator comments). Ready for `de_DE`, `de_CH` and any
+  other locale.
+* Documentation: top-level `docs/`-suite (Architecture, Developer, Operations,
+  User Guide, Issue Templates) — absorbed the previous `wp-plugin/docs/` and
+  centralized everything for both Action and Plugin.
 
 = 0.2.4 =
 * Plugin Check compliance: added missing translators comments, fixed unescaped
