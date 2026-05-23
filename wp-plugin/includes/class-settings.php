@@ -238,6 +238,8 @@ class TTT_Settings {
 		?>
 		<style>
 			/* Small styles scoped to this settings page only. */
+			.ttt-settings-title           { display: flex; align-items: center; gap: 12px; }
+			.ttt-settings-title-icon      { width: 40px; height: 40px; flex-shrink: 0; }
 			.ttt-settings-status-active   { color: #2271b1; }
 			.ttt-settings-status-inactive { color: #999; }
 			.ttt-settings-clear-msg       { margin-left: 10px; }
@@ -250,7 +252,14 @@ class TTT_Settings {
 		</style>
 		<?php // phpcs:enable WordPress.WP.EnqueuedResources.NonEnqueuedStylesheet ?>
 		<div class="wrap">
-			<h1><?php esc_html_e( 'Translation Tracker', 'training-translation-tracker' ); ?></h1>
+			<h1 class="ttt-settings-title">
+				<img
+					src="<?php echo esc_url( TTT_PLUGIN_URL . 'assets/icons/header-icon.svg' ); ?>"
+					alt=""
+					class="ttt-settings-title-icon"
+				/>
+				<?php esc_html_e( 'Translation Tracker', 'training-translation-tracker' ); ?>
+			</h1>
 
 			<form method="post" action="options.php">
 				<?php

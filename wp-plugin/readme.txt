@@ -4,7 +4,7 @@ Tags: translation, learn-wordpress, tracker, dashboard
 Requires at least: 6.0
 Tested up to: 7.0
 Requires PHP: 8.0
-Stable tag: 0.4.8
+Stable tag: 0.4.9
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -34,6 +34,12 @@ DACH Team for translating learn.wordpress.org content into German.
 4. Embed the shortcode `[translation_tracker]` on any page.
 
 == Changelog ==
+
+= 0.4.9 =
+* UI: brand icon added to the header of the settings page (under
+  Settings > Translation Tracker). Purely cosmetic; the icon lives at
+  `assets/icons/header-icon.svg` and is loaded as a decorative image
+  (alt=""), so screen readers continue to read just the page title.
 
 = 0.4.8 =
 * Security polish: tracker URL setting is now validated against an

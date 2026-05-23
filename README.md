@@ -1,5 +1,7 @@
 # Training Translation Tracker Inventory
 
+<img src="wp-plugin/assets/icons/header-icon.svg" width="200" alt="Translation Tracker">
+
 Mono-repo for the inventory-driven translation dashboard of the
 WordPress DACH team. Two components, one repo:
 
