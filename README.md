@@ -26,7 +26,7 @@ Five documents, depending on your role:
 ## Repository layout
 
 ```text
-Training-Translation-Tracker-Inventory-Plugin/
+Training-Translation-Tracker/
 ├── .github/workflows/build.yml   Workflow at top level (GitHub convention)
 ├── action/                       Python action, builds tracker.json on the data branch
 │   ├── src/                      Inventory sources, issue parser, joiner, build entry point

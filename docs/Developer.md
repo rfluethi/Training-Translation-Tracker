@@ -48,7 +48,7 @@ The most elegant approach for local development is a symlink into a WordPress in
 
 ```bash
 cd /path/to/wordpress/wp-content/plugins
-ln -s /path/to/Training-Translation-Tracker-Inventory-Plugin/wp-plugin training-translation-tracker
+ln -s /path/to/Training-Translation-Tracker/wp-plugin training-translation-tracker
 ```
 
 Alternatively build a local ZIP and upload via the WP admin UI:

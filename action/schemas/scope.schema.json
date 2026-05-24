@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/rfluethi/Training-Translation-Tracker-Inventory-Plugin/schemas/scope.schema.json",
+  "$id": "https://github.com/rfluethi/Training-Translation-Tracker/schemas/scope.schema.json",
   "title": "Translation Tracker Scope",
   "description": "Single source of truth: locale config + hierarchical grouping of items. The set of URLs in scope is the union of all leaf items in the pathways tree.",
   "type": "object",

@@ -4,7 +4,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Training Translation Tracker 0.4.6\n"
-"Report-Msgid-Bugs-To: https://github.com/rfluethi/Training-Translation-Tracker-Inventory-Plugin/issues\n"
+"Report-Msgid-Bugs-To: https://github.com/rfluethi/Training-Translation-Tracker/issues\n"
 "POT-Creation-Date: 2026-05-22 12:00+0000\n"
 "PO-Revision-Date: 2026-05-22 12:00+0000\n"
 "Last-Translator: Rico Lüthi <mail@rfluethi.com>\n"

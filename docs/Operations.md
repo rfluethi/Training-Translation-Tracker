@@ -7,7 +7,7 @@
 
 | Component | Where it lives | Who has access |
 |---|---|---|
-| Action code | Repo `Training-Translation-Tracker-Inventory-Plugin`, branch `main` | Maintainers + contributors |
+| Action code | Repo `Training-Translation-Tracker`, branch `main` | Maintainers + contributors |
 | `tracker.json` | Same repo, branch `data` | Force-pushed by the action; readable via `raw.githubusercontent.com` |
 | `last-run.md` | Same repo, branch `data` | Force-pushed by the action |
 | Plugin code | Same repo, path `wp-plugin/` | Maintainers + contributors |
@@ -46,7 +46,7 @@ The workflow `.github/workflows/release-plugin.yml` runs automatically and does:
 5. Extract changelog notes for the tagged version from `readme.txt`.
 6. Create the GitHub release via `softprops/action-gh-release@v2` with the ZIP as asset and the notes as description.
 
-Watch progress under `Actions → release-plugin.yml`. When the workflow is green: the release is available at `https://github.com/<owner>/Training-Translation-Tracker-Inventory-Plugin/releases/tag/v0.2.5`.
+Watch progress under `Actions → release-plugin.yml`. When the workflow is green: the release is available at `https://github.com/<owner>/Training-Translation-Tracker/releases/tag/v0.2.5`.
 
 ### Build the ZIP locally (without a release)
 
@@ -208,7 +208,7 @@ A `last-run.md` is committed to the `data` branch on each run:
 
 Statistics: how many items in total, how many with an issue, how many orphans. Warnings: issues with parse errors, duplicates, missing URLs. End time + run ID.
 
-URL: `https://github.com/<owner>/Training-Translation-Tracker-Inventory-Plugin/blob/data/last-run.md`
+URL: `https://github.com/<owner>/Training-Translation-Tracker/blob/data/last-run.md`
 
 ### Plugin side
 
@@ -278,7 +278,7 @@ Then trigger the action manually, it does the force push and refills the branch.
 
 If a new repo is set up (e.g. for a different locale account):
 
-1. Create a public repo under `<owner>/Training-Translation-Tracker-Inventory-Plugin`.
+1. Create a public repo under `<owner>/Training-Translation-Tracker`.
 2. Default branch `main`.
 3. Initialize the `data` branch (see case 5 above).
 4. Set the secret `GH_PAT_PROJECT_READ` (scopes: `read:org`, `project`).

@@ -29,8 +29,8 @@ you want to change, the workflow is slightly different.
 ## Repository setup
 
 ```bash
-git clone https://github.com/rfluethi/Training-Translation-Tracker-Inventory-Plugin.git
-cd Training-Translation-Tracker-Inventory-Plugin
+git clone https://github.com/rfluethi/Training-Translation-Tracker.git
+cd Training-Translation-Tracker
 ```
 
 The repository contains:

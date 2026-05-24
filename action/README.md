@@ -15,7 +15,7 @@ A GitHub Action runs every 12 hours and:
 5. parses the status tables from the issue bodies
 6. writes `tracker.json` (and `last-run.md` as a log) onto the `data` branch
 
-The resulting `tracker.json` is then statically available at `https://raw.githubusercontent.com/<owner>/Training-Translation-Tracker-Inventory-Plugin/data/tracker.json` and is read by the WordPress plugin.
+The resulting `tracker.json` is then statically available at `https://raw.githubusercontent.com/<owner>/Training-Translation-Tracker/data/tracker.json` and is read by the WordPress plugin.
 
 ## Architecture overview
 
@@ -60,7 +60,7 @@ data branch
 
 ## Initial setup by the maintainer
 
-1. Create a public repository on GitHub: `<owner>/Training-Translation-Tracker-Inventory-Plugin`.
+1. Create a public repository on GitHub: `<owner>/Training-Translation-Tracker`.
 2. Default branch `main` (created automatically on first push).
 3. Create a second branch `data`. Empty is enough, the workflow overwrites it:
 

@@ -45,7 +45,7 @@ Either symlink the plugin folder into your local WP install:
 
 ```bash
 cd /path/to/wp-content/plugins
-ln -s /path/to/Training-Translation-Tracker-Inventory-Plugin/wp-plugin training-translation-tracker
+ln -s /path/to/Training-Translation-Tracker/wp-plugin training-translation-tracker
 ```
 
 Or build a release ZIP from the repo root and upload it via the WP admin:

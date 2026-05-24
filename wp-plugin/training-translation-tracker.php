@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name:       Training Translation Tracker
- * Plugin URI:        https://github.com/rfluethi/Training-Translation-Tracker-Inventory-Plugin
+ * Plugin URI:        https://github.com/rfluethi/Training-Translation-Tracker
  * Description:       Dashboard for the translation progress of the Learn WP DACH Team.
  * Version:           0.4.9
  * Requires at least: 6.0
@@ -34,7 +34,7 @@ define( 'TTT_TRACKER_SCHEMA_VERSION', 1 );
 // Default source and cache hours, overridable via the settings page.
 define(
 	'TTT_DEFAULT_TRACKER_URL',
-	'https://raw.githubusercontent.com/rfluethi/Training-Translation-Tracker-Inventory-Plugin/data/tracker.json'
+	'https://raw.githubusercontent.com/rfluethi/Training-Translation-Tracker/data/tracker.json'
 );
 define( 'TTT_DEFAULT_CACHE_HOURS', 12 );
 

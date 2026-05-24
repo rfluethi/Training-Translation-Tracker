@@ -54,7 +54,7 @@ The issue itself remains the single point of truth for status changes. Re-transl
 
 ### 2.2 GitHub Action, aggregation
 
-The action in the `Training-Translation-Tracker-Inventory-Plugin` repository runs on three triggers:
+The action in the `Training-Translation-Tracker` repository runs on three triggers:
 
 - **Schedule:** `cron: "0 */12 * * *"` (every 12 hours).
 - **`workflow_dispatch`:** manual button in the GitHub UI.

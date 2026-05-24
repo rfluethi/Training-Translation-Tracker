@@ -72,7 +72,7 @@ class InventorySource(ABC):
     # User-Agent for all HTTP calls — easy to spot in upstream access logs.
     USER_AGENT = (
         "Training-Translation-Tracker-Inventory/0.1 "
-        "(+https://github.com/rfluethi/Training-Translation-Tracker-Inventory-Plugin)"
+        "(+https://github.com/rfluethi/Training-Translation-Tracker)"
     )
 
     def __init__(self, session: requests.Session | None = None) -> None:

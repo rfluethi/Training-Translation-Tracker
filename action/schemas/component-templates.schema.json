@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/rfluethi/Training-Translation-Tracker-Inventory-Plugin/schemas/component-templates.schema.json",
+  "$id": "https://github.com/rfluethi/Training-Translation-Tracker/schemas/component-templates.schema.json",
   "title": "Translation Tracker Component Templates",
   "description": "Schema for component-templates.yml. Defines (a) the SVG icon path per component name (rendered by the plugin with a 24x24 viewBox wrapper), and (b) the default component list per item type (used when an item has no GitHub issue yet).",
   "type": "object",

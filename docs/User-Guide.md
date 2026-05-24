@@ -14,7 +14,7 @@ The data does not come from the WordPress site itself but from a **GitHub Action
 | Component | Where? | What? |
 |---|---|---|
 | GitHub issues | `WordPress/Learn` repo, DACH project board | Translators maintain the status per item |
-| GitHub Action | `Training-Translation-Tracker-Inventory-Plugin` | Builds `tracker.json` every 12 h |
+| GitHub Action | `Training-Translation-Tracker` | Builds `tracker.json` every 12 h |
 | WordPress plugin | This site | Reads the JSON, renders the dashboard |
 
 You mostly work with the GitHub issues (maintaining status) and see the result in the dashboard.
@@ -31,7 +31,7 @@ You mostly work with the GitHub issues (maintaining status) and see the result i
 
 ### Installation steps
 
-1. **Download the ZIP**, get the current `training-translation-tracker.zip` from the [Releases tab of the GitHub repo](https://github.com/rfluethi/Training-Translation-Tracker-Inventory-Plugin/releases).
+1. **Download the ZIP**, get the current `training-translation-tracker.zip` from the [Releases tab of the GitHub repo](https://github.com/rfluethi/Training-Translation-Tracker/releases).
 2. In the WP admin, click **Plugins → Add New**.
 3. Click **Upload Plugin** at the top, then pick the ZIP file.
 4. Click **Install Now**.
@@ -52,7 +52,7 @@ Available at **WP Admin → Settings → Translation Tracker**.
 The address from which the plugin loads the JSON file. By default it points at the `data` branch of the inventory plugin repo:
 
 ```text
-https://raw.githubusercontent.com/rfluethi/Training-Translation-Tracker-Inventory-Plugin/data/tracker.json
+https://raw.githubusercontent.com/rfluethi/Training-Translation-Tracker/data/tracker.json
 ```
 
 Only change this URL if the action repo moves or if a different data source should be used. In 99 % of cases it stays at the default.
@@ -320,7 +320,7 @@ Before you report a bug, please note down:
 5. **Screenshot** of the page, preferably full browser window.
 6. **Browser console** (F12 → Console tab), copy all red errors.
 
-Open an issue in the action repo: <https://github.com/rfluethi/Training-Translation-Tracker-Inventory-Plugin/issues>
+Open an issue in the action repo: <https://github.com/rfluethi/Training-Translation-Tracker/issues>
 
 Or contact the maintainer directly by email (see the plugin header).
 
