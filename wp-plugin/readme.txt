@@ -4,7 +4,7 @@ Tags: translation, learn-wordpress, tracker, dashboard
 Requires at least: 6.0
 Tested up to: 7.0
 Requires PHP: 8.0
-Stable tag: 0.4.9
+Stable tag: 0.4.10
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -34,6 +34,16 @@ DACH Team for translating learn.wordpress.org content into German.
 4. Embed the shortcode `[translation_tracker]` on any page.
 
 == Changelog ==
+
+= 0.4.10 =
+* Repository renamed from `Training-Translation-Tracker-Inventory-Plugin` to
+  `Training-Translation-Tracker`. Default `tracker.json` URL updated
+  accordingly: existing installations that still point at the old
+  raw.githubusercontent.com path will get a 404 — adjust the URL in
+  Settings → Translation Tracker, or reinstall this version which carries
+  the new default. Plugin URI, bug-tracker URL in translation headers,
+  schema $id fields and the GitHub Action's User-Agent string have been
+  updated in lockstep.
 
 = 0.4.9 =
 * UI: brand icon added to the header of the settings page (under
