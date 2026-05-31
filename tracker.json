@@ -1,0 +1,1311 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-05-31T12:30:27Z",
+  "stats": {
+    "total_items": 32,
+    "done": 2,
+    "review": 0,
+    "wip": 0,
+    "open": 30,
+    "na": 0,
+    "untouched": 27
+  },
+  "groups": [
+    {
+      "type": "pathway",
+      "slug": "user",
+      "label": "Start using WordPress",
+      "courses": [
+        {
+          "slug": "beginner-wordpress-user",
+          "label": "Beginner WordPress User",
+          "sections": [
+            {
+              "slug": "get-started-with-wordpress",
+              "label": "Get Started With WordPress",
+              "items": [
+                {
+                  "type": "lesson",
+                  "slug": "introduction-to-wordpress-2",
+                  "title_en": "Introduction to WordPress",
+                  "url_en": "https://learn.wordpress.org/lesson/introduction-to-wordpress-2/",
+                  "issue": {
+                    "number": 2742,
+                    "url": "https://github.com/WordPress/Learn/issues/2742",
+                    "state": "closed",
+                    "assignees": [
+                      "rfluethi",
+                      "BenjaminZekavica"
+                    ],
+                    "project_status": "Published or Closed"
+                  },
+                  "url_de": "https://learn.wordpress.org/lesson/einfuhrung-in-wordpress/",
+                  "title_de": "Einführung in WordPress",
+                  "url_wptv_en": "https://wordpress.tv/2023/12/06/introduction-to-wordpress/",
+                  "url_wptv_de": "https://wordpress.tv/2024/10/14/einfuhrung-in-wordpress/",
+                  "url_wptv": "https://wordpress.tv/2024/10/14/einfuhrung-in-wordpress/",
+                  "url_youtube_en": "https://www.youtube.com/watch?v=3S-s_V_z8JQ",
+                  "url_youtube_de": "https://www.youtube.com/watch?v=hDwmD2hoVrA",
+                  "url_youtube": "https://www.youtube.com/watch?v=hDwmD2hoVrA",
+                  "components": [
+                    {
+                      "name": "thumbnails",
+                      "status": "done",
+                      "creator": "rfluethi",
+                      "reviewer": "BenjaminZekavica"
+                    },
+                    {
+                      "name": "text",
+                      "status": "done",
+                      "creator": "rfluethi",
+                      "reviewer": "BenjaminZekavica"
+                    },
+                    {
+                      "name": "subtitles",
+                      "status": "done",
+                      "creator": "rfluethi",
+                      "reviewer": "BenjaminZekavica"
+                    },
+                    {
+                      "name": "exercise",
+                      "status": "na"
+                    },
+                    {
+                      "name": "quiz",
+                      "status": "done",
+                      "creator": "rfluethi",
+                      "reviewer": "BenjaminZekavica"
+                    },
+                    {
+                      "name": "audio",
+                      "status": "done",
+                      "creator": "rfluethi",
+                      "reviewer": "BenjaminZekavica"
+                    },
+                    {
+                      "name": "video",
+                      "status": "done",
+                      "creator": "rfluethi",
+                      "reviewer": "BenjaminZekavica"
+                    }
+                  ],
+                  "overall_status": "done"
+                },
+                {
+                  "type": "lesson",
+                  "slug": "wordpress-essentials-domains-and-hosting",
+                  "title_en": "WordPress essentials: Domains and hosting",
+                  "url_en": "https://learn.wordpress.org/lesson/wordpress-essentials-domains-and-hosting/",
+                  "issue": {
+                    "number": 2955,
+                    "url": "https://github.com/WordPress/Learn/issues/2955",
+                    "state": "closed",
+                    "assignees": [
+                      "rfluethi",
+                      "Ursha-wp"
+                    ],
+                    "project_status": "Published or Closed"
+                  },
+                  "url_de": "https://learn.wordpress.org/lesson/wordpress-grundlagen-domains-und-hosting/",
+                  "title_de": "WordPress-Grundlagen: Domains und Hosting",
+                  "url_wptv_en": "https://wordpress.tv/2023/12/07/wordpress-essentials-domains-and-hosting/",
+                  "url_wptv_de": "https://wordpress.tv/2025/11/18/wordpress-grundlagen-domains-und-hosting/",
+                  "url_wptv": "https://wordpress.tv/2025/11/18/wordpress-grundlagen-domains-und-hosting/",
+                  "url_youtube_en": "https://www.youtube.com/watch?v=stbR6Tf7tCg",
+                  "url_youtube_de": "https://www.youtube.com/watch?v=Vj3pFHoFSTY",
+                  "url_youtube": "https://www.youtube.com/watch?v=Vj3pFHoFSTY",
+                  "components": [
+                    {
+                      "name": "thumbnails",
+                      "status": "done",
+                      "creator": "rfluethi",
+                      "reviewer": "Ursha-wp"
+                    },
+                    {
+                      "name": "text",
+                      "status": "done",
+                      "creator": "rfluethi",
+                      "reviewer": "Ursha-wp"
+                    },
+                    {
+                      "name": "subtitles",
+                      "status": "done",
+                      "creator": "rfluethi",
+                      "reviewer": "Ursha-wp"
+                    },
+                    {
+                      "name": "exercise",
+                      "status": "na"
+                    },
+                    {
+                      "name": "quiz",
+                      "status": "done",
+                      "creator": "rfluethi",
+                      "reviewer": "Ursha-wp"
+                    },
+                    {
+                      "name": "audio",
+                      "status": "done",
+                      "creator": "Ursha-wp",
+                      "reviewer": "rfluethi"
+                    },
+                    {
+                      "name": "video",
+                      "status": "done",
+                      "creator": "rfluethi",
+                      "reviewer": "Ursha-wp"
+                    }
+                  ],
+                  "overall_status": "done"
+                },
+                {
+                  "type": "lesson",
+                  "slug": "choosing-and-installing-a-theme",
+                  "title_en": "Choosing and installing a theme",
+                  "url_en": "https://learn.wordpress.org/lesson/choosing-and-installing-a-theme/",
+                  "issue": {
+                    "number": 3170,
+                    "url": "https://github.com/WordPress/Learn/issues/3170",
+                    "state": "open",
+                    "assignees": [
+                      "rfluethi",
+                      "Chris-Ober"
+                    ],
+                    "project_status": "Ready for Review"
+                  },
+                  "components": [
+                    {
+                      "name": "thumbnails",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "text",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "subtitles",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "exercise",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "quiz",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "audio",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "video",
+                      "status": "unset"
+                    }
+                  ],
+                  "overall_status": "open"
+                },
+                {
+                  "type": "lesson",
+                  "slug": "choosing-and-installing-a-plugin",
+                  "title_en": "Choosing and installing a plugin",
+                  "url_en": "https://learn.wordpress.org/lesson/choosing-and-installing-a-plugin/",
+                  "issue": {
+                    "number": 3174,
+                    "url": "https://github.com/WordPress/Learn/issues/3174",
+                    "state": "open",
+                    "assignees": [
+                      "Bigod",
+                      "rfluethi"
+                    ],
+                    "project_status": "Published or Closed"
+                  },
+                  "url_de": "https://learn.wordpress.org/lesson/auswahl-und-installation-von-plugins/",
+                  "title_de": "Auswahl und Installation von Plugins",
+                  "url_youtube_en": "https://www.youtube.com/watch?v=WooNmrNKmcM",
+                  "url_youtube_de": "https://www.youtube.com/watch?v=WooNmrNKmcM",
+                  "url_youtube": "https://www.youtube.com/watch?v=WooNmrNKmcM",
+                  "components": [
+                    {
+                      "name": "thumbnails",
+                      "status": "open"
+                    },
+                    {
+                      "name": "text",
+                      "status": "done",
+                      "creator": "Bigod",
+                      "reviewer": "rfluethi"
+                    },
+                    {
+                      "name": "subtitles",
+                      "status": "open"
+                    },
+                    {
+                      "name": "exercise",
+                      "status": "open"
+                    },
+                    {
+                      "name": "quiz",
+                      "status": "done",
+                      "creator": "Bigod",
+                      "reviewer": "rfluethi"
+                    },
+                    {
+                      "name": "audio",
+                      "status": "open"
+                    },
+                    {
+                      "name": "video",
+                      "status": "open"
+                    }
+                  ],
+                  "overall_status": "open"
+                },
+                {
+                  "type": "lesson",
+                  "slug": "getting-started-with-the-wordpress-dashboard",
+                  "title_en": "Getting started with the WordPress dashboard",
+                  "url_en": "https://learn.wordpress.org/lesson/getting-started-with-the-wordpress-dashboard/",
+                  "issue": {
+                    "number": 3173,
+                    "url": "https://github.com/WordPress/Learn/issues/3173",
+                    "state": "closed",
+                    "assignees": [
+                      "rfluethi",
+                      "Ursha-wp"
+                    ],
+                    "project_status": "Published or Closed"
+                  },
+                  "components": [
+                    {
+                      "name": "thumbnails",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "text",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "subtitles",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "exercise",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "quiz",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "audio",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "video",
+                      "status": "unset"
+                    }
+                  ],
+                  "overall_status": "open"
+                }
+              ]
+            },
+            {
+              "slug": "gain-familiarity-with-the-wordpress-interface",
+              "label": "Gain a familiarity with the WordPress Interface",
+              "items": [
+                {
+                  "type": "lesson",
+                  "slug": "understanding-the-difference-between-wordpress-posts-and-pages",
+                  "title_en": "Understanding the difference between WordPress posts and pages",
+                  "url_en": "https://learn.wordpress.org/lesson/understanding-the-difference-between-wordpress-posts-and-pages/",
+                  "issue": {
+                    "number": 3265,
+                    "url": "https://github.com/WordPress/Learn/issues/3265",
+                    "state": "open",
+                    "assignees": [
+                      "Bigod"
+                    ],
+                    "project_status": "Translation in Progress"
+                  },
+                  "components": [
+                    {
+                      "name": "thumbnails",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "text",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "subtitles",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "exercise",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "quiz",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "audio",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "video",
+                      "status": "unset"
+                    }
+                  ],
+                  "overall_status": "open"
+                },
+                {
+                  "type": "lesson",
+                  "slug": "using-the-media-library-2",
+                  "title_en": "Using the Media Library",
+                  "url_en": "https://learn.wordpress.org/lesson/using-the-media-library-2/",
+                  "issue": {
+                    "number": 3286,
+                    "url": "https://github.com/WordPress/Learn/issues/3286",
+                    "state": "open",
+                    "assignees": [
+                      "rfluethi",
+                      "valeriewandeler"
+                    ],
+                    "project_status": "Published or Closed"
+                  },
+                  "components": [
+                    {
+                      "name": "thumbnails",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "text",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "subtitles",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "exercise",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "quiz",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "audio",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "video",
+                      "status": "unset"
+                    }
+                  ],
+                  "overall_status": "open"
+                },
+                {
+                  "type": "lesson",
+                  "slug": "creating-posts-and-pages-with-the-wordpress-block-editor",
+                  "title_en": "Creating posts and pages with the WordPress Block Editor",
+                  "url_en": "https://learn.wordpress.org/lesson/creating-posts-and-pages-with-the-wordpress-block-editor/",
+                  "issue": {
+                    "number": 3291,
+                    "url": "https://github.com/WordPress/Learn/issues/3291",
+                    "state": "open",
+                    "assignees": [
+                      "Bigod",
+                      "valeriewandeler"
+                    ],
+                    "project_status": "Published or Closed"
+                  },
+                  "components": [
+                    {
+                      "name": "thumbnails",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "text",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "subtitles",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "exercise",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "quiz",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "audio",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "video",
+                      "status": "unset"
+                    }
+                  ],
+                  "overall_status": "open"
+                },
+                {
+                  "type": "lesson",
+                  "slug": "basic-wordpress-settings",
+                  "title_en": "Basic WordPress settings",
+                  "url_en": "https://learn.wordpress.org/lesson/basic-wordpress-settings/",
+                  "issue": {
+                    "number": 3295,
+                    "url": "https://github.com/WordPress/Learn/issues/3295",
+                    "state": "closed",
+                    "assignees": [
+                      "Bigod",
+                      "valeriewandeler"
+                    ],
+                    "project_status": "Published or Closed"
+                  },
+                  "components": [
+                    {
+                      "name": "thumbnails",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "text",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "subtitles",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "exercise",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "quiz",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "audio",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "video",
+                      "status": "unset"
+                    }
+                  ],
+                  "overall_status": "open"
+                },
+                {
+                  "type": "lesson",
+                  "slug": "what-is-the-difference-between-the-block-editor-and-site-editor",
+                  "title_en": "What is the difference between the Block Editor and Site Editor?",
+                  "url_en": "https://learn.wordpress.org/lesson/what-is-the-difference-between-the-block-editor-and-site-editor/",
+                  "issue": {
+                    "number": 3296,
+                    "url": "https://github.com/WordPress/Learn/issues/3296",
+                    "state": "open",
+                    "assignees": [
+                      "Bigod",
+                      "valeriewandeler"
+                    ],
+                    "project_status": "Ready for Review"
+                  },
+                  "components": [
+                    {
+                      "name": "thumbnails",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "text",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "subtitles",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "exercise",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "quiz",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "audio",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "video",
+                      "status": "unset"
+                    }
+                  ],
+                  "overall_status": "open"
+                }
+              ]
+            },
+            {
+              "slug": "site-editing",
+              "label": "Site Editing",
+              "items": [
+                {
+                  "type": "lesson",
+                  "slug": "intro-to-the-site-editor",
+                  "title_en": "Intro to the Site Editor",
+                  "url_en": "https://learn.wordpress.org/lesson/intro-to-the-site-editor/",
+                  "issue": {
+                    "number": 3314,
+                    "url": "https://github.com/WordPress/Learn/issues/3314",
+                    "state": "open",
+                    "assignees": [
+                      "valeriewandeler"
+                    ],
+                    "project_status": "Published or Closed"
+                  },
+                  "components": [
+                    {
+                      "name": "thumbnails",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "text",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "subtitles",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "exercise",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "quiz",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "audio",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "video",
+                      "status": "unset"
+                    }
+                  ],
+                  "overall_status": "open"
+                },
+                {
+                  "type": "lesson",
+                  "slug": "using-page-templates",
+                  "title_en": "Using page templates",
+                  "url_en": "https://learn.wordpress.org/lesson/using-page-templates/",
+                  "components": [
+                    {
+                      "name": "thumbnails",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "text",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "subtitles",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "exercise",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "quiz",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "audio",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "video",
+                      "status": "unset"
+                    }
+                  ],
+                  "overall_status": "open"
+                },
+                {
+                  "type": "lesson",
+                  "slug": "using-template-parts",
+                  "title_en": "Using template parts",
+                  "url_en": "https://learn.wordpress.org/lesson/using-template-parts/",
+                  "components": [
+                    {
+                      "name": "thumbnails",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "text",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "subtitles",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "exercise",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "quiz",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "audio",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "video",
+                      "status": "unset"
+                    }
+                  ],
+                  "overall_status": "open"
+                }
+              ]
+            },
+            {
+              "slug": "content-creation",
+              "label": "Content Creation",
+              "items": [
+                {
+                  "type": "lesson",
+                  "slug": "setting-up-your-pages-posts-site-logo-and-navigation-menu",
+                  "title_en": "Setting up your pages, posts, site logo and navigation menu",
+                  "url_en": "https://learn.wordpress.org/lesson/setting-up-your-pages-posts-site-logo-and-navigation-menu/",
+                  "components": [
+                    {
+                      "name": "thumbnails",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "text",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "subtitles",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "exercise",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "quiz",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "audio",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "video",
+                      "status": "unset"
+                    }
+                  ],
+                  "overall_status": "open"
+                },
+                {
+                  "type": "lesson",
+                  "slug": "creating-and-customizing-a-header-and-footer",
+                  "title_en": "Creating and customizing a header and footer",
+                  "url_en": "https://learn.wordpress.org/lesson/creating-and-customizing-a-header-and-footer/",
+                  "components": [
+                    {
+                      "name": "thumbnails",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "text",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "subtitles",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "exercise",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "quiz",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "audio",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "video",
+                      "status": "unset"
+                    }
+                  ],
+                  "overall_status": "open"
+                },
+                {
+                  "type": "lesson",
+                  "slug": "nesting-and-using-blocks-to-create-visually-appealing-content",
+                  "title_en": "Nesting and using blocks to create visually appealing content",
+                  "url_en": "https://learn.wordpress.org/lesson/nesting-and-using-blocks-to-create-visually-appealing-content/",
+                  "components": [
+                    {
+                      "name": "thumbnails",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "text",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "subtitles",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "exercise",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "quiz",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "audio",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "video",
+                      "status": "unset"
+                    }
+                  ],
+                  "overall_status": "open"
+                },
+                {
+                  "type": "lesson",
+                  "slug": "using-block-patterns-2",
+                  "title_en": "Using block patterns",
+                  "url_en": "https://learn.wordpress.org/lesson/using-block-patterns-2/",
+                  "components": [
+                    {
+                      "name": "thumbnails",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "text",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "subtitles",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "exercise",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "quiz",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "audio",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "video",
+                      "status": "unset"
+                    }
+                  ],
+                  "overall_status": "open"
+                },
+                {
+                  "type": "lesson",
+                  "slug": "embedding-media-and-third-party-content-on-your-website",
+                  "title_en": "Embedding media and third-party content on your website",
+                  "url_en": "https://learn.wordpress.org/lesson/embedding-media-and-third-party-content-on-your-website/",
+                  "components": [
+                    {
+                      "name": "thumbnails",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "text",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "subtitles",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "exercise",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "quiz",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "audio",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "video",
+                      "status": "unset"
+                    }
+                  ],
+                  "overall_status": "open"
+                }
+              ]
+            },
+            {
+              "slug": "security-spam-and-backups",
+              "label": "Security, Spam and Backups",
+              "items": [
+                {
+                  "type": "lesson",
+                  "slug": "7-tips-to-improve-website-security",
+                  "title_en": "7 Tips to improve website security",
+                  "url_en": "https://learn.wordpress.org/lesson/7-tips-to-improve-website-security/",
+                  "components": [
+                    {
+                      "name": "thumbnails",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "text",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "subtitles",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "exercise",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "quiz",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "audio",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "video",
+                      "status": "unset"
+                    }
+                  ],
+                  "overall_status": "open"
+                },
+                {
+                  "type": "lesson",
+                  "slug": "managing-spam-on-your-site",
+                  "title_en": "Managing spam on your site",
+                  "url_en": "https://learn.wordpress.org/lesson/managing-spam-on-your-site/",
+                  "components": [
+                    {
+                      "name": "thumbnails",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "text",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "subtitles",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "exercise",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "quiz",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "audio",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "video",
+                      "status": "unset"
+                    }
+                  ],
+                  "overall_status": "open"
+                },
+                {
+                  "type": "lesson",
+                  "slug": "how-to-backup-your-site",
+                  "title_en": "How to backup your site",
+                  "url_en": "https://learn.wordpress.org/lesson/how-to-backup-your-site/",
+                  "components": [
+                    {
+                      "name": "thumbnails",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "text",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "subtitles",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "exercise",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "quiz",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "audio",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "video",
+                      "status": "unset"
+                    }
+                  ],
+                  "overall_status": "open"
+                }
+              ]
+            },
+            {
+              "slug": "seo",
+              "label": "SEO",
+              "items": [
+                {
+                  "type": "lesson",
+                  "slug": "how-to-improve-your-seo-rankings",
+                  "title_en": "How to improve SEO rankings",
+                  "url_en": "https://learn.wordpress.org/lesson/how-to-improve-your-seo-rankings/",
+                  "components": [
+                    {
+                      "name": "thumbnails",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "text",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "subtitles",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "exercise",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "quiz",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "audio",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "video",
+                      "status": "unset"
+                    }
+                  ],
+                  "overall_status": "open"
+                },
+                {
+                  "type": "lesson",
+                  "slug": "how-to-use-headings-for-accessibility-and-seo",
+                  "title_en": "How to use headings for accessibility and SEO",
+                  "url_en": "https://learn.wordpress.org/lesson/how-to-use-headings-for-accessibility-and-seo/",
+                  "components": [
+                    {
+                      "name": "thumbnails",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "text",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "subtitles",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "exercise",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "quiz",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "audio",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "video",
+                      "status": "unset"
+                    }
+                  ],
+                  "overall_status": "open"
+                }
+              ]
+            },
+            {
+              "slug": "getting-help",
+              "label": "Getting help",
+              "items": [
+                {
+                  "type": "lesson",
+                  "slug": "how-to-find-help-with-wordpress-2",
+                  "title_en": "How to find help with WordPress",
+                  "url_en": "https://learn.wordpress.org/lesson/how-to-find-help-with-wordpress-2/",
+                  "components": [
+                    {
+                      "name": "thumbnails",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "text",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "subtitles",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "exercise",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "quiz",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "audio",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "video",
+                      "status": "unset"
+                    }
+                  ],
+                  "overall_status": "open"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "pathway",
+      "slug": "lesson-plans",
+      "label": "Lesson Plans",
+      "courses": [
+        {
+          "slug": "all",
+          "label": "Lesson Plans",
+          "sections": [
+            {
+              "slug": "all",
+              "label": "Lesson Plans",
+              "items": [
+                {
+                  "type": "lesson_plan",
+                  "slug": "setting-a-static-page-as-your-homepage",
+                  "title_en": "Setting A Static Page As Your Homepage",
+                  "url_en": "https://learn.wordpress.org/lesson-plan/setting-a-static-page-as-your-homepage/",
+                  "issue": {
+                    "number": 2114,
+                    "url": "https://github.com/WordPress/Learn/issues/2114",
+                    "state": "closed",
+                    "assignees": [
+                      "BenjaminZekavica"
+                    ],
+                    "project_status": "Published or Closed"
+                  },
+                  "components": [
+                    {
+                      "name": "thumbnails",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "text",
+                      "status": "unset"
+                    }
+                  ],
+                  "overall_status": "open"
+                },
+                {
+                  "type": "lesson_plan",
+                  "slug": "how-to-find-theme-specific-documentation",
+                  "title_en": "How To Find Theme Specific Documentation",
+                  "url_en": "https://learn.wordpress.org/lesson-plan/how-to-find-theme-specific-documentation/",
+                  "issue": {
+                    "number": 2144,
+                    "url": "https://github.com/WordPress/Learn/issues/2144",
+                    "state": "closed",
+                    "assignees": [
+                      "BenjaminZekavica"
+                    ],
+                    "project_status": "Published or Closed"
+                  },
+                  "components": [
+                    {
+                      "name": "thumbnails",
+                      "status": "unset"
+                    },
+                    {
+                      "name": "text",
+                      "status": "unset"
+                    }
+                  ],
+                  "overall_status": "open"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "handbook",
+      "label": "Training Handbook",
+      "sections": [
+        {
+          "slug": "about",
+          "label": "About",
+          "items": [
+            {
+              "type": "handbook_text",
+              "slug": "about",
+              "title_en": "About",
+              "url_en": "https://make.wordpress.org/training/handbook/about/",
+              "components": [
+                {
+                  "name": "text",
+                  "status": "unset"
+                }
+              ],
+              "overall_status": "open"
+            },
+            {
+              "type": "handbook_text",
+              "slug": "history-of-the-training-team",
+              "title_en": "History of the Training Team",
+              "url_en": "https://make.wordpress.org/training/handbook/about/history-of-the-training-team/",
+              "components": [
+                {
+                  "name": "text",
+                  "status": "unset"
+                }
+              ],
+              "overall_status": "open"
+            },
+            {
+              "type": "handbook_text",
+              "slug": "team-values",
+              "title_en": "Team Values",
+              "url_en": "https://make.wordpress.org/training/handbook/about/team-values/",
+              "components": [
+                {
+                  "name": "text",
+                  "status": "unset"
+                }
+              ],
+              "overall_status": "open"
+            }
+          ]
+        },
+        {
+          "slug": "getting-started",
+          "label": "Getting Started",
+          "items": [
+            {
+              "type": "handbook_text",
+              "slug": "getting-started",
+              "title_en": "Getting Started",
+              "url_en": "https://make.wordpress.org/training/handbook/getting-started/",
+              "components": [
+                {
+                  "name": "text",
+                  "status": "unset"
+                }
+              ],
+              "overall_status": "open"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "orphan",
+      "label": "Other",
+      "items": [
+        {
+          "type": "lesson",
+          "slug": "issue-1873",
+          "title_en": "German Subtitles \"What kind of WordPress theme do I have: classic, block, or something else?\"",
+          "url_en": "https://github.com/WordPress/Learn/issues/1873",
+          "orphan_reason": "outside_scope",
+          "issue": {
+            "number": 1873,
+            "url": "https://github.com/WordPress/Learn/issues/1873",
+            "state": "closed",
+            "assignees": [
+              "gudrunfrank",
+              "BenjaminZekavica",
+              "devmuhib009"
+            ],
+            "project_status": "Published or Closed"
+          },
+          "components": [],
+          "overall_status": "open"
+        },
+        {
+          "type": "lesson",
+          "slug": "issue-2135",
+          "title_en": "German translation for \"Themes/Plugins Relationship\"",
+          "url_en": "https://github.com/WordPress/Learn/issues/2135",
+          "orphan_reason": "outside_scope",
+          "issue": {
+            "number": 2135,
+            "url": "https://github.com/WordPress/Learn/issues/2135",
+            "state": "closed",
+            "assignees": [
+              "gudrunfrank",
+              "BenjaminZekavica"
+            ],
+            "project_status": "Published or Closed"
+          },
+          "components": [],
+          "overall_status": "open"
+        }
+      ]
+    }
+  ],
+  "scope_version": "c2b9955 2026-05-22 17:31:00 +0200",
+  "component_icons": {
+    "text": "M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z",
+    "thumbnails": "M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z",
+    "video": "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z",
+    "subtitles": "M19 4H5c-1.11 0-2 .9-2 2v12c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zM11 11H9.5v-.5h-2v3h2V13H11v1c0 .55-.45 1-1 1H7c-.55 0-1-.45-1-1v-4c0-.55.45-1 1-1h3c.55 0 1 .45 1 1v1zm7 0h-1.5v-.5h-2v3h2V13H18v1c0 .55-.45 1-1 1h-3c-.55 0-1-.45-1-1v-4c0-.55.45-1 1-1h3c.55 0 1 .45 1 1v1z",
+    "quiz": "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z",
+    "exercise": "M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z",
+    "audio": "M12 14c1.66 0 2.99-1.34 2.99-3L15 5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.48 6-3.3 6-6.72h-1.7z"
+  }
+}
