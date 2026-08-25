@@ -82,18 +82,21 @@ def parse_issue_body(body: str) -> IssueBody:
 
     # WP.tv: first look for the explicit "original" / "translated" labels.
     # If those are missing, old style "Link to WordPress.tv recording" -> DE slot.
-    # If that is also missing, auto-detect (any wordpress.tv link) -> DE slot.
+    # If that is also missing, auto-detect (any wordpress.tv link) -> DE slot,
+    # but never the URL already claimed as the English original: an issue
+    # that only documents the original recording must not have that URL leak
+    # into the DE slot (issue #2 in the plugin repo).
     wptv_en = _extract_url(body, _WPTV_EN_PATTERNS)
     wptv_de = (
         _extract_url(body, _WPTV_DE_PATTERNS)
         or _extract_url(body, _WPTV_GENERIC_PATTERNS)
-        or _auto_wptv(body)
+        or _auto_wptv(body, exclude=wptv_en)
     )
     youtube_en = _extract_url(body, _YOUTUBE_EN_PATTERNS)
     youtube_de = (
         _extract_url(body, _YOUTUBE_DE_PATTERNS)
         or _extract_url(body, _YOUTUBE_GENERIC_PATTERNS)
-        or _auto_youtube(body)
+        or _auto_youtube(body, exclude=youtube_en)
     )
 
     return IssueBody(
@@ -266,14 +269,30 @@ def _extract_text(body: str, patterns: list[tuple[re.Pattern[str], int]]) -> str
     return ""
 
 
-def _auto_wptv(body: str) -> str:
-    match = _AUTO_WPTV.search(body)
-    return match.group(1).strip() if match else ""
+def _auto_wptv(body: str, exclude: str = "") -> str:
+    """First wordpress.tv URL in the body that is not the excluded one.
+
+    `exclude` is the URL already claimed as the English original. Without
+    this filter, an issue that only documents the original recording would
+    leak that URL into the DE slot (plugin issue #2).
+    """
+    for match in _AUTO_WPTV.finditer(body):
+        url = match.group(1).strip().rstrip(").,;")
+        if url and url != exclude:
+            return url
+    return ""
 
 
-def _auto_youtube(body: str) -> str:
-    match = _AUTO_YT.search(body)
-    return match.group(1).strip() if match else ""
+def _auto_youtube(body: str, exclude: str = "") -> str:
+    """First YouTube URL in the body that is not the excluded one.
+
+    Same exclusion rationale as `_auto_wptv`.
+    """
+    for match in _AUTO_YT.finditer(body):
+        url = match.group(1).strip().rstrip(").,;")
+        if url and url != exclude:
+            return url
+    return ""
 
 
 # ---------------------------------------------------------------------------

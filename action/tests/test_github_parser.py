@@ -179,3 +179,33 @@ def test_legacy_generic_label_maps_to_de_slot():
     assert parsed.url_wptv_en == ""
     assert parsed.url_youtube_de == "https://www.youtube.com/watch?v=foo-de"
     assert parsed.url_youtube_en == ""
+
+
+def test_original_only_recordings_do_not_leak_into_de_slot():
+    """Plugin issue #2: an issue that only documents the ORIGINAL recordings
+    must not have those URLs auto-detected into the DE slots."""
+    body = """\
+**Link to original content:** https://learn.wordpress.org/lesson/foo/
+**Link to original WordPress.tv recording:** https://wordpress.tv/2024/01/foo-en/
+**Link to original YouTube recording:** https://www.youtube.com/watch?v=foo-en
+"""
+    parsed = parse_issue_body(body)
+    assert parsed.url_wptv_en == "https://wordpress.tv/2024/01/foo-en/"
+    assert parsed.url_wptv_de == ""
+    assert parsed.url_youtube_en == "https://www.youtube.com/watch?v=foo-en"
+    assert parsed.url_youtube_de == ""
+    # Deprecated aliases mirror the (empty) DE slot
+    assert parsed.url_wptv == ""
+    assert parsed.url_youtube == ""
+
+
+def test_auto_detect_still_picks_second_unlabeled_url_as_de():
+    """A labeled EN recording plus a second, unlabeled URL: the second one
+    is the translation and lands in the DE slot."""
+    body = """\
+**Link to original WordPress.tv recording:** https://wordpress.tv/2024/01/foo-en/
+Recording of the German session: https://wordpress.tv/2024/09/foo-de/
+"""
+    parsed = parse_issue_body(body)
+    assert parsed.url_wptv_en == "https://wordpress.tv/2024/01/foo-en/"
+    assert parsed.url_wptv_de == "https://wordpress.tv/2024/09/foo-de/"

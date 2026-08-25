@@ -4,7 +4,7 @@ Tags: translation, learn-wordpress, tracker, dashboard
 Requires at least: 6.0
 Tested up to: 7.0
 Requires PHP: 8.0
-Stable tag: 0.4.10
+Stable tag: 0.4.11
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -34,6 +34,25 @@ DACH Team for translating learn.wordpress.org content into German.
 4. Embed the shortcode `[translation_tracker]` on any page.
 
 == Changelog ==
+
+= 0.4.11 =
+* Bugfix (issue #2): original video URLs no longer appear in the translation
+  column. Root cause was twofold. (1) The Action's issue parser auto-detected
+  any WordPress.tv/YouTube URL in the issue body as the German recording,
+  including the URL already recognized as the English original; the parser
+  now excludes the EN-claimed URL from auto-detection. (2) As a defensive
+  layer for tracker.json files built before that fix, the plugin renderer
+  now treats a DE media URL that is identical to the EN media URL as empty.
+* New plugin header `Update URI:` pointing at the GitHub repository, so a
+  same-slug plugin on wordpress.org can never override this GitHub-
+  distributed install (WordPress 5.8+).
+* Fix: the inline CSS block is printed only once per page when the shortcode
+  appears multiple times (previously each instance emitted a duplicate
+  <style> block with the same id).
+* i18n/a11y: the aria-label of the component icons now uses the translated
+  component and status labels from the shared i18n bundle instead of raw
+  English tokens, so screen readers on localized sites hear the same
+  wording as the visual popover.
 
 = 0.4.10 =
 * Repository renamed from `Training-Translation-Tracker-Inventory-Plugin` to

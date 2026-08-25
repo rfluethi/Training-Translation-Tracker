@@ -61,6 +61,17 @@ class TTT_Renderer {
 	private $icon_map = null;
 
 	/**
+	 * Cached frontend i18n bundle for the current request.
+	 *
+	 * render_component_icon() reads the translated component and status
+	 * labels from here for the aria-label, so screen readers get the same
+	 * localized strings as the JS popover instead of raw English tokens.
+	 *
+	 * @var array|null
+	 */
+	private $i18n_cache = null;
+
+	/**
 	 * Constructor: register the shortcode.
 	 *
 	 * Since 0.3.2, all CSS is emitted exclusively inline with the shortcode
@@ -231,6 +242,16 @@ class TTT_Renderer {
 	 * @return void
 	 */
 	private function render_inline_styles() {
+		// The CSS is identical for every tracker instance and the block
+		// carries an id attribute, so print it once per page even when the
+		// shortcode appears multiple times (same guard pattern as in
+		// render_inline_script()).
+		static $already_printed = false;
+		if ( $already_printed ) {
+			return;
+		}
+		$already_printed = true;
+
 		// Intentional deviation from wp_enqueue_style(): page builders, cache
 		// plugins, and some theme setups do not load external stylesheets
 		// reliably when the shortcode comes from a builder meta field rather
@@ -1062,6 +1083,19 @@ class TTT_Renderer {
 		$url_wptv_de    = (string) ( $item['url_wptv_de'] ?? ( $item['url_wptv'] ?? '' ) );
 		$url_youtube_en = (string) ( $item['url_youtube_en'] ?? '' );
 		$url_youtube_de = (string) ( $item['url_youtube_de'] ?? ( $item['url_youtube'] ?? '' ) );
+
+		// Guard against issue #2: a translated recording is by definition a
+		// different video than the original. When the DE URL equals the EN
+		// URL (older tracker.json data whose parser auto-detected the
+		// original link into the DE slot, or a copy-paste in the issue
+		// body), treat the translation slot as empty so the Translation
+		// column does not claim a German recording that is not one.
+		if ( '' !== $url_wptv_de && $url_wptv_de === $url_wptv_en ) {
+			$url_wptv_de = '';
+		}
+		if ( '' !== $url_youtube_de && $url_youtube_de === $url_youtube_en ) {
+			$url_youtube_de = '';
+		}
 		$overall        = (string) ( $item['overall_status'] ?? 'open' );
 		$components     = (array) ( $item['components'] ?? array() );
 		$issue          = isset( $item['issue'] ) && is_array( $item['issue'] ) ? $item['issue'] : null;
@@ -1207,8 +1241,16 @@ class TTT_Renderer {
 		$creator  = (string) ( $comp['creator'] ?? '' );
 		$reviewer = (string) ( $comp['reviewer'] ?? '' );
 
-		// Fallback tooltip for no-JS browsers and screen readers.
-		$tooltip = $name . ' · ' . $status;
+		// Fallback tooltip for no-JS browsers and screen readers. Uses the
+		// same translated labels as the JS popover (via the shared i18n
+		// bundle), so assistive tech does not get raw English tokens on a
+		// localized site.
+		if ( null === $this->i18n_cache ) {
+			$this->i18n_cache = $this->get_frontend_i18n();
+		}
+		$name_label   = (string) ( $this->i18n_cache['componentLabels'][ $name ] ?? $name );
+		$status_label = (string) ( $this->i18n_cache['statusLabels'][ $status ] ?? $status );
+		$tooltip      = $name_label . ' · ' . $status_label;
 		if ( $creator ) {
 			$tooltip .= ' · ' . __( 'Creator', 'training-translation-tracker' ) . ': ' . $creator;
 		}
