@@ -3,7 +3,7 @@
  * Plugin Name:       Training Translation Tracker
  * Plugin URI:        https://github.com/rfluethi/Training-Translation-Tracker
  * Description:       Dashboard for the translation progress of the Learn WP DACH Team.
- * Version:           0.5.1
+ * Version:           0.5.2
  * Requires at least: 6.0
  * Requires PHP:      8.0
  * Author:            Learn WP DACH Team
@@ -23,7 +23,7 @@ defined( 'ABSPATH' ) || exit;
 // Constants
 // -----------------------------------------------------------------------------
 
-define( 'TTT_VERSION', '0.5.1' );
+define( 'TTT_VERSION', '0.5.2' );
 define( 'TTT_PLUGIN_FILE', __FILE__ );
 define( 'TTT_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'TTT_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
@@ -56,6 +56,8 @@ define( 'TTT_BACKOFF_KEY', 'ttt_fetch_backoff' );
 
 require_once TTT_PLUGIN_DIR . 'includes/class-settings.php';
 require_once TTT_PLUGIN_DIR . 'includes/class-fetcher.php';
+require_once TTT_PLUGIN_DIR . 'includes/class-status.php';
+require_once TTT_PLUGIN_DIR . 'includes/class-styles.php';
 require_once TTT_PLUGIN_DIR . 'includes/class-renderer.php';
 
 // -----------------------------------------------------------------------------

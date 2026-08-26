@@ -4,7 +4,7 @@ Tags: translation, learn-wordpress, tracker, dashboard
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 0.5.1
+Stable tag: 0.5.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -34,6 +34,19 @@ DACH Team for translating learn.wordpress.org content into German.
 4. Embed the shortcode `[translation_tracker]` on any page.
 
 == Changelog ==
+
+= 0.5.2 =
+* Internal refactor, no functional change: the renderer class was split
+  into three concerns. `class-status.php` (TTT_Status) holds the pure
+  status/data logic (board-status normalization, stats counting,
+  component ordering, item markers), `class-styles.php` (TTT_Styles)
+  holds the inline frontend CSS, and `class-renderer.php` keeps the
+  HTML emission. Verified by a byte-identical output snapshot against
+  0.5.1 and by the new unit test suite.
+* New: PHPUnit + Brain Monkey unit test suite under `plugin-tests/`
+  (28 tests) covering fetcher (cache, timeout, backoff, schema guards),
+  status logic and settings. Runs without Docker or wp-env; a CI
+  workflow template ships in `plugin-tests/`.
 
 = 0.5.1 =
 Collects everything built after the v0.5.0 tag, plus new privacy and
