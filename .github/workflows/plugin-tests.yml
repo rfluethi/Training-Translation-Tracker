@@ -1,0 +1,39 @@
+# Template: copy to .github/workflows/plugin-tests.yml (workflow files must
+# be added by a human — remote tools cannot write into .github/workflows/).
+name: Plugin Unit Tests
+
+on:
+  push:
+    paths:
+      - "wp-plugin/**"
+      - "plugin-tests/**"
+  pull_request:
+    paths:
+      - "wp-plugin/**"
+      - "plugin-tests/**"
+
+jobs:
+  phpunit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.3"
+          coverage: none
+      - name: Install dependencies
+        working-directory: plugin-tests
+        run: composer install --no-interaction --prefer-dist
+      - name: Run PHPUnit
+        working-directory: plugin-tests
+        run: vendor/bin/phpunit
+  syntax:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.3"
+      - name: PHP syntax check
+        run: |
+          find wp-plugin -name '*.php' -print0 | xargs -0 -n1 php -l

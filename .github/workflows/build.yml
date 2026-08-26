@@ -20,6 +20,7 @@ on:
     paths:
       - "action/scope.yml"
       - "action/component-templates.yml"
+      - "action/status-map.yml"
       - "action/inventory-cache.json"
       - "action/src/**"
       - "action/schemas/**"

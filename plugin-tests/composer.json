@@ -1,0 +1,15 @@
+{
+    "name": "learnwpdach/training-translation-tracker-tests",
+    "description": "Unit tests for the Training Translation Tracker WordPress plugin. Pure PHPUnit + Brain Monkey (WordPress functions are mocked) - no Docker, no wp-env needed.",
+    "license": "GPL-2.0-or-later",
+    "require-dev": {
+        "phpunit/phpunit": "^11",
+        "brain/monkey": "^2.6"
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "scripts": {
+        "test": "phpunit"
+    }
+}
