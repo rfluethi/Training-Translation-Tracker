@@ -2,7 +2,7 @@
 Contributors: learnwpdach, rfluethi
 Tags: translation, learn-wordpress, tracker, dashboard
 Requires at least: 6.0
-Tested up to: 7.0
+Tested up to: 7.1
 Requires PHP: 8.0
 Stable tag: 0.5.0
 License: GPLv2 or later
@@ -58,6 +58,14 @@ DACH Team for translating learn.wordpress.org content into German.
   correct even without JavaScript.
 * Unknown overall_status values are normalized to "open" for both the
   count and the card class, so numbers and colors cannot disagree.
+* Tested up to bumped to WordPress 7.1.
+* Plugin Check note: current Plugin Check versions flag the `Update URI:`
+  header and the raw.githubusercontent.com URLs as errors. Both are
+  expected for this GitHub-distributed plugin: the header is the
+  recommended protection against a same-slug plugin on wordpress.org
+  (it would only be removed for a wp.org submission), and the flagged
+  URLs are the server-side tracker.json data source with caching, not
+  offloaded frontend assets.
 * Compatibility: tracker.json keeps schema_version 1. New tracker.json
   with old plugin: "published" items count under "open" (as before this
   release). Old tracker.json with this plugin: "done" is displayed as

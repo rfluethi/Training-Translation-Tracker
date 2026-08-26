@@ -167,17 +167,17 @@ The explicit `show_handbook="yes"` overrides the smart default.
 
 ### Stats pills at the top
 
-Show the totals per status:
+Show the totals per status. Since 0.5.0 the status comes from the **Project V2 board** (the "Status" column the team maintains); the mapping lives in `action/status-map.yml`:
 
 - **Items**, all items combined
-- **done** (green), `overall_status = done`
-- **Review** (gold), `overall_status = review`
-- **in progress** (blue), `overall_status = wip`
-- **open** (yellow), `overall_status = open`. Yellow since 0.4.4 to make "still to do" items stand out.
+- **published** (green), board status "Published or Closed". A published item counts as published even when optional components (e.g. subtitles) were intentionally not translated — the component icons on the card show that detail.
+- **Review** (gold), board status "Ready for Review"
+- **in progress** (blue), board status "Translation in Progress" or "Preparing to Publish"
+- **open** (yellow), board status "Awaiting Triage", "Looking for Translator", or no issue yet. Yellow since 0.4.4 to make "still to do" items stand out.
 - **unspecified** (neutral gray), sub-count of items whose every component is still `unset` (the status table in the issue has not been filled in yet). Sub-count of "open" — these items are also counted in the "open" pill, this pill surfaces "how many of the open ones are completely untouched".
-- **n/a** (light gray), `overall_status = na`
+- **n/a** (light gray), `overall_status = na` (only reachable through the component fallback)
 
-Clicking a pill filters the cards to that status. Clicking "Items" resets the filter. The "n/a" pill is informational only and not clickable.
+Items whose issue carries no board status, or a board value not present in `status-map.yml`, fall back to the component-table rollup (see Architecture.md). Clicking a pill filters the cards to that status. Clicking "Items" resets the filter. The "n/a" pill is informational only and not clickable.
 
 ### Combined component filter
 
@@ -253,11 +253,7 @@ In the **`WordPress/Learn`** repo, not in the inventory plugin repo. The issue m
 
 `open` · `wip` · `review` · `done` · `na`
 
-A sixth value `unset` exists internally and is assigned by the action to
-components when an issue has no parsed status table yet (e.g. the
-template was not filled in). You normally do not write `unset` yourself;
-the action emits it automatically so the frontend can render those
-components in a neutral gray rather than the bright yellow "open" color.
+A sixth value `unset` exists internally and is assigned by the action to components when an issue has no parsed status table yet (e.g. the template was not filled in). You normally do not write `unset` yourself; the action emits it automatically so the frontend can render those components in a neutral gray rather than the bright yellow "open" color.
 
 ### Creator / reviewer
 

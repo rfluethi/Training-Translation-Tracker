@@ -4,32 +4,19 @@
 > sister GitHub Action and renders it as a translation dashboard on a
 > WordPress page.
 
-This plugin is the slim renderer half of the mono-repo. Instead of making
-GraphQL or REST calls against WordPress/Learn itself, it loads a single
-precomputed JSON file. That file is built by the GitHub Action in this
-same repo every 12 hours and published on a separate `data` branch.
+This plugin is the slim renderer half of the mono-repo. Instead of making GraphQL or REST calls against WordPress/Learn itself, it loads a single precomputed JSON file. That file is built by the GitHub Action in this same repo every 12 hours and published on a separate `data` branch.
 
-For the full picture (mono-repo, three-component pipeline, design
-decisions) see the [top-level README](../README.md) and
-[docs/Architecture.md](../docs/Architecture.md).
+For the full picture (mono-repo, three-component pipeline, design decisions) see the [top-level README](../README.md) and [docs/Architecture.md](../docs/Architecture.md).
 
 ## What it does
 
 The shortcode `[translation_tracker]` renders the dashboard on any page.
 
-Settings under **Settings → Translation Tracker**: tracker.json URL
-(defaults to the inventory plugin repo, `data` branch), cache duration
-(default 12 hours via a WordPress transient), a "Clear cache now" button,
-and a display of the `generated_at` timestamp from the current cache.
+Settings under **Settings → Translation Tracker**: tracker.json URL (defaults to the inventory plugin repo, `data` branch), cache duration (default 12 hours via a WordPress transient), a "Clear cache now" button, and a display of the `generated_at` timestamp from the current cache.
 
-A `schema_version` check rejects payloads with an unknown major version.
-On fetch errors the plugin keeps showing the last successful state from a
-separate `last_good` transient, so the dashboard never goes blank.
+A `schema_version` check rejects payloads with an unknown major version. On fetch errors the plugin keeps showing the last successful state from a separate `last_good` transient, so the dashboard never goes blank.
 
-The frontend supports filters, search, sectional collapse, and a
-component popover (creator and reviewer with GitHub avatars). All
-user-facing strings are i18n-enabled (source language English, German
-translation shipped under `languages/`).
+The frontend supports filters, search, sectional collapse, and a component popover (creator and reviewer with GitHub avatars). All user-facing strings are i18n-enabled (source language English, German translation shipped under `languages/`).
 
 ## Requirements
 
@@ -55,16 +42,13 @@ Or build a release ZIP from the repo root and upload it via the WP admin:
 # Then upload ~/Desktop/training-translation-tracker.zip via Plugins → Add New → Upload Plugin
 ```
 
-In WP admin: **Plugins → Training Translation Tracker** → activate, then
-**Settings → Translation Tracker**, adjust the URL if needed, press
-"Clear cache now". Insert the shortcode on any page:
+In WP admin: **Plugins → Training Translation Tracker** → activate, then **Settings → Translation Tracker**, adjust the URL if needed, press "Clear cache now". Insert the shortcode on any page:
 
 ```text
 [translation_tracker]
 ```
 
-Full usage including shortcode attributes lives in
-[docs/User-Guide.md](../docs/User-Guide.md).
+Full usage including shortcode attributes lives in [docs/User-Guide.md](../docs/User-Guide.md).
 
 ## Repository layout
 

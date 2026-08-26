@@ -19,14 +19,11 @@ The resulting `tracker.json` is then statically available at `https://raw.github
 
 ## Architecture overview
 
-See the [top-level README](../README.md) for the three-component pipeline
-(issues → action → plugin) and the full repository layout.
+See the [top-level README](../README.md) for the three-component pipeline (issues → action → plugin) and the full repository layout.
 
-The format and maintenance of DACH translation issues are described in the
-user guide: [docs/User-Guide.md → Creating issues for new translations](../docs/User-Guide.md#7-creating-issues-for-new-translations).
+The format and maintenance of DACH translation issues are described in the user guide: [docs/User-Guide.md → Creating issues for new translations](../docs/User-Guide.md#7-creating-issues-for-new-translations).
 
-Architectural background (components, data flow, design decisions):
-[docs/Architecture.md](../docs/Architecture.md).
+Architectural background (components, data flow, design decisions): [docs/Architecture.md](../docs/Architecture.md).
 
 ## Repository structure
 
@@ -47,8 +44,7 @@ action/
 └── README.md                      This document
 ```
 
-The workflow `../.github/workflows/build.yml` lives at the repo top level
-(GitHub convention) and uses `working-directory: action` for its commands.
+The workflow `../.github/workflows/build.yml` lives at the repo top level (GitHub convention) and uses `working-directory: action` for its commands.
 
 Output lands on a separate branch:
 
@@ -82,15 +78,9 @@ data branch
 
 ## Inventory cache
 
-The action no longer calls `learn.wordpress.org` live. The GitHub
-runner IPs are rate-limited aggressively by the WP CDN, in practice
-hardly any request gets through. Instead, the inventory lives as a
-precomputed file `inventory-cache.json` in the repo. The action reads
-that file and uses it for pathway grouping.
+The action no longer calls `learn.wordpress.org` live. The GitHub runner IPs are rate-limited aggressively by the WP CDN, in practice hardly any request gets through. Instead, the inventory lives as a precomputed file `inventory-cache.json` in the repo. The action reads that file and uses it for pathway grouping.
 
-Whenever `scope.yml` changes or content on learn.wordpress.org is
-restructured, the maintainer refreshes the cache **locally** (home or
-office IPs are not rate-limited) and commits the new file:
+Whenever `scope.yml` changes or content on learn.wordpress.org is restructured, the maintainer refreshes the cache **locally** (home or office IPs are not rate-limited) and commits the new file:
 
 ```bash
 python -m src.build --refresh-cache
@@ -100,13 +90,9 @@ git commit -m "Refresh inventory cache"
 git push
 ```
 
-`--refresh-cache` fetches every URL from `scope.yml` (with a 1.5 s throttle
-by default) and writes the InventoryItems into `inventory-cache.json`. It
-does **not** fetch issues and does **not** write `tracker.json`.
+`--refresh-cache` fetches every URL from `scope.yml` (with a 1.5 s throttle by default) and writes the InventoryItems into `inventory-cache.json`. It does **not** fetch issues and does **not** write `tracker.json`.
 
-URLs that cannot be reached during the refresh simply stay out of the cache.
-Retry on the next local run. Issues for those URLs end up (temporarily) in
-the orphan bucket.
+URLs that cannot be reached during the refresh simply stay out of the cache. Retry on the next local run. Issues for those URLs end up (temporarily) in the orphan bucket.
 
 ## Local development
 

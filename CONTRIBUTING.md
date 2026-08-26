@@ -1,8 +1,6 @@
 # Contributing
 
-Glad you want to contribute. This repo contains two components, a GitHub
-Action written in Python and a WordPress plugin in PHP. Depending on what
-you want to change, the workflow is slightly different.
+Glad you want to contribute. This repo contains two components, a GitHub Action written in Python and a WordPress plugin in PHP. Depending on what you want to change, the workflow is slightly different.
 
 ## Table of contents
 
@@ -135,8 +133,7 @@ git tag v0.4.2        # beta scheme: 0.x.y
 git push --tags
 ```
 
-The release workflow automatically builds the ZIP and publishes a GitHub
-release.
+The release workflow automatically builds the ZIP and publishes a GitHub release.
 
 ## Documentation
 
@@ -176,22 +173,15 @@ Other language teams can use this tracker for their own locale:
 3. `action/scope.yml`: enter your pathway and URL list.
 4. Populate `inventory-cache.json` locally with `--refresh-cache`.
 5. Set the GitHub secret `GH_PAT_PROJECT_READ` to your own PAT (Project V2 read scope).
-6. Update the plugin header in `wp-plugin/training-translation-tracker.php`
-   (your plugin name, author, project URI).
+6. Update the plugin header in `wp-plugin/training-translation-tracker.php` (your plugin name, author, project URI).
 7. Translate text in `docs/` and all locale-specific strings.
 8. Build the plugin ZIP and install it on your own site.
 
-Pull requests that contribute generic improvements back upstream (e.g. new
-inventory sources, new shortcode options) are welcome. Please keep
-locale-specific changes in your fork.
+Pull requests that contribute generic improvements back upstream (e.g. new inventory sources, new shortcode options) are welcome. Please keep locale-specific changes in your fork.
 
 ## Acknowledgments
 
-**Frontend UI design concept:** Andy Rudorfer
-([@Bigod](https://github.com/Bigod)). Card layout, status pills,
-component icons and filter bar interaction follow Andy's design. The
-implementation in PHP, CSS and JavaScript turns that concept into a
-WordPress plugin.
+**Frontend UI design concept:** Andy Rudorfer ([@Bigod](https://github.com/Bigod)). Card layout, status pills, component icons and filter bar interaction follow Andy's design. The implementation in PHP, CSS and JavaScript turns that concept into a WordPress plugin.
 
 ## Code of conduct
 

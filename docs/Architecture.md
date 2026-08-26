@@ -58,7 +58,7 @@ The action in the `Training-Translation-Tracker` repository runs on three trigge
 
 - **Schedule:** `cron: "0 */12 * * *"` (every 12 hours).
 - **`workflow_dispatch`:** manual button in the GitHub UI.
-- **`push`** on `main` with a path filter on `scope.yml` and `component-templates.yml`, immediate rebuild after configuration changes.
+- **`push`** on `main` with a path filter on `scope.yml`, `component-templates.yml` and `status-map.yml`, immediate rebuild after configuration changes.
 
 Pipeline steps:
 
@@ -113,21 +113,32 @@ Each item carries:
 
 - Metadata: EN and DE titles and URLs, optionally WP.tv and YouTube (per original and translation).
 - A components array with `name`, `status`, `creator`, `reviewer` per component.
-- `overall_status` derived from the status aggregation.
+- `overall_status`: since 0.5.0 derived from the Project V2 board status (see `status-map.yml`), with the component-status rollup as fallback.
 - An `issue` object (`number`, `url`, `state`), the reference to the GitHub issue.
 - Markers: `draft_original`, `duplicate_issues`, `parse_error`, `orphan_reason`.
 
 ### `overall_status` algorithm
 
-Implemented in the action:
+Implemented in the action. Two stages since 0.5.0:
 
 ```
-1. All components = "na"   → "na"
-2. All non-na     = "done" → "done"
-3. At least one "review"   → "review"
-4. At least one "wip"      → "wip"
-5. Otherwise               → "open"
+1. Board status leads: if the item's issue carries a Project V2 board
+   status that is mapped in action/status-map.yml, that bucket wins.
+   Default mapping:
+     "Published or Closed"                              → "published"
+     "Ready for Review"                                 → "review"
+     "Translation in Progress" / "Preparing to Publish" → "wip"
+     "Awaiting Triage" / "Looking for Translator"       → "open"
+2. Fallback (no issue, no board status, or unmapped value):
+   component rollup —
+   a. All components = "na"   → "na"
+   b. All non-na     = "done" → "done"
+   c. At least one "review"   → "review"
+   d. At least one "wip"      → "wip"
+   e. Otherwise               → "open"
 ```
+
+The board status is what the team actually maintains, so it leads the dashboard; a published item stays "published" even when optional components were intentionally not translated. The mapping is configuration (`status-map.yml`, validated against `schemas/status-map.schema.json`), so a renamed board column needs a config edit, not a code change. The plugin displays the legacy rollup value `done` as "published".
 
 Stats are computed at the item level from `overall_status`. Component statuses are shown in the frontend but do not feed into the stats aggregation.
 
@@ -151,17 +162,7 @@ These decisions are binding for the implementation. They come from the original 
 
 ### 4.2 Status calculation
 
-**4.2.1 `overall_status` algorithm** (see also section 3):
-
-```
-1. All components = "na"   → na
-2. All non-na     = "done" → done
-3. At least one "review"   → review
-4. At least one "wip"      → wip
-5. Otherwise               → open
-```
-
-`overall_status` is used only for stats aggregation and filtering.
+**4.2.1 `overall_status`: board status leads (0.5.0).** The Project V2 board status, mapped via `action/status-map.yml`, determines `overall_status`; the component rollup (see section 3) is the fallback for items without an issue, without a board status, or with an unmapped value. Rationale: the board is the status the team maintains, and a published item must count as published even when optional components stay untranslated. `overall_status` is used only for stats aggregation and filtering.
 
 **4.2.2 Stats and component display.** Stats in the header are computed at the **item level** based on `overall_status`. Independently, **all component statuses are shown in full** on each item card. These do not feed into the stats aggregation.
 
@@ -191,7 +192,7 @@ The set of metadata fields differs per item type. The JSON schema documents per 
 
 - `schedule: cron: "0 */12 * * *"` (every 12 hours).
 - `workflow_dispatch`, manual button in the GitHub UI.
-- `push` on `main` with `paths: ['scope.yml', 'component-templates.yml']` filter, immediate rebuild after configuration changes.
+- `push` on `main` with `paths: ['scope.yml', 'component-templates.yml', 'status-map.yml']` filter, immediate rebuild after configuration changes.
 
 ### 4.5 Plugin operations
 
@@ -244,6 +245,7 @@ Repo-Root/                       # cloned from GitHub
 │   ├── schemas/                 # JSON schemas (runtime copy)
 │   ├── scope.yml                # which URLs are in scope
 │   ├── component-templates.yml  # default components per item type
+│   ├── status-map.yml           # board status → dashboard status (0.5.0)
 │   ├── inventory-cache.json     # committed inventory snapshot
 │   └── requirements.txt
 ├── wp-plugin/                   # WordPress plugin (PHP)

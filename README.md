@@ -2,14 +2,10 @@
 
 <img src="wp-plugin/assets/icons/header-icon.svg" width="200" alt="Translation Tracker">
 
-Mono-repo for the inventory-driven translation dashboard of the
-WordPress DACH team. Two components, one repo:
+Mono-repo for the inventory-driven translation dashboard of the WordPress DACH team. Two components, one repo:
 
-1. **`action/`**, a GitHub Action (Python) that produces a `tracker.json`
-   snapshot of all DACH translations. Runs every 12 hours and on pushes
-   to relevant action paths.
-2. **`wp-plugin/`**, a WordPress plugin that loads `tracker.json` and
-   renders it on a WP page as a dashboard (cards, filters, search, collapse).
+1. **`action/`**, a GitHub Action (Python) that produces a `tracker.json` snapshot of all DACH translations. Runs every 12 hours and on pushes to relevant action paths.
+2. **`wp-plugin/`**, a WordPress plugin that loads `tracker.json` and renders it on a WP page as a dashboard (cards, filters, search, collapse).
 
 ## Documentation
 
@@ -70,8 +66,7 @@ Not in the repo (in `.gitignore`):
        translators                    schema validation                the frontend
 ```
 
-The plugin makes **no** API calls to GitHub or learn.wordpress.org itself.
-Everything is precomputed by the action; the plugin is a thin renderer with a cache.
+The plugin makes **no** API calls to GitHub or learn.wordpress.org itself. Everything is precomputed by the action; the plugin is a thin renderer with a cache.
 
 For a deeper introduction, see [docs/Architecture.md](docs/Architecture.md).
 
@@ -94,8 +89,7 @@ python -m src.build --skip-issues  # builds tracker.json without a GitHub token
 # → ~/Desktop/training-translation-tracker.zip
 ```
 
-Install in WordPress admin via "Upload Plugin", step-by-step in
-[docs/User-Guide.md](docs/User-Guide.md).
+Install in WordPress admin via "Upload Plugin", step-by-step in [docs/User-Guide.md](docs/User-Guide.md).
 
 ### Refresh the inventory cache (when scope.yml gets new URLs)
 
@@ -111,10 +105,7 @@ The action then triggers automatically and rebuilds tracker.json.
 
 ## Credits
 
-The frontend UI design concept (card layout, status pills, component
-icons, filter bar interaction) is by **Andy Rudorfer**
-([@Bigod](https://github.com/Bigod)). The implementation in PHP, CSS
-and JavaScript was carried out on top of that concept.
+The frontend UI design concept (card layout, status pills, component icons, filter bar interaction) is by **Andy Rudorfer** ([@Bigod](https://github.com/Bigod)). The implementation in PHP, CSS and JavaScript was carried out on top of that concept.
 
 ## License
 
