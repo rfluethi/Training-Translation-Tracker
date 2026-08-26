@@ -697,19 +697,21 @@ class TTT_Renderer {
 		} elseif ( 'handbook' === $type ) {
 			foreach ( (array) ( $group['sections'] ?? array() ) as $section ) {
 				// Group label as parent; if the section label is the same,
-				// render_section hides the h4.
-				$this->render_section( $section, $key, $label );
+				// render_section hides the heading. Directly below the h2
+				// group title, so the section heading is an h3 (0.5.3,
+				// heading levels must not skip).
+				$this->render_section( $section, $key, $label, 'h3' );
 			}
 		} elseif ( 'orphan' === $type ) {
 			// Pseudo-section wrapping the items so they become collapsible via
 			// the section collapse mechanism (analogous to Lesson Plans and
-			// Handbook).
+			// Handbook). h3 for the same reason as the handbook sections.
 			$fake_section = array(
 				'slug'  => 'all',
 				'label' => $label,
 				'items' => (array) ( $group['items'] ?? array() ),
 			);
-			$this->render_section( $fake_section, $key, '' );
+			$this->render_section( $fake_section, $key, '', 'h3' );
 		}
 
 		echo '</div>'; // .ttt-group-body
@@ -739,9 +741,12 @@ class TTT_Renderer {
 		}
 		// Effective parent label for the section: when the course is
 		// redundant, the section compares directly against the group label.
+		// When the course title (h3) is suppressed as redundant, the section
+		// heading moves up to h3 so the heading levels do not skip (0.5.3).
 		$effective_parent = $is_redundant ? $parent_group_label : $label;
+		$section_heading  = $is_redundant ? 'h3' : 'h4';
 		foreach ( (array) ( $course['sections'] ?? array() ) as $section ) {
-			$this->render_section( $section, $key, $effective_parent );
+			$this->render_section( $section, $key, $effective_parent, $section_heading );
 		}
 		echo '</div>';
 	}
@@ -752,10 +757,13 @@ class TTT_Renderer {
 	 * @param array $section Section.
 	 * @return void
 	 */
-	private function render_section( $section, $parent_key = '', $parent_label = '' ) {
+	private function render_section( $section, $parent_key = '', $parent_label = '', $heading_tag = 'h4' ) {
 		$label = (string) ( $section['label'] ?? '' );
 		$slug  = (string) ( $section['slug'] ?? sanitize_title( $label ) );
 		$key   = trim( $parent_key . '-' . $slug, '-' );
+		// Whitelisted tag (0.5.3): h3 directly below a group title, h4 below
+		// a course title. Styling is class-based, so the look is identical.
+		$heading_tag = in_array( $heading_tag, array( 'h3', 'h4' ), true ) ? $heading_tag : 'h4';
 
 		// The section header is always shown (as long as the label is not
 		// empty), even if it repeats the group label. Reason: it is the only
@@ -767,12 +775,12 @@ class TTT_Renderer {
 			// Section header: heading hierarchy via <h4> plus a real <button>
 			// as the toggle element. aria-expanded reflects the collapse
 			// state and is maintained by the JS.
-			echo '<h4 class="ttt-section-heading">';
+			echo '<' . $heading_tag . ' class="ttt-section-heading">'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- whitelisted h3/h4 above.
 			echo '<button type="button" class="ttt-section-title" aria-expanded="true">';
 			echo '<span class="ttt-section-toggle" aria-hidden="true">▾</span> ';
 			echo esc_html( $label );
 			echo '</button>';
-			echo '</h4>';
+			echo '</' . $heading_tag . '>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- whitelisted h3/h4 above.
 		}
 		echo '<div class="ttt-section-body">';
 		$this->render_item_list( (array) ( $section['items'] ?? array() ) );

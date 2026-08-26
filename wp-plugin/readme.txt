@@ -4,7 +4,7 @@ Tags: translation, learn-wordpress, tracker, dashboard
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 0.5.2
+Stable tag: 0.5.3
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -34,6 +34,23 @@ DACH Team for translating learn.wordpress.org content into German.
 4. Embed the shortcode `[translation_tracker]` on any page.
 
 == Changelog ==
+
+= 0.5.3 =
+Accessibility release based on an axe-core run against a staging site.
+
+* WCAG AA contrast: `--ttt-color-text-subtle` darkened #868e96 -> #697077
+  (3.3:1 -> 5.0:1 on white; also passes on the component-filter caption
+  surface), `--ttt-color-na-fg` darkened #6c757d -> #5f666d (3.9:1 ->
+  4.9:1 on the n/a pill). Placeholder titles in the translation column
+  now use the (passing) subtle token instead of the decorative faint
+  gray (was 2.1:1); the italic style keeps the placeholder signal.
+  `--ttt-color-text-faint` remains for decoration only (card border,
+  collapse arrows).
+* Heading hierarchy: section headings no longer skip a level. Directly
+  below a group title (h2) they render as h3 (handbook sections, the
+  orphan group, and pathways whose redundant course title is
+  suppressed, e.g. Lesson Plans); below a course title (h3) they stay
+  h4. Styling is class-based, the look is unchanged.
 
 = 0.5.2 =
 * Internal refactor, no functional change: the renderer class was split

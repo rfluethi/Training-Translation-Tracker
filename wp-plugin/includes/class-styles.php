@@ -45,7 +45,7 @@ class TTT_Styles {
 	--ttt-color-text: var(--wp--preset--color--foreground, #222);
 	--ttt-color-text-strong: #212529;
 	--ttt-color-text-muted: #6c757d;
-	--ttt-color-text-subtle: #868e96;
+	--ttt-color-text-subtle: #697077; /* 0.5.3: was #868e96 (3.3:1 on white, failed AA); now 5.0:1 on white, 4.5:1 on the caption surface */
 	--ttt-color-text-faint: #adb5bd;
 	--ttt-color-bg: var(--wp--preset--color--base, #fff);
 	--ttt-color-border: #e5e5e5;
@@ -78,7 +78,7 @@ class TTT_Styles {
 	--ttt-color-open-fg:   #495057;
 	--ttt-color-open-bg:   #fef9c3;
 	--ttt-color-open:      #ca8a04;
-	--ttt-color-na-fg:     #6c757d;
+	--ttt-color-na-fg:     #5f666d; /* 0.5.3: was #6c757d (3.9:1 on the n/a pill, failed AA); now 4.9:1 */
 	--ttt-color-na-bg:     #e9ecef;
 	--ttt-color-na:        #ced4da;
 	/* Unset (0.4.5): components without a recorded status (no status
@@ -202,7 +202,7 @@ class TTT_Styles {
 .ttt-tracker .ttt-card-title { font-size: var(--ttt-font-size-base); font-weight: 600; color: var(--ttt-color-text-strong); line-height: 1.3; }
 .ttt-tracker .ttt-card-title a { color: inherit; text-decoration: none; }
 .ttt-tracker .ttt-card-title a:hover { color: var(--ttt-color-primary); text-decoration: underline; }
-.ttt-tracker .ttt-card-col-placeholder .ttt-card-title { color: var(--ttt-color-text-faint); font-style: italic; }
+.ttt-tracker .ttt-card-col-placeholder .ttt-card-title { color: var(--ttt-color-text-subtle); font-style: italic; } /* 0.5.3: text-faint (2.1:1) is decoration-only now; the italic keeps the placeholder signal */
 .ttt-tracker .ttt-card-media { margin-top: var(--ttt-space-xs); display: flex !important; flex-wrap: wrap; gap: var(--ttt-space-sm); }
 .ttt-tracker .ttt-card-media-link { display: inline-block !important; font-size: 0.78rem; color: var(--ttt-color-primary); text-decoration: none; }
 .ttt-tracker .ttt-card-media-link:hover { text-decoration: underline; }
