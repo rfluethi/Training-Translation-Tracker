@@ -55,8 +55,9 @@ class TTT_Settings {
 				'type'              => 'array',
 				'sanitize_callback' => array( $this, 'sanitize_settings' ),
 				'default'           => array(
-					'tracker_url' => TTT_DEFAULT_TRACKER_URL,
-					'cache_hours' => TTT_DEFAULT_CACHE_HOURS,
+					'tracker_url'  => TTT_DEFAULT_TRACKER_URL,
+					'cache_hours'  => TTT_DEFAULT_CACHE_HOURS,
+					'show_avatars' => 1,
 				),
 			)
 		);
@@ -80,6 +81,14 @@ class TTT_Settings {
 			'ttt_cache_hours',
 			__( 'Cache duration (hours)', 'training-translation-tracker' ),
 			array( $this, 'field_cache_hours' ),
+			'training-translation-tracker',
+			'ttt_section_main'
+		);
+
+		add_settings_field(
+			'ttt_show_avatars',
+			__( 'GitHub avatars', 'training-translation-tracker' ),
+			array( $this, 'field_show_avatars' ),
 			'training-translation-tracker',
 			'ttt_section_main'
 		);
@@ -149,9 +158,13 @@ class TTT_Settings {
 			$cache_hours = 168;
 		}
 
+		// Checkbox: absent when unchecked (0.5.1).
+		$show_avatars = empty( $input['show_avatars'] ) ? 0 : 1;
+
 		return array(
-			'tracker_url' => $tracker_url,
-			'cache_hours' => $cache_hours,
+			'tracker_url'  => $tracker_url,
+			'cache_hours'  => $cache_hours,
+			'show_avatars' => $show_avatars,
 		);
 	}
 
@@ -212,6 +225,39 @@ class TTT_Settings {
 		echo ' <span class="description">';
 		echo esc_html__( '1–168 hours. Recommended: 12 (matches the Action interval).', 'training-translation-tracker' );
 		echo '</span>';
+	}
+
+	/**
+	 * Checkbox: show GitHub avatars in the component popovers (0.5.1).
+	 *
+	 * When disabled, the frontend renders initials instead and the
+	 * visitor's browser makes no request to github.com — relevant for
+	 * privacy policies on public sites.
+	 *
+	 * @return void
+	 */
+	public function field_show_avatars() {
+		$checked = self::show_avatars();
+		printf(
+			'<label><input type="checkbox" name="%1$s[show_avatars]" value="1" %2$s /> %3$s</label>',
+			esc_attr( TTT_OPTION_KEY ),
+			checked( $checked, true, false ),
+			esc_html__( 'Show avatars in the component popovers', 'training-translation-tracker' )
+		);
+		echo '<p class="description">';
+		echo esc_html__( 'When disabled, initials are shown instead and the visitor\'s browser makes no request to github.com (privacy).', 'training-translation-tracker' );
+		echo '</p>';
+	}
+
+	/**
+	 * Whether GitHub avatars are enabled (0.5.1). Defaults to true for
+	 * installations whose stored option predates the setting.
+	 *
+	 * @return bool
+	 */
+	public static function show_avatars() {
+		$value = self::get( 'show_avatars' );
+		return null === $value ? true : (bool) $value;
 	}
 
 	// ----------------------------------------------------------------- render

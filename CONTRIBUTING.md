@@ -24,6 +24,8 @@ Glad you want to contribute. This repo contains two components, a GitHub Action 
 | Translation | Pull request with a `.po` file | `de_DE`, `de_CH`, `en_US` for UI strings |
 | Documentation | Pull request with README or docs changes | Typo fixes, clearer explanations, examples |
 
+Issues for this tool are managed on the [Training-Translation-Tracker Pipeline](https://github.com/users/rfluethi/projects/12) project board. The [WordPress project board 104](https://github.com/orgs/WordPress/projects/104/views/12) tracks the translations themselves, not this tool.
+
 ## Repository setup
 
 ```bash

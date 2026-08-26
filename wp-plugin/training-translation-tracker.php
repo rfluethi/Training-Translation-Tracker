@@ -3,7 +3,7 @@
  * Plugin Name:       Training Translation Tracker
  * Plugin URI:        https://github.com/rfluethi/Training-Translation-Tracker
  * Description:       Dashboard for the translation progress of the Learn WP DACH Team.
- * Version:           0.5.0
+ * Version:           0.5.1
  * Requires at least: 6.0
  * Requires PHP:      8.0
  * Author:            Learn WP DACH Team
@@ -23,7 +23,7 @@ defined( 'ABSPATH' ) || exit;
 // Constants
 // -----------------------------------------------------------------------------
 
-define( 'TTT_VERSION', '0.5.0' );
+define( 'TTT_VERSION', '0.5.1' );
 define( 'TTT_PLUGIN_FILE', __FILE__ );
 define( 'TTT_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'TTT_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
@@ -46,6 +46,9 @@ define( 'TTT_TRANSIENT_KEY', 'ttt_tracker_payload' );
 // Transient for the last successful state (NOT auto-invalidated),
 // fallback on API errors (A.5.3).
 define( 'TTT_LAST_GOOD_KEY', 'ttt_last_good_payload' );
+// Short-lived transient set after a failed fetch (0.5.0): while present,
+// the fetcher serves last-good instead of retrying on every page view.
+define( 'TTT_BACKOFF_KEY', 'ttt_fetch_backoff' );
 
 // -----------------------------------------------------------------------------
 // Class loader
@@ -124,5 +127,6 @@ register_activation_hook( __FILE__, 'ttt_activate' );
  */
 function ttt_deactivate() {
 	delete_transient( TTT_TRANSIENT_KEY );
+	delete_transient( TTT_BACKOFF_KEY );
 }
 register_deactivation_hook( __FILE__, 'ttt_deactivate' );

@@ -103,9 +103,15 @@ git push
 
 The action then triggers automatically and rebuilds tracker.json.
 
+## Reporting bugs and ideas
+
+Bugs, ideas and tasks for this tool are tracked as GitHub issues in this repository and managed on the [Training-Translation-Tracker Pipeline](https://github.com/users/rfluethi/projects/12) project board. Please open an issue here rather than posting in Slack. Note that the [WordPress project board 104](https://github.com/orgs/WordPress/projects/104/views/12) is for the translations themselves, not for this tool.
+
 ## Credits
 
 The frontend UI design concept (card layout, status pills, component icons, filter bar interaction) is by **Andy Rudorfer** ([@Bigod](https://github.com/Bigod)). The implementation in PHP, CSS and JavaScript was carried out on top of that concept.
+
+The component icons in the frontend use path data from [Material Icons](https://fonts.google.com/icons) (Apache License 2.0). Apache-2.0 is compatible with GPLv3; since this plugin is licensed "GPL v2 or later", distribution under GPLv3 covers the combination.
 
 ## License
 

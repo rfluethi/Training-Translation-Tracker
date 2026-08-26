@@ -14,3 +14,4 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 delete_option( 'ttt_settings' );
 delete_transient( 'ttt_tracker_payload' );
 delete_transient( 'ttt_last_good_payload' );
+delete_transient( 'ttt_fetch_backoff' );

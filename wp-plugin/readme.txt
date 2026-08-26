@@ -4,7 +4,7 @@ Tags: translation, learn-wordpress, tracker, dashboard
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 0.5.0
+Stable tag: 0.5.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -35,6 +35,42 @@ DACH Team for translating learn.wordpress.org content into German.
 
 == Changelog ==
 
+= 0.5.1 =
+Collects everything built after the v0.5.0 tag, plus new privacy and
+accessibility work.
+
+* New setting "GitHub avatars" (Settings -> Translation Tracker, default
+  on): when disabled, the component popovers show initials instead of
+  GitHub avatar images and the visitor's browser makes no request to
+  github.com. Relevant for privacy policies on public sites.
+* i18n: the issue state badge on the cards now shows a translated label
+  ("open"/"closed" -> "offen"/"geschlossen" on German sites); the raw
+  value remains in the CSS class.
+* Accessibility: the component filter group carries a visible
+  "Component" caption naming its dimension, and the search field gained
+  a real (visually hidden) label in addition to its aria-label.
+* Fetch hardening: the tracker.json request timeout is reduced from 15 s
+  to 5 s, and after a failed fetch a 5-minute backoff serves the last
+  good state instead of retrying on every page view. A slow or
+  unreachable GitHub can no longer stall page rendering.
+* The component filter now derives its options and the icon order on the
+  cards from the components actually present in tracker.json. A new
+  component introduced by the Action appears without a plugin release
+  (its label falls back to the raw name until translations catch up).
+* Clarity: the first option of the component-status dropdown is renamed
+  from "Any status" to "Component status: any", so its values are not
+  mistaken for the card status counted by the stats pills.
+* Accessibility: the "no results" message carries role="status" with
+  aria-live, so screen readers announce an empty filter result.
+* Tested up to bumped to WordPress 7.1.
+* Plugin Check note: current Plugin Check versions flag the `Update URI:`
+  header and the raw.githubusercontent.com URLs as errors. Both are
+  expected for this GitHub-distributed plugin: the header is the
+  recommended protection against a same-slug plugin on wordpress.org
+  (it would only be removed for a wp.org submission), and the flagged
+  URLs are the server-side tracker.json data source with caching, not
+  offloaded frontend assets.
+
 = 0.5.0 =
 * The GitHub Project V2 board status now LEADS the dashboard: stats
   pills, card border color and the status filter count the board status
@@ -58,14 +94,6 @@ DACH Team for translating learn.wordpress.org content into German.
   correct even without JavaScript.
 * Unknown overall_status values are normalized to "open" for both the
   count and the card class, so numbers and colors cannot disagree.
-* Tested up to bumped to WordPress 7.1.
-* Plugin Check note: current Plugin Check versions flag the `Update URI:`
-  header and the raw.githubusercontent.com URLs as errors. Both are
-  expected for this GitHub-distributed plugin: the header is the
-  recommended protection against a same-slug plugin on wordpress.org
-  (it would only be removed for a wp.org submission), and the flagged
-  URLs are the server-side tracker.json data source with caching, not
-  offloaded frontend assets.
 * Compatibility: tracker.json keeps schema_version 1. New tracker.json
   with old plugin: "published" items count under "open" (as before this
   release). Old tracker.json with this plugin: "done" is displayed as

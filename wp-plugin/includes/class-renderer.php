@@ -85,6 +85,20 @@ class TTT_Renderer {
 	private $i18n_cache = null;
 
 	/**
+	 * Ordered component names for the current render cycle (0.5.0).
+	 *
+	 * Derived from the actually present components in the visible items:
+	 * canonical COMPONENT_ORDER first, then any additional components from
+	 * tracker.json in order of first appearance. Used for both the icon
+	 * order on the cards and the options of the component filter, so a
+	 * new component introduced by the action shows up without a plugin
+	 * release.
+	 *
+	 * @var array<int,string>|null
+	 */
+	private $component_names_cache = null;
+
+	/**
 	 * Constructor: register the shortcode.
 	 *
 	 * Since 0.3.2, all CSS is emitted exclusively inline with the shortcode
@@ -216,6 +230,9 @@ class TTT_Renderer {
 	 */
 	private function get_frontend_i18n() {
 		return array(
+			// Not a translation: tells the JS whether to render GitHub
+			// avatars or initials in the popover (0.5.1, privacy setting).
+			'showAvatars'      => TTT_Settings::show_avatars(),
 			'collapseAll'      => __( 'Collapse all', 'training-translation-tracker' ),
 			'expandAll'        => __( 'Expand all', 'training-translation-tracker' ),
 			'creator'          => __( 'Creator', 'training-translation-tracker' ),
@@ -398,6 +415,9 @@ class TTT_Renderer {
 .ttt-tracker .ttt-stat-na     { background: var(--ttt-color-na-bg);     color: var(--ttt-color-na-fg); cursor: default !important; }
 .ttt-tracker .ttt-stat-total  { background: var(--ttt-color-total-bg);  color: var(--ttt-color-total-fg); }
 .ttt-tracker .ttt-filter-bar { display: flex !important; flex-wrap: wrap; gap: var(--ttt-space-md); align-items: center; margin: 0.5rem 0; }
+.ttt-tracker .ttt-visually-hidden { position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+.ttt-tracker .ttt-component-filter-caption { display: inline-flex; align-items: center; padding: var(--ttt-space-sm) var(--ttt-space-md); font-size: var(--ttt-font-size-xs); text-transform: uppercase; letter-spacing: 0.05em; color: var(--ttt-color-text-subtle); background: var(--ttt-color-surface-subtle); border-right: var(--ttt-border-width) solid var(--ttt-color-border-input); }
+.ttt-tracker .ttt-comp-popover-avatar-initials { display: inline-flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 700; color: var(--ttt-color-text-muted); }
 .ttt-tracker .ttt-search-input { flex: 1 1 220px; max-width: 320px; padding: var(--ttt-space-sm) 0.7rem; border: var(--ttt-border-width) solid var(--ttt-color-border-input); border-radius: var(--ttt-radius-md); font-size: 0.9rem; font-family: inherit; line-height: 1.3; background: var(--ttt-color-bg); color: var(--ttt-color-text-strong); box-sizing: border-box; }
 .ttt-tracker .ttt-search-input:focus { outline: none; border-color: var(--ttt-color-primary); box-shadow: var(--ttt-shadow-focus); }
 .ttt-tracker .ttt-collapse-all-btn { padding: var(--ttt-space-sm) 0.85rem; border: var(--ttt-border-width) solid var(--ttt-color-border-input); background: var(--ttt-color-bg); color: var(--ttt-color-open-fg); border-radius: var(--ttt-radius-md); font-size: var(--ttt-font-size-sm); cursor: pointer; font-family: inherit; line-height: 1.3; transition: background 0.15s ease, border-color 0.15s ease; flex-shrink: 0; }
@@ -587,6 +607,71 @@ class TTT_Renderer {
 	}
 
 	/**
+	 * Collects the ordered list of component names present in the visible
+	 * items (0.5.0).
+	 *
+	 * Canonical COMPONENT_ORDER entries come first (only those actually
+	 * present), followed by unknown components from tracker.json in order
+	 * of first appearance. Falls back to COMPONENT_ORDER when no items
+	 * carry components at all.
+	 *
+	 * @param array $groups Filtered group list.
+	 * @return array<int,string>
+	 */
+	private function collect_component_names( $groups ) {
+		$seen = array();
+
+		$collect_item = function ( $item ) use ( &$seen ) {
+			foreach ( (array) ( $item['components'] ?? array() ) as $comp ) {
+				$name = (string) ( $comp['name'] ?? '' );
+				if ( '' !== $name && ! isset( $seen[ $name ] ) ) {
+					$seen[ $name ] = true;
+				}
+			}
+		};
+
+		foreach ( $groups as $group ) {
+			$type = (string) ( $group['type'] ?? '' );
+			if ( 'pathway' === $type ) {
+				foreach ( (array) ( $group['courses'] ?? array() ) as $course ) {
+					foreach ( (array) ( $course['sections'] ?? array() ) as $section ) {
+						foreach ( (array) ( $section['items'] ?? array() ) as $item ) {
+							$collect_item( $item );
+						}
+					}
+				}
+			} elseif ( 'handbook' === $type ) {
+				foreach ( (array) ( $group['sections'] ?? array() ) as $section ) {
+					foreach ( (array) ( $section['items'] ?? array() ) as $item ) {
+						$collect_item( $item );
+					}
+				}
+			} elseif ( 'orphan' === $type ) {
+				foreach ( (array) ( $group['items'] ?? array() ) as $item ) {
+					$collect_item( $item );
+				}
+			}
+		}
+
+		if ( empty( $seen ) ) {
+			return self::COMPONENT_ORDER;
+		}
+
+		$ordered = array();
+		foreach ( self::COMPONENT_ORDER as $name ) {
+			if ( isset( $seen[ $name ] ) ) {
+				$ordered[] = $name;
+				unset( $seen[ $name ] );
+			}
+		}
+		// Whatever remains is new to the plugin — append in first-seen order.
+		foreach ( array_keys( $seen ) as $name ) {
+			$ordered[] = $name;
+		}
+		return $ordered;
+	}
+
+	/**
 	 * Normalizes an overall_status value to a displayable one (0.5.0).
 	 *
 	 * `done` (legacy rollup, pre-0.5.0 tracker.json) is treated as
@@ -721,13 +806,16 @@ class TTT_Renderer {
 		}
 		$stats = $this->calculate_stats_from_groups( $visible_groups );
 
+		// Component order and filter options, derived from the data (0.5.0).
+		$this->component_names_cache = $this->collect_component_names( $visible_groups );
+
 		?>
 		<div class="ttt-tracker" id="<?php echo esc_attr( $tracker_id ); ?>" data-tracker-id="<?php echo esc_attr( $tracker_id ); ?>">
 			<header class="ttt-header">
 				<?php if ( $show_stats ) : ?>
 					<?php $this->render_stats( $stats ); ?>
 				<?php endif; ?>
-				<?php $this->render_filter_bar(); ?>
+				<?php $this->render_filter_bar( $tracker_id ); ?>
 				<?php
 				// "As of: ..." does not appear on the frontend; the timestamp
 				// lives on the settings page (Settings > Translation Tracker).
@@ -745,7 +833,11 @@ class TTT_Renderer {
 				<?php $this->render_group( $group ); ?>
 			<?php endforeach; ?>
 
-			<div class="ttt-no-results" hidden>
+			<?php
+			// role="status" + aria-live: screen readers announce when a
+			// filter or search combination yields no results (0.5.0).
+			?>
+			<div class="ttt-no-results" role="status" aria-live="polite" hidden>
 				<?php esc_html_e( 'No results for the current filter/search combination.', 'training-translation-tracker' ); ?>
 			</div>
 		</div>
@@ -759,16 +851,21 @@ class TTT_Renderer {
 	 *
 	 * @return void
 	 */
-	private function render_filter_bar() {
+	private function render_filter_bar( $tracker_id = '' ) {
 		// The separate Project-status dropdown was removed in 0.5.0: since
 		// the board status leads the stats pills and the card border, the
 		// dropdown duplicated the pill filter and confused users with a
 		// second status dimension.
+		$search_id = $tracker_id ? $tracker_id . '-search' : '';
 		?>
 		<div class="ttt-filter-bar">
+			<?php if ( $search_id ) : ?>
+				<label class="ttt-visually-hidden" for="<?php echo esc_attr( $search_id ); ?>"><?php esc_html_e( 'Search titles', 'training-translation-tracker' ); ?></label>
+			<?php endif; ?>
 			<input
 				type="search"
 				class="ttt-search-input"
+				<?php if ( $search_id ) : ?>id="<?php echo esc_attr( $search_id ); ?>"<?php endif; ?>
 				placeholder="<?php esc_attr_e( 'Search titles…', 'training-translation-tracker' ); ?>"
 				aria-label="<?php esc_attr_e( 'Search titles', 'training-translation-tracker' ); ?>"
 			/>
@@ -777,25 +874,43 @@ class TTT_Renderer {
 				role="group"
 				aria-label="<?php esc_attr_e( 'Component filter', 'training-translation-tracker' ); ?>"
 			>
+				<?php
+				// Visible caption naming the group's dimension (0.5.1), so
+				// the status values in the second select are not mistaken
+				// for the card status counted by the pills.
+				?>
+				<span class="ttt-component-filter-caption" aria-hidden="true"><?php esc_html_e( 'Component', 'training-translation-tracker' ); ?></span>
 				<select
 					class="ttt-component-select"
 					aria-label="<?php esc_attr_e( 'Filter by component', 'training-translation-tracker' ); ?>"
 				>
 					<option value=""><?php esc_html_e( 'All components', 'training-translation-tracker' ); ?></option>
-					<option value="thumbnails"><?php esc_html_e( 'thumbnails', 'training-translation-tracker' ); ?></option>
-					<option value="text"><?php esc_html_e( 'text', 'training-translation-tracker' ); ?></option>
-					<option value="subtitles"><?php esc_html_e( 'subtitles', 'training-translation-tracker' ); ?></option>
-					<option value="exercise"><?php esc_html_e( 'exercise', 'training-translation-tracker' ); ?></option>
-					<option value="quiz"><?php esc_html_e( 'quiz', 'training-translation-tracker' ); ?></option>
-					<option value="audio"><?php esc_html_e( 'audio', 'training-translation-tracker' ); ?></option>
-					<option value="video"><?php esc_html_e( 'video', 'training-translation-tracker' ); ?></option>
+					<?php
+					// Options are derived from the components actually present
+					// in tracker.json (0.5.0). Labels come from the shared i18n
+					// bundle; a component unknown to the bundle falls back to
+					// its raw name until the translations catch up.
+					if ( null === $this->i18n_cache ) {
+						$this->i18n_cache = $this->get_frontend_i18n();
+					}
+					$component_names = $this->component_names_cache ? $this->component_names_cache : self::COMPONENT_ORDER;
+					foreach ( $component_names as $comp_name ) :
+						$comp_label = (string) ( $this->i18n_cache['componentLabels'][ $comp_name ] ?? $comp_name );
+						?>
+						<option value="<?php echo esc_attr( $comp_name ); ?>"><?php echo esc_html( $comp_label ); ?></option>
+					<?php endforeach; ?>
 				</select>
 				<select
 					class="ttt-component-status-select"
 					aria-label="<?php esc_attr_e( 'Filter component by status', 'training-translation-tracker' ); ?>"
 					disabled
 				>
-					<option value=""><?php esc_html_e( 'Any status', 'training-translation-tracker' ); ?></option>
+					<?php
+					// "Component status: any" instead of "Any status" (0.5.0):
+					// the option names its dimension, so the values below are
+					// not mistaken for the card status counted by the pills.
+					?>
+					<option value=""><?php esc_html_e( 'Component status: any', 'training-translation-tracker' ); ?></option>
 					<option value="unset"><?php esc_html_e( 'unspecified', 'training-translation-tracker' ); ?></option>
 					<option value="open"><?php esc_html_e( 'open', 'training-translation-tracker' ); ?></option>
 					<option value="wip"><?php esc_html_e( 'in progress', 'training-translation-tracker' ); ?></option>
@@ -1167,7 +1282,15 @@ class TTT_Renderer {
 			echo '</a>';
 			$state = (string) ( $issue['state'] ?? '' );
 			if ( $state ) {
-				echo ' <span class="ttt-issue-state ttt-issue-state-' . esc_attr( $state ) . '">' . esc_html( $state ) . '</span>';
+				// Translated label (0.5.1); the raw value stays in the class.
+				if ( 'open' === $state ) {
+					$state_label = __( 'open', 'training-translation-tracker' );
+				} elseif ( 'closed' === $state ) {
+					$state_label = __( 'closed', 'training-translation-tracker' );
+				} else {
+					$state_label = $state;
+				}
+				echo ' <span class="ttt-issue-state ttt-issue-state-' . esc_attr( $state ) . '">' . esc_html( $state_label ) . '</span>';
 			}
 			// Projects V2 status pill (e.g. "Translation in Progress"). Slug
 			// class used for targeted coloring per status.
@@ -1183,9 +1306,10 @@ class TTT_Renderer {
 		}
 		echo '</div>';
 
-		// Right side: component icons in canonical order
+		// Right side: component icons in canonical-then-data-driven order (0.5.0)
 		echo '<div class="ttt-card-footer-right">';
-		foreach ( self::COMPONENT_ORDER as $comp_name ) {
+		$icon_order = $this->component_names_cache ? $this->component_names_cache : self::COMPONENT_ORDER;
+		foreach ( $icon_order as $comp_name ) {
 			if ( ! isset( $components_by_name[ $comp_name ] ) ) {
 				continue;
 			}

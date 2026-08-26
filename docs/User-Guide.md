@@ -37,7 +37,7 @@ You mostly work with the GitHub issues (maintaining status) and see the result i
 4. Click **Install Now**.
 5. After a successful upload, click **Activate Plugin**.
 
-If an older version is already installed, **first deactivate and delete the old version** (red "Delete" action in the plugin list). Only then upload the new ZIP. Settings and cache are preserved.
+If an older version is already installed, upload the new ZIP and confirm the **"Replace current with uploaded"** dialog — settings are preserved. Do **not** deactivate and delete the old version first: deleting a plugin runs its uninstall routine, which removes the saved settings and cache.
 
 ### Verification
 
@@ -64,6 +64,10 @@ How long the loaded JSON sits in the WordPress transient cache before it is relo
 Set it shorter (e.g. 1 hour) during test phases or when fast updates are needed. Set it longer (e.g. 24 hours) when the data source is stable and HTTP traffic should be minimized.
 
 Allowed range: 1 to 168 hours (up to one week).
+
+### Checkbox "GitHub avatars" (since 0.5.1)
+
+Default: on. When disabled, the component popovers show initials instead of GitHub avatar images, and the visitor's browser makes no request to github.com. Turn this off when the site's privacy policy should not need to cover a third-party request to GitHub.
 
 ### Button "Clear cache now"
 
@@ -199,7 +203,7 @@ Each card shows one content item:
 
 **Translation column** (right): same for the German translation. If the English title is shown there in gray italics, the German translation does not exist yet.
 
-**Footer row:** left side shows the issue number (e.g. `#2952`) linked to the GitHub issue, next to it the issue status `open`/`closed` and possibly markers ("Orphan", "Duplicate", "Original draft", "Out of scope"). Right side shows up to seven small colored icons for the components (thumbnails, text, subtitles, exercise, quiz, audio, video). Hovering over an icon opens a popover with status, creator + avatar and reviewer + avatar.
+**Footer row:** left side shows the issue number (e.g. `#2952`) linked to the GitHub issue, next to it the issue status `open`/`closed` and possibly markers ("Orphan", "Duplicate", "Original draft", "Out of scope"). Right side shows up to seven small colored icons for the components (thumbnails, text, subtitles, exercise, quiz, audio, video). Hovering over an icon opens a popover with status, creator + avatar and reviewer + avatar. Privacy note: the avatars are loaded directly from GitHub (`github.com/<user>.png`), so opening a popover transmits the visitor's IP address to GitHub — mention this in the site's privacy policy when running the plugin on a public site, or disable the avatars entirely via the "GitHub avatars" setting (since 0.5.1), which renders initials instead.
 
 ### Search field
 

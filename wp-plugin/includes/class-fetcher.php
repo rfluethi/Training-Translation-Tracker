@@ -36,6 +36,14 @@ class TTT_Fetcher {
 			return self::result( $cached, 'cache' );
 		}
 
+		// Backoff (0.5.0): after a failed fetch we wait a few minutes before
+		// trying again, serving last-good in the meantime. Without this,
+		// every page view of every visitor would retry the blocking HTTP
+		// request while GitHub is slow or down.
+		if ( get_transient( TTT_BACKOFF_KEY ) ) {
+			return self::result( self::get_last_good(), 'last_good', __( 'Fetch paused after a recent failure (backoff).', 'training-translation-tracker' ) );
+		}
+
 		$url = TTT_Settings::get( 'tracker_url' );
 		if ( empty( $url ) ) {
 			return self::result( self::get_last_good(), 'last_good', __( 'No tracker.json URL configured.', 'training-translation-tracker' ) );
@@ -43,16 +51,27 @@ class TTT_Fetcher {
 
 		$fetch = self::http_get_json( $url );
 		if ( is_wp_error( $fetch ) ) {
+			self::start_backoff();
 			return self::result( self::get_last_good(), 'last_good', $fetch->get_error_message() );
 		}
 
 		$check = self::validate_payload( $fetch );
 		if ( is_wp_error( $check ) ) {
+			self::start_backoff();
 			return self::result( self::get_last_good(), 'last_good', $check->get_error_message() );
 		}
 
 		self::store( $fetch );
 		return self::result( $fetch, 'fresh' );
+	}
+
+	/**
+	 * Starts the failure backoff window (0.5.0).
+	 *
+	 * @return void
+	 */
+	private static function start_backoff() {
+		set_transient( TTT_BACKOFF_KEY, 1, 5 * MINUTE_IN_SECONDS );
 	}
 
 	/**
@@ -109,7 +128,10 @@ class TTT_Fetcher {
 	 */
 	private static function http_get_json( $url ) {
 		$args = array(
-			'timeout'    => 15,
+			// 5 s instead of the previous 15 s (0.5.0): the fetch runs
+			// synchronously during page rendering, so a slow GitHub must
+			// not stall the page; on failure last-good is served anyway.
+			'timeout'    => 5,
 			'redirection' => 3,
 			'user-agent' => 'training-translation-tracker/' . TTT_VERSION . ' (+wp-plugin)',
 			'headers'    => array(

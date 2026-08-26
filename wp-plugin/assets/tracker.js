@@ -547,10 +547,21 @@
 		}
 
 		function renderPerson(role, username) {
-			var avatarUrl = 'https://github.com/' + encodeURIComponent(username) + '.png?size=64';
 			var profileUrl = 'https://github.com/' + encodeURIComponent(username);
+			// Avatar or initials (0.5.1): with avatars disabled in the plugin
+			// settings, no request to github.com is made for the image —
+			// initials are rendered instead (privacy). The initials span is
+			// aria-hidden because the username follows as visible text.
+			var avatarHtml;
+			if (I18N.showAvatars === false) {
+				var initials = escapeHtml(String(username).slice(0, 2).toUpperCase());
+				avatarHtml = '<span class="ttt-comp-popover-avatar ttt-comp-popover-avatar-initials" aria-hidden="true">' + initials + '</span>';
+			} else {
+				var avatarUrl = 'https://github.com/' + encodeURIComponent(username) + '.png?size=64';
+				avatarHtml = '<img class="ttt-comp-popover-avatar" src="' + avatarUrl + '" alt="" loading="lazy" referrerpolicy="no-referrer">';
+			}
 			return '<div class="ttt-comp-popover-person">'
-				+ '<img class="ttt-comp-popover-avatar" src="' + avatarUrl + '" alt="" loading="lazy" referrerpolicy="no-referrer">'
+				+ avatarHtml
 				+ '<div class="ttt-comp-popover-text">'
 				+ '<span class="ttt-comp-popover-role">' + escapeHtml(role) + '</span>'
 				+ '<span class="ttt-comp-popover-username"><a href="' + profileUrl + '" target="_blank" rel="noopener noreferrer">@' + escapeHtml(username) + '</a></span>'

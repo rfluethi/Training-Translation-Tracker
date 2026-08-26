@@ -291,3 +291,26 @@ msgstr "veröffentlicht"
 
 msgid "Show only published"
 msgstr "Nur Veröffentlichte anzeigen"
+
+# 0.5.0: fetch backoff + component filter clarity
+msgid "Component status: any"
+msgstr "Komponenten-Status: egal"
+
+msgid "Fetch paused after a recent failure (backoff)."
+msgstr "Abruf nach kürzlichem Fehler pausiert (Backoff)."
+
+# 0.5.1: avatar privacy setting + a11y polish
+msgid "GitHub avatars"
+msgstr "GitHub-Avatare"
+
+msgid "Show avatars in the component popovers"
+msgstr "Avatare in den Komponenten-Popovers anzeigen"
+
+msgid "When disabled, initials are shown instead and the visitor's browser makes no request to github.com (privacy)."
+msgstr "Wenn deaktiviert, erscheinen Initialen, und der Browser der Besucher stellt keine Anfrage an github.com (Datenschutz)."
+
+msgid "Component"
+msgstr "Komponente"
+
+msgid "closed"
+msgstr "geschlossen"
