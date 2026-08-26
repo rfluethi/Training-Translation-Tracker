@@ -362,3 +362,10 @@ msgstr ""
 msgid "video"
 msgstr ""
 
+
+# 0.5.0: board status leads the dashboard; "published" replaces the "done" pill
+msgid "published"
+msgstr ""
+
+msgid "Show only published"
+msgstr ""

@@ -2,7 +2,7 @@
  * Training Translation Tracker - frontend interactivity.
  *
  * For each `.ttt-tracker` container, it binds:
- *   - Status filter buttons (data-filter-status="all|done|review|wip|open")
+ *   - Status filter buttons (data-filter-status="all|published|review|wip|open")
  *   - Stats pills (which share the same data-filter-status values)
  *   - Search field (.ttt-search-input) -> live search across data-search on each card
  *   - Collapse toggle per section (click on .ttt-section-title)
@@ -60,7 +60,6 @@
 		var state = {
 			status: 'all',
 			query: '',
-			projectStatus: '',     // empty = all project statuses
 			component: '',         // empty = no component filter
 			componentStatus: '',   // empty = any status (combined with component)
 		};
@@ -69,9 +68,10 @@
 		var statButtons = root.querySelectorAll('.ttt-stat[data-filter-status]');
 		// Search input
 		var searchInput = root.querySelector('.ttt-search-input');
-		// Project status dropdown (optional, only if items with project_status exist)
-		var projectStatusSelect = root.querySelector('.ttt-project-status-select');
 		// Component + component-status dropdowns (combined filter, 0.4.4)
+		// (The separate project-status dropdown was removed in 0.5.0: the
+		// board status now leads the stats pills, so the dropdown was a
+		// duplicate filter dimension.)
 		var componentSelect = root.querySelector('.ttt-component-select');
 		var componentStatusSelect = root.querySelector('.ttt-component-status-select');
 
@@ -80,14 +80,14 @@
 		if (saved) {
 			state.status = saved.status || 'all';
 			state.query = saved.query || '';
-			state.projectStatus = saved.projectStatus || '';
 			state.component = saved.component || '';
 			state.componentStatus = saved.componentStatus || '';
+			// Migration 0.5.0: 'done' was renamed to 'published'.
+			if (state.status === 'done') {
+				state.status = 'published';
+			}
 			if (searchInput && state.query) {
 				searchInput.value = state.query;
-			}
-			if (projectStatusSelect && state.projectStatus) {
-				projectStatusSelect.value = state.projectStatus;
 			}
 			if (componentSelect && state.component) {
 				componentSelect.value = state.component;
@@ -120,15 +120,6 @@
 					applyFilters(root, state);
 					saveState(trackerId, state);
 				}, 150);
-			});
-		}
-
-		// Project status dropdown: change event
-		if (projectStatusSelect) {
-			projectStatusSelect.addEventListener('change', function (e) {
-				state.projectStatus = e.target.value || '';
-				applyFilters(root, state);
-				saveState(trackerId, state);
 			});
 		}
 
@@ -253,7 +244,6 @@
 			var card = cards[i];
 			var status = card.getAttribute('data-status') || 'open';
 			var search = card.getAttribute('data-search') || '';
-			var projectStatus = card.getAttribute('data-project-status') || '';
 
 			// Status filter (overall status). The pseudo-status "unspecified"
 			// (introduced in 0.4.5, renamed in 0.4.6) is a sub-filter that
@@ -280,9 +270,6 @@
 
 			// Search filter
 			var matchQuery = (state.query === '') || (search.indexOf(state.query) !== -1);
-
-			// Project status filter (slug match)
-			var matchProjectStatus = (state.projectStatus === '') || (projectStatus === state.projectStatus);
 
 			// Component (+ optional component-status) filter, 0.4.4.
 			// When `state.component` is empty, no component filter applies and
@@ -311,7 +298,7 @@
 				}
 			}
 
-			var visible = matchStatus && matchQuery && matchProjectStatus && matchComponent;
+			var visible = matchStatus && matchQuery && matchComponent;
 			// Hide via the [hidden] attribute. The associated CSS rule
 			// `.ttt-tracker .ttt-card[hidden] { display: none !important }` has
 			// higher specificity than the card's display rule and wins.
@@ -345,16 +332,14 @@
 	}
 
 	function updateStatsPills(root, state) {
-		var counts = { done: 0, review: 0, wip: 0, open: 0, na: 0 };
+		var counts = { published: 0, review: 0, wip: 0, open: 0, na: 0 };
 		var untouched = 0;
 		var total = 0;
 		var cards = root.querySelectorAll('.ttt-card');
 		for (var i = 0; i < cards.length; i++) {
 			var card = cards[i];
 			var search = card.getAttribute('data-search') || '';
-			var projectStatus = card.getAttribute('data-project-status') || '';
 			var matchQuery = (state.query === '') || (search.indexOf(state.query) !== -1);
-			var matchProjectStatus = (state.projectStatus === '') || (projectStatus === state.projectStatus);
 
 			// Mirror the component (+ component-status) filter applied in
 			// applyFilters() so the pill counts reflect what is actually
@@ -377,7 +362,7 @@
 				}
 			}
 
-			if (!matchQuery || !matchProjectStatus || !matchComponent) continue;
+			if (!matchQuery || !matchComponent) continue;
 
 			var status = card.getAttribute('data-status') || 'open';
 			if (counts.hasOwnProperty(status)) {

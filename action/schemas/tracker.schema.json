@@ -44,12 +44,13 @@
   "$defs": {
 
     "Stats": {
-      "description": "Item-level aggregation. Component statuses are NOT aggregated into this. `untouched` is an optional sub-count of items whose status table is completely empty (every component has status='unset'); those items are also counted in their overall bucket (typically `open`).",
+      "description": "Item-level aggregation. Component statuses are NOT aggregated into this. `untouched` is an optional sub-count of items whose status table is completely empty (every component has status='unset'); those items are also counted in their overall bucket (typically `open`). `published` (0.5.0) counts items whose board status maps to 'published'; optional so pre-0.5.0 files stay valid.",
       "type": "object",
       "required": ["total_items", "done", "review", "wip", "open", "na"],
       "additionalProperties": false,
       "properties": {
         "total_items": { "type": "integer", "minimum": 0 },
+        "published":   { "type": "integer", "minimum": 0 },
         "done":        { "type": "integer", "minimum": 0 },
         "review":      { "type": "integer", "minimum": 0 },
         "wip":         { "type": "integer", "minimum": 0 },
@@ -60,9 +61,9 @@
     },
 
     "Status": {
-      "description": "Status value used for overall_status (item-level rollup). Does NOT include 'unset', because items always roll up to one of the five published statuses.",
+      "description": "Status value used for overall_status. Since 0.5.0 the Project V2 board status leads (see status-map.yml): 'published' marks items whose board status is 'Published or Closed'. The component rollup remains the fallback and can still yield 'done'. Does NOT include 'unset', because items always roll up to a published status value.",
       "type": "string",
-      "enum": ["na", "done", "review", "wip", "open"]
+      "enum": ["na", "done", "review", "wip", "open", "published"]
     },
 
     "ComponentStatus": {

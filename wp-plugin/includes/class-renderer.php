@@ -42,6 +42,19 @@ class TTT_Renderer {
 	);
 
 	/**
+	 * Overall statuses the renderer knows how to display (0.5.0).
+	 *
+	 * Since 0.5.0 the Project V2 board status leads: the action maps
+	 * "Published or Closed" to `published` (see status-map.yml). The
+	 * legacy rollup value `done` is normalized to `published` for
+	 * display, and unknown values fall back to `open`, so the stats
+	 * count and the card border can never disagree.
+	 *
+	 * @var array<int,string>
+	 */
+	private const KNOWN_OVERALL_STATUSES = array( 'published', 'review', 'wip', 'open', 'na' );
+
+	/**
 	 * Counts shortcode invocations per page render. Becomes part of the
 	 * tracker_id, which ensures stable localStorage keys across reloads.
 	 *
@@ -210,6 +223,7 @@ class TTT_Renderer {
 			'notAssigned'      => __( 'not yet assigned', 'training-translation-tracker' ),
 			'componentDetails' => __( 'Component details', 'training-translation-tracker' ),
 			'statusLabels'    => array(
+				'published' => __( 'published', 'training-translation-tracker' ),
 				'done'   => __( 'done', 'training-translation-tracker' ),
 				'review' => __( 'Review', 'training-translation-tracker' ),
 				'wip'    => __( 'in progress', 'training-translation-tracker' ),
@@ -375,6 +389,7 @@ class TTT_Renderer {
 .ttt-tracker .ttt-stat[data-filter-status]:hover { opacity: 0.85; }
 .ttt-tracker .ttt-stat-active { box-shadow: var(--ttt-shadow-active); }
 .ttt-tracker .ttt-stat-count { font-weight: 700; }
+.ttt-tracker .ttt-stat-published { background: var(--ttt-color-done-bg); color: var(--ttt-color-done-fg); }
 .ttt-tracker .ttt-stat-done   { background: var(--ttt-color-done-bg);   color: var(--ttt-color-done-fg); }
 .ttt-tracker .ttt-stat-review { background: var(--ttt-color-review-bg); color: var(--ttt-color-review-fg); }
 .ttt-tracker .ttt-stat-wip    { background: var(--ttt-color-wip-bg);    color: var(--ttt-color-wip-fg); }
@@ -420,6 +435,7 @@ class TTT_Renderer {
 .ttt-tracker .ttt-course[hidden] { display: none !important; }
 .ttt-tracker .ttt-group[hidden] { display: none !important; }
 .ttt-tracker .ttt-no-results[hidden] { display: none !important; }
+.ttt-tracker .ttt-overall-published { border-left-color: var(--ttt-color-done) !important; }
 .ttt-tracker .ttt-overall-done   { border-left-color: var(--ttt-color-done) !important; }
 .ttt-tracker .ttt-overall-review { border-left-color: var(--ttt-color-review-border) !important; }
 .ttt-tracker .ttt-overall-wip    { border-left-color: var(--ttt-color-wip-border) !important; }
@@ -513,20 +529,35 @@ class TTT_Renderer {
 	private function calculate_stats_from_groups( $groups ) {
 		$stats = array(
 			'total_items' => 0,
-			'done'        => 0,
+			'published'   => 0,
 			'review'      => 0,
 			'wip'         => 0,
 			'open'        => 0,
 			'na'          => 0,
+			'untouched'   => 0,
 		);
 
 		$count_item = function ( $item ) use ( &$stats ) {
-			$status = (string) ( $item['overall_status'] ?? 'open' );
-			if ( ! isset( $stats[ $status ] ) ) {
-				$status = 'open';
-			}
+			$status = $this->normalize_overall_status( $item['overall_status'] ?? 'open' );
 			$stats[ $status ]++;
 			$stats['total_items']++;
+
+			// Sub-count "untouched": every component is unset (no status
+			// table in the issue). Computed server-side since 0.5.0 so the
+			// "unspecified" pill is correct even without JavaScript.
+			$components = (array) ( $item['components'] ?? array() );
+			if ( ! empty( $components ) ) {
+				$all_unset = true;
+				foreach ( $components as $comp ) {
+					if ( ( $comp['status'] ?? '' ) !== 'unset' ) {
+						$all_unset = false;
+						break;
+					}
+				}
+				if ( $all_unset ) {
+					$stats['untouched']++;
+				}
+			}
 		};
 
 		foreach ( $groups as $group ) {
@@ -553,6 +584,25 @@ class TTT_Renderer {
 		}
 
 		return $stats;
+	}
+
+	/**
+	 * Normalizes an overall_status value to a displayable one (0.5.0).
+	 *
+	 * `done` (legacy rollup, pre-0.5.0 tracker.json) is treated as
+	 * `published`; anything unknown falls back to `open`. Used for both
+	 * the stats count and the card class/data-status, so the two can
+	 * never disagree.
+	 *
+	 * @param string $status Raw overall_status from tracker.json.
+	 * @return string One of KNOWN_OVERALL_STATUSES.
+	 */
+	private function normalize_overall_status( $status ) {
+		$status = (string) $status;
+		if ( 'done' === $status ) {
+			return 'published';
+		}
+		return in_array( $status, self::KNOWN_OVERALL_STATUSES, true ) ? $status : 'open';
 	}
 
 	/**
@@ -671,17 +721,13 @@ class TTT_Renderer {
 		}
 		$stats = $this->calculate_stats_from_groups( $visible_groups );
 
-		// Collect distinct project status values from the visible items so the
-		// dropdown only shows options that actually occur.
-		$project_status_values = $this->collect_project_statuses( $visible_groups );
-
 		?>
 		<div class="ttt-tracker" id="<?php echo esc_attr( $tracker_id ); ?>" data-tracker-id="<?php echo esc_attr( $tracker_id ); ?>">
 			<header class="ttt-header">
 				<?php if ( $show_stats ) : ?>
 					<?php $this->render_stats( $stats ); ?>
 				<?php endif; ?>
-				<?php $this->render_filter_bar( $project_status_values ); ?>
+				<?php $this->render_filter_bar(); ?>
 				<?php
 				// "As of: ..." does not appear on the frontend; the timestamp
 				// lives on the settings page (Settings > Translation Tracker).
@@ -713,7 +759,11 @@ class TTT_Renderer {
 	 *
 	 * @return void
 	 */
-	private function render_filter_bar( $project_status_values = array() ) {
+	private function render_filter_bar() {
+		// The separate Project-status dropdown was removed in 0.5.0: since
+		// the board status leads the stats pills and the card border, the
+		// dropdown duplicated the pill filter and confused users with a
+		// second status dimension.
 		?>
 		<div class="ttt-filter-bar">
 			<input
@@ -722,17 +772,6 @@ class TTT_Renderer {
 				placeholder="<?php esc_attr_e( 'Search titles…', 'training-translation-tracker' ); ?>"
 				aria-label="<?php esc_attr_e( 'Search titles', 'training-translation-tracker' ); ?>"
 			/>
-			<?php if ( ! empty( $project_status_values ) ) : ?>
-				<select
-					class="ttt-project-status-select"
-					aria-label="<?php esc_attr_e( 'Filter by Project status', 'training-translation-tracker' ); ?>"
-				>
-					<option value=""><?php esc_html_e( 'All statuses', 'training-translation-tracker' ); ?></option>
-					<?php foreach ( $project_status_values as $slug => $label ) : ?>
-						<option value="<?php echo esc_attr( $slug ); ?>"><?php echo esc_html( $label ); ?></option>
-					<?php endforeach; ?>
-				</select>
-			<?php endif; ?>
 			<div
 				class="ttt-component-filter-group"
 				role="group"
@@ -773,55 +812,6 @@ class TTT_Renderer {
 			><?php esc_html_e( 'Collapse all', 'training-translation-tracker' ); ?></button>
 		</div>
 		<?php
-	}
-
-	/**
-	 * Collects all distinct project status values from the visible groups.
-	 * Returns a slug-to-label map (slug for robust filter matching, label for
-	 * the UI). Sorted alphabetically by label.
-	 *
-	 * @param array $groups Filtered group list.
-	 * @return array<string,string>
-	 */
-	private function collect_project_statuses( $groups ) {
-		$found = array();
-
-		$collect_item = function ( $item ) use ( &$found ) {
-			if ( empty( $item['issue']['project_status'] ) ) {
-				return;
-			}
-			$label = (string) $item['issue']['project_status'];
-			$slug  = sanitize_title( $label );
-			if ( '' !== $slug && ! isset( $found[ $slug ] ) ) {
-				$found[ $slug ] = $label;
-			}
-		};
-
-		foreach ( $groups as $group ) {
-			$type = (string) ( $group['type'] ?? '' );
-			if ( 'pathway' === $type ) {
-				foreach ( (array) ( $group['courses'] ?? array() ) as $course ) {
-					foreach ( (array) ( $course['sections'] ?? array() ) as $section ) {
-						foreach ( (array) ( $section['items'] ?? array() ) as $item ) {
-							$collect_item( $item );
-						}
-					}
-				}
-			} elseif ( 'handbook' === $type ) {
-				foreach ( (array) ( $group['sections'] ?? array() ) as $section ) {
-					foreach ( (array) ( $section['items'] ?? array() ) as $item ) {
-						$collect_item( $item );
-					}
-				}
-			} elseif ( 'orphan' === $type ) {
-				foreach ( (array) ( $group['items'] ?? array() ) as $item ) {
-					$collect_item( $item );
-				}
-			}
-		}
-
-		asort( $found, SORT_NATURAL | SORT_FLAG_CASE );
-		return $found;
 	}
 
 	/**
@@ -896,7 +886,7 @@ class TTT_Renderer {
 	 */
 	private function render_stats( $stats ) {
 		$total     = (int) ( $stats['total_items'] ?? 0 );
-		$done      = (int) ( $stats['done'] ?? 0 );
+		$published = (int) ( $stats['published'] ?? 0 );
 		$review    = (int) ( $stats['review'] ?? 0 );
 		$wip       = (int) ( $stats['wip'] ?? 0 );
 		$open      = (int) ( $stats['open'] ?? 0 );
@@ -909,9 +899,9 @@ class TTT_Renderer {
 				<span class="ttt-stat-count"><?php echo (int) $total; ?></span>
 				<?php esc_html_e( 'Items', 'training-translation-tracker' ); ?>
 			</button>
-			<button type="button" class="ttt-stat ttt-stat-done" data-filter-status="done" title="<?php esc_attr_e( 'Show only done', 'training-translation-tracker' ); ?>">
-				<span class="ttt-stat-count"><?php echo (int) $done; ?></span>
-				<?php esc_html_e( 'done', 'training-translation-tracker' ); ?>
+			<button type="button" class="ttt-stat ttt-stat-published" data-filter-status="published" title="<?php esc_attr_e( 'Show only published', 'training-translation-tracker' ); ?>">
+				<span class="ttt-stat-count"><?php echo (int) $published; ?></span>
+				<?php esc_html_e( 'published', 'training-translation-tracker' ); ?>
 			</button>
 			<button type="button" class="ttt-stat ttt-stat-review" data-filter-status="review" title="<?php esc_attr_e( 'Show only Review', 'training-translation-tracker' ); ?>">
 				<span class="ttt-stat-count"><?php echo (int) $review; ?></span>
@@ -1096,7 +1086,7 @@ class TTT_Renderer {
 		if ( '' !== $url_youtube_de && $url_youtube_de === $url_youtube_en ) {
 			$url_youtube_de = '';
 		}
-		$overall        = (string) ( $item['overall_status'] ?? 'open' );
+		$overall        = $this->normalize_overall_status( $item['overall_status'] ?? 'open' );
 		$components     = (array) ( $item['components'] ?? array() );
 		$issue          = isset( $item['issue'] ) && is_array( $item['issue'] ) ? $item['issue'] : null;
 		$markers        = $this->collect_markers( $item );

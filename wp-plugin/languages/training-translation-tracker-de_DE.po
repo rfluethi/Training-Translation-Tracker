@@ -284,3 +284,10 @@ msgstr "fehlt"
 msgid "Invalid tracker URL. Must be HTTPS and on the allowed-hosts list. Reverted to previous value."
 msgstr "Ungültige Tracker-URL. Muss HTTPS sein und auf der erlaubten Host-Liste stehen. Vorheriger Wert wiederhergestellt."
 
+
+# 0.5.0: board status leads the dashboard; "published" replaces the "done" pill
+msgid "published"
+msgstr "veröffentlicht"
+
+msgid "Show only published"
+msgstr "Nur Veröffentlichte anzeigen"

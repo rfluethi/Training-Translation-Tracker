@@ -209,6 +209,25 @@ def _build_tracker(repo_root: Path, output_dir: Path | None, skip_issues: bool) 
     component_icons = component_templates_full.get("icons", {})
     component_types = component_templates_full.get("types", {})
 
+    # ----------------------------------------------------------------- step 2b
+    # Board-status map (0.5.0): the Project V2 board status leads the
+    # dashboard's overall status. Optional — without the file, the
+    # component rollup remains the only source (pre-0.5.0 behavior).
+    status_map: dict[str, str] = {}
+    status_map_path = repo_root / "status-map.yml"
+    if status_map_path.exists():
+        status_map_full = _load_and_validate_yaml(
+            status_map_path,
+            repo_root / "schemas" / "status-map.schema.json",
+        )
+        status_map = {
+            str(k).strip().lower(): str(v)
+            for k, v in (status_map_full.get("map") or {}).items()
+        }
+        LOG.info("status-map.yml: %d board-status mappings (board status leads)", len(status_map))
+    else:
+        LOG.info("status-map.yml not found — overall_status uses the component rollup only")
+
     # ----------------------------------------------------------------- step 3
     # Read inventory from cache (committed to the repo). No live API calls
     # against wordpress.org — that lookup is too rate-limited in CI.
@@ -247,14 +266,15 @@ def _build_tracker(repo_root: Path, output_dir: Path | None, skip_issues: bool) 
     LOG.info("Joining inventory and issues")
     # The full scope.yml dict carries the pathways hierarchy — that's what the
     # joiner uses to place each inventory item.
-    result = build_groups(inventory_items, issues, component_types, scope)
+    result = build_groups(inventory_items, issues, component_types, scope, status_map=status_map)
     warnings = inventory_warnings + result.warnings
 
     # ----------------------------------------------------------------- step 6
     stats = calculate_stats(result.groups)
     LOG.info(
-        "Stats: %d items (done=%d review=%d wip=%d open=%d na=%d)",
+        "Stats: %d items (published=%d done=%d review=%d wip=%d open=%d na=%d)",
         stats["total_items"],
+        stats["published"],
         stats["done"],
         stats["review"],
         stats["wip"],

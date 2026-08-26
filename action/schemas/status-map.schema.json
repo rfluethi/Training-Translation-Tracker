@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/rfluethi/Training-Translation-Tracker/schemas/status-map.schema.json",
+  "title": "Board Status Map",
+  "description": "Maps GitHub Project V2 board status values to the dashboard's overall status buckets. The board status is the leading status for cards and stats pills; unknown values fall back to the component rollup.",
+  "type": "object",
+  "required": ["map"],
+  "additionalProperties": false,
+  "properties": {
+    "map": {
+      "description": "Board status value (matched case-insensitively) to bucket.",
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {
+        "type": "string",
+        "enum": ["open", "wip", "review", "published", "done", "na"]
+      }
+    }
+  }
+}

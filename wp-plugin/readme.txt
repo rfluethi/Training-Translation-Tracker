@@ -4,7 +4,7 @@ Tags: translation, learn-wordpress, tracker, dashboard
 Requires at least: 6.0
 Tested up to: 7.0
 Requires PHP: 8.0
-Stable tag: 0.4.11
+Stable tag: 0.5.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -34,6 +34,34 @@ DACH Team for translating learn.wordpress.org content into German.
 4. Embed the shortcode `[translation_tracker]` on any page.
 
 == Changelog ==
+
+= 0.5.0 =
+* The GitHub Project V2 board status now LEADS the dashboard: stats
+  pills, card border color and the status filter count the board status
+  ("Awaiting Triage"/"Looking for Translator" -> open, "Translation in
+  Progress"/"Preparing to Publish" -> in progress, "Ready for Review" ->
+  Review, "Published or Closed" -> published). The component table
+  remains the detail level (icons, yellow highlighting, component
+  filter) and the fallback for items without a board status.
+* New status and pill "published" (German: "veroeffentlicht") replaces
+  the "done" pill. A published item counts as published even when
+  optional components were intentionally not translated.
+* The mapping from board status to dashboard status lives in the new
+  Action config `action/status-map.yml` (validated against
+  `schemas/status-map.schema.json`); a renamed board column only needs a
+  config edit, not a code change. Unknown values fall back to the
+  component rollup.
+* The separate "Filter by Project status" dropdown was removed - it
+  duplicated the pill filter and created a second, confusing status
+  dimension.
+* The "unspecified" pill count is now computed server-side, so it is
+  correct even without JavaScript.
+* Unknown overall_status values are normalized to "open" for both the
+  count and the card class, so numbers and colors cannot disagree.
+* Compatibility: tracker.json keeps schema_version 1. New tracker.json
+  with old plugin: "published" items count under "open" (as before this
+  release). Old tracker.json with this plugin: "done" is displayed as
+  "published". Update Action and plugin together for exact numbers.
 
 = 0.4.11 =
 * Bugfix (issue #2): original video URLs no longer appear in the translation

@@ -263,6 +263,7 @@ def test_stats_count_per_overall_status():
     stats = calculate_stats(groups)
     assert stats == {
         "total_items": 4,
+        "published": 0,
         "done": 1,
         "review": 1,
         "wip": 1,
@@ -315,3 +316,130 @@ def test_end_to_end_output_validates_against_schema(tmp_path):
     # also sanity-check the report file
     report = (tmp_path / "last-run.md").read_text(encoding="utf-8")
     assert "total_items: 2" in report
+
+
+# ---------------------------------------------------------------------------
+# Board status leads (0.5.0, status-map.yml)
+# ---------------------------------------------------------------------------
+
+STATUS_MAP = {
+    "awaiting triage": "open",
+    "looking for translator": "open",
+    "translation in progress": "wip",
+    "preparing to publish": "wip",
+    "ready for review": "review",
+    "published or closed": "published",
+}
+
+
+def _issue_with_board_status(url_orig, board_status, components=None, number=1):
+    issue = _issue(url_orig, components, number=number)
+    issue.raw.project_status = board_status
+    return issue
+
+
+def test_board_status_leads_over_component_rollup():
+    """"Ready for Review" on the board counts as review, even when the
+    component table would roll up to open."""
+    inv = [_inventory_item()]
+    issues = [
+        _issue_with_board_status(
+            "https://learn.wordpress.org/lesson/what-is-wordpress/",
+            "Ready for Review",
+            [ComponentStatus("text", "open")],
+            number=11,
+        )
+    ]
+    result = build_groups(inv, issues, COMPONENT_TEMPLATES, status_map=STATUS_MAP)
+    item = result.groups[0]["courses"][0]["sections"][0]["items"][0]
+    assert item["overall_status"] == "review"
+
+
+def test_published_or_closed_maps_to_published_despite_open_components():
+    """A published item stays published even when optional components
+    (e.g. subtitles) were intentionally not translated."""
+    inv = [_inventory_item()]
+    issues = [
+        _issue_with_board_status(
+            "https://learn.wordpress.org/lesson/what-is-wordpress/",
+            "Published or Closed",
+            [ComponentStatus("text", "done"), ComponentStatus("subtitles", "open")],
+            number=12,
+        )
+    ]
+    result = build_groups(inv, issues, COMPONENT_TEMPLATES, status_map=STATUS_MAP)
+    item = result.groups[0]["courses"][0]["sections"][0]["items"][0]
+    assert item["overall_status"] == "published"
+
+
+def test_unknown_board_status_falls_back_to_rollup():
+    inv = [_inventory_item()]
+    issues = [
+        _issue_with_board_status(
+            "https://learn.wordpress.org/lesson/what-is-wordpress/",
+            "Some Brand New Column",
+            [ComponentStatus("text", "wip")],
+            number=13,
+        )
+    ]
+    result = build_groups(inv, issues, COMPONENT_TEMPLATES, status_map=STATUS_MAP)
+    item = result.groups[0]["courses"][0]["sections"][0]["items"][0]
+    assert item["overall_status"] == "wip"
+
+
+def test_without_status_map_behavior_unchanged():
+    """No status_map passed: pre-0.5.0 rollup-only behavior."""
+    inv = [_inventory_item()]
+    issues = [
+        _issue_with_board_status(
+            "https://learn.wordpress.org/lesson/what-is-wordpress/",
+            "Ready for Review",
+            [ComponentStatus("text", "open")],
+            number=14,
+        )
+    ]
+    result = build_groups(inv, issues, COMPONENT_TEMPLATES)
+    item = result.groups[0]["courses"][0]["sections"][0]["items"][0]
+    assert item["overall_status"] == "open"
+
+
+def test_board_status_leads_for_orphans():
+    issues = [
+        _issue_with_board_status(
+            "https://learn.wordpress.org/lesson/not-in-scope/",
+            "Published or Closed",
+            [ComponentStatus("text", "open")],
+            number=15,
+        )
+    ]
+    result = build_groups([], issues, COMPONENT_TEMPLATES, status_map=STATUS_MAP)
+    orphans = [g for g in result.groups if g["type"] == "orphan"]
+    assert orphans[0]["items"][0]["overall_status"] == "published"
+
+
+def test_stats_count_published_bucket():
+    groups = [
+        {
+            "type": "orphan",
+            "label": "Other",
+            "items": [
+                {"type": "lesson", "slug": "p", "title_en": "P",
+                 "url_en": "https://learn.wordpress.org/lesson/p/",
+                 "overall_status": "published"},
+            ],
+        },
+    ]
+    stats = calculate_stats(groups)
+    assert stats["published"] == 1
+    assert stats["total_items"] == 1
+
+
+def test_status_map_yml_matches_schema_and_loader():
+    """The shipped status-map.yml validates against its schema, and the
+    normalized keys cover the six known board columns."""
+    import yaml
+    raw = yaml.safe_load((REPO_ROOT / "status-map.yml").read_text(encoding="utf-8"))
+    schema = json.loads((REPO_ROOT / "schemas" / "status-map.schema.json").read_text(encoding="utf-8"))
+    Draft202012Validator(schema).validate(raw)
+    normalized = {str(k).strip().lower(): v for k, v in raw["map"].items()}
+    assert normalized == STATUS_MAP

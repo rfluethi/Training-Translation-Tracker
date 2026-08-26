@@ -38,12 +38,19 @@ def build_groups(
     issues: list[ParsedIssue],
     component_templates: dict[str, list[str]],
     scope_config: dict[str, Any] | None = None,
+    status_map: dict[str, str] | None = None,
 ) -> JoinerResult:
     """Top-level entry point. Returns groups + a list of human-readable warnings.
 
     `scope_config` is the parsed groups.yml (a dict with key "pathways").
     Pass None to fall back to a single 'Unassigned' pathway containing all
     inventory items in scope.yml order.
+
+    `status_map` (0.5.0) maps the Project V2 board status (lowercased,
+    trimmed) to an overall-status bucket. When an item's primary issue has
+    a mapped board status, that bucket LEADS and overrides the component
+    rollup; otherwise the rollup remains the fallback. Pass None or {} to
+    keep the pre-0.5.0 rollup-only behavior.
     """
 
     # 1) Map issues by normalized original URL (and detect duplicates)
@@ -66,10 +73,11 @@ def build_groups(
         component_templates,
         url_to_position,
         warnings,
+        status_map,
     )
 
     # 4) Orphans = issues that didn't match any inventory item
-    orphan_items = _collect_orphans(issues, matched_inventory_urls, warnings)
+    orphan_items = _collect_orphans(issues, matched_inventory_urls, warnings, status_map)
 
     # 5) Build the actual pathway groups, in the order they appear in groups.yml
     groups: list[dict[str, Any]] = []
@@ -172,6 +180,24 @@ def calculate_overall_status(component_statuses: list[str]) -> str:
     return "open"
 
 
+def _overall_from_board(issue: ParsedIssue, status_map: dict[str, str] | None) -> str:
+    """Bucket from the Project V2 board status, or "" when unmapped (0.5.0).
+
+    The board status is the status the team actually maintains, so it
+    leads the dashboard's cards and stats pills. Keys in `status_map` are
+    expected lowercased and trimmed (build.py normalizes them on load).
+    Returns "" when no map is configured, the issue has no board status,
+    or the value is not in the map — callers then fall back to the
+    component rollup.
+    """
+    if not status_map:
+        return ""
+    raw = (issue.raw.project_status or "").strip().lower()
+    if not raw:
+        return ""
+    return status_map.get(raw, "")
+
+
 # ---------------------------------------------------------------------------
 # groups.yml lookup helpers
 # ---------------------------------------------------------------------------
@@ -232,6 +258,7 @@ def _walk_inventory(
     component_templates: dict[str, list[str]],
     url_to_position: dict[str, Position],
     warnings: list[str],
+    status_map: dict[str, str] | None = None,
 ) -> tuple[dict, list[dict[str, Any]]]:
     """Build pathway tree dict and a flat list of handbook items.
 
@@ -245,7 +272,7 @@ def _walk_inventory(
 
     for inv_item in inventory:
         matching = issue_index.get(inv_item.url_en, [])
-        item_dict = _item_to_dict(inv_item, matching, component_templates, warnings)
+        item_dict = _item_to_dict(inv_item, matching, component_templates, warnings, status_map)
 
         if inv_item.url_en in issue_index:
             matched_urls.add(inv_item.url_en)
@@ -302,6 +329,7 @@ def _item_to_dict(
     matching_issues: list[ParsedIssue],
     component_templates: dict[str, list[str]],
     warnings: list[str],
+    status_map: dict[str, str] | None = None,
 ) -> dict[str, Any]:
     item = inv_item.to_minimal_dict()
 
@@ -361,6 +389,13 @@ def _item_to_dict(
         statuses = ["unset"] * len(defaults)
 
     item["overall_status"] = calculate_overall_status(statuses)
+
+    # 0.5.0: the board status leads when it maps to a bucket. The rollup
+    # above stays as the fallback for unmapped or missing board values.
+    board_bucket = _overall_from_board(primary, status_map)
+    if board_bucket:
+        item["overall_status"] = board_bucket
+
     return item
 
 
@@ -372,6 +407,7 @@ def _collect_orphans(
     issues: list[ParsedIssue],
     matched_urls: set[str],
     warnings: list[str],
+    status_map: dict[str, str] | None = None,
 ) -> list[dict[str, Any]]:
     out: list[dict[str, Any]] = []
 
@@ -389,7 +425,8 @@ def _collect_orphans(
                 "orphan_reason": "outside_scope",
                 "issue": issue.to_issue_dict(),
                 "components": [c.to_dict() for c in issue.components],
-                "overall_status": calculate_overall_status(
+                "overall_status": _overall_from_board(issue, status_map)
+                or calculate_overall_status(
                     [c.status for c in issue.components]
                 ),
             })
@@ -406,7 +443,8 @@ def _collect_orphans(
             "orphan_reason": "outside_scope",
             "issue": issue.to_issue_dict(),
             "components": [c.to_dict() for c in issue.components],
-            "overall_status": calculate_overall_status(
+            "overall_status": _overall_from_board(issue, status_map)
+            or calculate_overall_status(
                 [c.status for c in issue.components]
             ),
         })

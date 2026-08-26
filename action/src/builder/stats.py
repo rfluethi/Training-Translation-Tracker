@@ -1,7 +1,9 @@
 """Item-level statistics (Arbeitsplan section A.2.2).
 
 Only `overall_status` per item is counted, component statuses are NOT
-aggregated. The sum of (done + review + wip + open + na) equals total_items.
+aggregated. The sum of (published + done + review + wip + open + na)
+equals total_items. `published` was added in 0.5.0 for items whose board
+status is "Published or Closed" (see status-map.yml).
 
 Additionally tracks `untouched`: a sub-count of items whose status table
 is completely empty (every component has status="unset"). These items
@@ -18,7 +20,7 @@ from typing import Any
 
 def calculate_stats(groups: list[dict[str, Any]]) -> dict[str, int]:
     """Walk the groups tree and count items by overall_status."""
-    counts = {"done": 0, "review": 0, "wip": 0, "open": 0, "na": 0}
+    counts = {"published": 0, "done": 0, "review": 0, "wip": 0, "open": 0, "na": 0}
     total = 0
     untouched = 0
 
