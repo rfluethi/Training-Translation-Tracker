@@ -145,26 +145,27 @@ When a DACH team account exists:
 
 ### Via the WP admin UI
 
-1. **Plugins → Installed Plugins**, deactivate Translation Tracker (settings and cache are preserved).
-2. Remove **Translation Tracker** (red delete action).
-3. **Plugins → Upload Plugin**, choose the ZIP from the current Releases tab.
-4. **Install Now** → **Activate**.
-5. **Settings → Translation Tracker**, verify URL and cache duration.
-6. Press **Clear cache now**.
-7. Open the test page, verify that the dashboard appears.
+1. **Plugins → Upload Plugin**, choose the ZIP from the current Releases tab.
+2. In the dialog WordPress shows for an already installed plugin, confirm **"Replace current with uploaded"**. Settings and cache are preserved.
+3. **Settings → Translation Tracker**, verify URL and cache duration.
+4. Press **Clear cache now**.
+5. Open the test page, verify that the dashboard appears.
+
+**Never update by deleting the plugin first.** Deleting runs `uninstall.php`, which intentionally removes all settings and cached data. Deactivating alone is harmless but unnecessary; the replace dialog handles everything.
 
 ### Via WP-CLI
 
 ```bash
-wp plugin install ~/Downloads/training-translation-tracker.zip --activate
-wp option update ttt_settings '{"tracker_url":"…","cache_hours":12}' --format=json
+wp plugin install ~/Downloads/training-translation-tracker.zip --force --activate
 wp transient delete ttt_tracker_payload
 wp transient delete ttt_tracker_last_good
 ```
 
-### Via the GitHub Updater plugin (planned, Phase 4)
+`--force` replaces the installed version in place, like the replace dialog; settings are preserved.
 
-A GitHub Updater plugin handles the update directly from the repo. Once the variant is picked and configured, the update flow runs automatically through the WordPress plugins list.
+### No automatic updater (decision)
+
+There is deliberately no update mechanism in the plugin. The `plugin-update-checker` library was removed in 0.4.2 (it is itself an updater, which Plugin Check forbids, and produced dozens of noise findings), and on 2026-08-26 the available GitHub updater variants were reviewed and rejected. Updates are manual, via the release ZIP and the replace dialog as described above. The `Update URI:` plugin header remains in place so wordpress.org can never offer a foreign plugin with the same slug as an "update" (see [Architecture.md](Architecture.md), established decisions).
 
 ## 7. Cache management
 

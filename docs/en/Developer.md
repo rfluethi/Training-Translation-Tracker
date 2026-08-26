@@ -522,5 +522,5 @@ Expected: no `missing` and no `unused` tokens.
 - System architecture: [Architecture.md](Architecture.md)
 - Operations (releases, token maintenance, failure recovery): [Operations.md](Operations.md)
 - User view: [User-Guide.md](User-Guide.md)
-- JSON schemas: [`action/schemas/`](../action/schemas/)
-- Contributing guide: [CONTRIBUTING.md](../CONTRIBUTING.md)
+- JSON schemas: [`action/schemas/`](../../action/schemas/)
+- Contributing guide: [CONTRIBUTING.md](../../CONTRIBUTING.md)

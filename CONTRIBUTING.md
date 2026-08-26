@@ -37,15 +37,16 @@ The repository contains:
 
 - `action/`, Python code for the GitHub Action
 - `wp-plugin/`, WordPress plugin
-- `.github/workflows/`, build and release workflows
+- `plugin-tests/`, PHPUnit + Brain Monkey suite for the plugin (no Docker needed)
+- `.github/workflows/`, build, test and release workflows
 - `build-plugin-zip.sh`, builds the plugin ZIP locally
 
-Documentation suite (covers both components):
+Documentation suite (covers both components; English in `docs/en/`, German mirror in `docs/de/`):
 
-- [docs/Architecture.md](docs/Architecture.md), system architecture and design decisions
-- [docs/Developer.md](docs/Developer.md), code setup, tests, extensions
-- [docs/Operations.md](docs/Operations.md), releases, token maintenance, failure recovery
-- [docs/User-Guide.md](docs/User-Guide.md), plugin usage and issue maintenance
+- [docs/en/Architecture.md](docs/en/Architecture.md), system architecture and design decisions
+- [docs/en/Developer.md](docs/en/Developer.md), code setup, tests, extensions
+- [docs/en/Operations.md](docs/en/Operations.md), releases, token maintenance, failure recovery
+- [docs/en/User-Guide.md](docs/en/User-Guide.md), plugin usage and issue maintenance
 - [action/README.md](action/README.md), short action-specific notes
 
 ## Action development (Python)
@@ -111,6 +112,16 @@ Or build a ZIP for every test:
 # → ~/Desktop/training-translation-tracker.zip
 ```
 
+### Run tests
+
+```bash
+cd plugin-tests
+composer install
+composer test
+```
+
+The suite runs on plain PHP with Brain Monkey (no WordPress installation, no Docker) and should **always be green** before every commit. It also runs in CI via `.github/workflows/plugin-tests.yml`.
+
 ### Code style
 
 - WordPress Coding Standards (see the [WordPress.org Handbook](https://developer.wordpress.org/coding-standards/wordpress-coding-standards/))
@@ -139,13 +150,15 @@ The release workflow automatically builds the ZIP and publishes a GitHub release
 
 ## Documentation
 
-The documentation lives at the top level under `docs/`:
+The documentation lives at the top level under `docs/`, English in `docs/en/`, the German mirror in `docs/de/`:
 
-- `Architecture.md`, system architecture, data model, decisions
+- `Architecture.md` / `Architektur.md`, system architecture, data model, decisions
 - `Developer.md`, code setup, modules, tests, extension points
 - `Operations.md`, releases, token, failure recovery
 - `User-Guide.md`, plugin settings, shortcodes, frontend usage, issue maintenance
-- `Issue-Templates-DACH.md`, templates for creating translation issues (lesson, handbook text, handbook video)
+- `Issue-Templates-DACH.md` / `Issue-Vorlagen-DACH.md`, templates for creating translation issues (lesson, handbook text, handbook video)
+
+Both languages are maintained together: a documentation change is only complete when the EN and the DE file are updated in the same commit. If you cannot provide the German side of a change, say so in the PR and the maintainers will translate it.
 
 Documentation contributions are welcome: typo fixes, clearer explanations, examples.
 
@@ -159,7 +172,7 @@ Documentation contributions are welcome: typo fixes, clearer explanations, examp
 3. **Commits** with clear, short, imperative messages:
    - "Fix: popover gets clipped at the right viewport edge"
    - "Add: CSV export for tracker items"
-4. **Run tests** (action: `pytest`, plugin: manual smoke test).
+4. **Run tests** (action: `pytest`, plugin: `composer test` in `plugin-tests/` plus a manual smoke test).
 5. **Open a pull request** against `main` with a description covering:
    - What changes?
    - Why?
@@ -176,7 +189,7 @@ Other language teams can use this tracker for their own locale:
 4. Populate `inventory-cache.json` locally with `--refresh-cache`.
 5. Set the GitHub secret `GH_PAT_PROJECT_READ` to your own PAT (Project V2 read scope).
 6. Update the plugin header in `wp-plugin/training-translation-tracker.php` (your plugin name, author, project URI).
-7. Translate text in `docs/` and all locale-specific strings.
+7. Translate text in `docs/en/` (and replace or drop the German mirror `docs/de/`) and all locale-specific strings.
 8. Build the plugin ZIP and install it on your own site.
 
 Pull requests that contribute generic improvements back upstream (e.g. new inventory sources, new shortcode options) are welcome. Please keep locale-specific changes in your fork.

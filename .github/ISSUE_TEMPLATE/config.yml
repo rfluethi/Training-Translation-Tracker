@@ -11,7 +11,7 @@ contact_links:
       If you are a DACH team member and want to open a translation
       issue for a single lesson, that belongs in the WordPress/Learn
       repo, NOT here. For the issue template see this plugin's
-      user guide: docs/User-Guide.md, section "Creating issues for
+      user guide: docs/en/User-Guide.md, section "Creating issues for
       new translations".
   - name: General questions / discussion
     url: https://make.wordpress.org/training/

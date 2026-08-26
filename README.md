@@ -1,4 +1,4 @@
-# Training Translation Tracker Inventory
+# Training Translation Tracker
 
 <img src="wp-plugin/assets/icons/header-icon.svg" width="200" alt="Translation Tracker">
 
@@ -9,39 +9,49 @@ Mono-repo for the inventory-driven translation dashboard of the WordPress DACH t
 
 ## Documentation
 
-Five documents, depending on your role:
+English documentation lives in [`docs/en/`](docs/en/), the German mirror in [`docs/de/`](docs/de/). Five documents, depending on your role:
 
-| If you want to… | Then read… |
-|---|---|
-| understand the system, how it works and why it is built this way | [docs/Architecture.md](docs/Architecture.md) |
-| work on the code (Action-Python or Plugin-PHP/JS/CSS) | [docs/Developer.md](docs/Developer.md) |
-| operate the tool (releases, token maintenance, failure recovery) | [docs/Operations.md](docs/Operations.md) |
-| install the plugin on a WP site or maintain issues | [docs/User-Guide.md](docs/User-Guide.md) |
-| create a DACH translation issue | [docs/Issue-Templates-DACH.md](docs/Issue-Templates-DACH.md) |
+| If you want to… | Then read… | Deutsch |
+|---|---|---|
+| understand the system, how it works and why it is built this way | [docs/en/Architecture.md](docs/en/Architecture.md) | [Architektur.md](docs/de/Architektur.md) |
+| work on the code (Action-Python or Plugin-PHP/JS/CSS) | [docs/en/Developer.md](docs/en/Developer.md) | [Developer.md](docs/de/Developer.md) |
+| operate the tool (releases, token maintenance, failure recovery) | [docs/en/Operations.md](docs/en/Operations.md) | [Operations.md](docs/de/Operations.md) |
+| install the plugin on a WP site or maintain issues | [docs/en/User-Guide.md](docs/en/User-Guide.md) | [User-Guide.md](docs/de/User-Guide.md) |
+| create a DACH translation issue | [docs/en/Issue-Templates-DACH.md](docs/en/Issue-Templates-DACH.md) | [Issue-Vorlagen-DACH.md](docs/de/Issue-Vorlagen-DACH.md) |
+
+Both languages are maintained together: every documentation change updates the EN and the DE file in the same commit.
 
 ## Repository layout
 
 ```text
 Training-Translation-Tracker/
-├── .github/workflows/build.yml   Workflow at top level (GitHub convention)
+├── .github/workflows/
+│   ├── build.yml                 Builds tracker.json (every 12 h, config push, manual)
+│   ├── release-plugin.yml        Builds the release ZIP on version tag push (v*)
+│   └── plugin-tests.yml          Runs the PHPUnit suite on plugin changes
+│
 ├── action/                       Python action, builds tracker.json on the data branch
 │   ├── src/                      Inventory sources, issue parser, joiner, build entry point
 │   ├── tests/                    pytest tests
-│   ├── schemas/                  JSON schemas (runtime copy)
+│   ├── schemas/                  JSON schemas (tracker, scope, templates, status-map)
 │   ├── scope.yml                 DACH scope: which URLs are tracked
-│   ├── component-templates.yml   Default components per item type
+│   ├── component-templates.yml   Default components per item type, icons
+│   ├── status-map.yml            Board status → dashboard status (since 0.5.0)
 │   ├── inventory-cache.json      Committed inventory snapshot
 │   ├── requirements.txt
 │   └── LICENSE
 │
 ├── wp-plugin/                    WordPress plugin
 │   ├── training-translation-tracker.php   Plugin header and boot
-│   ├── includes/                 Settings, fetcher, renderer
-│   ├── assets/                   JS for the frontend
+│   ├── includes/                 Settings, fetcher, status logic, styles, renderer
+│   ├── assets/                   Frontend JS, admin JS, icons
+│   ├── languages/                .pot, de_DE .po and .mo
 │   ├── readme.txt                WordPress standard readme
 │   └── LICENSE
 │
-├── docs/                         Documentation suite (Architecture, Developer, Operations, User Guide, Issue Templates)
+├── plugin-tests/                 PHPUnit + Brain Monkey suite for the plugin
+│                                 (outside wp-plugin/ so it never ends up in the ZIP)
+├── docs/                         Documentation suite: en/ and de/
 ├── build-plugin-zip.sh           Build the plugin ZIP for WP upload
 ├── sync-schemas.py               Schema sync tool for maintenance
 ├── CONTRIBUTING.md
@@ -51,7 +61,7 @@ Training-Translation-Tracker/
 Not in the repo (in `.gitignore`):
 
 - `training-translation-tracker.zip`, regenerated on every build.
-- `.venv/`, `.pytest_cache/`, `.ruff_cache/`, `__pycache__/`, Python tooling caches.
+- `.venv/`, `.pytest_cache/`, `.ruff_cache/`, `__pycache__/`, `vendor/`, tooling caches.
 - `action/tracker.json`, `action/last-run.md`, `action/data-hygiene.md`, local action outputs (live on the `data` branch).
 
 ## Three-component pipeline
@@ -68,7 +78,7 @@ Not in the repo (in `.gitignore`):
 
 The plugin makes **no** API calls to GitHub or learn.wordpress.org itself. Everything is precomputed by the action; the plugin is a thin renderer with a cache.
 
-For a deeper introduction, see [docs/Architecture.md](docs/Architecture.md).
+For a deeper introduction, see [docs/en/Architecture.md](docs/en/Architecture.md).
 
 ## Quickstart
 
@@ -79,7 +89,16 @@ cd action
 python -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
+python -m pytest -q                # run the test suite
 python -m src.build --skip-issues  # builds tracker.json without a GitHub token
+```
+
+### Test the plugin locally (no Docker needed)
+
+```bash
+cd plugin-tests
+composer install
+composer test
 ```
 
 ### Build the plugin ZIP
@@ -89,7 +108,7 @@ python -m src.build --skip-issues  # builds tracker.json without a GitHub token
 # → ~/Desktop/training-translation-tracker.zip
 ```
 
-Install in WordPress admin via "Upload Plugin", step-by-step in [docs/User-Guide.md](docs/User-Guide.md).
+Install in WordPress admin via "Upload Plugin", step-by-step in [docs/en/User-Guide.md](docs/en/User-Guide.md). Releases are normally built by `release-plugin.yml` on a version tag push; the local script is for testing.
 
 ### Refresh the inventory cache (when scope.yml gets new URLs)
 

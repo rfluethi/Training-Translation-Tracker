@@ -21,9 +21,9 @@ The resulting `tracker.json` is then statically available at `https://raw.github
 
 See the [top-level README](../README.md) for the three-component pipeline (issues → action → plugin) and the full repository layout.
 
-The format and maintenance of DACH translation issues are described in the user guide: [docs/User-Guide.md → Creating issues for new translations](../docs/User-Guide.md#7-creating-issues-for-new-translations).
+The format and maintenance of DACH translation issues are described in the user guide: [docs/User-Guide.md → Creating issues for new translations](../docs/en/User-Guide.md#7-creating-issues-for-new-translations).
 
-Architectural background (components, data flow, design decisions): [docs/Architecture.md](../docs/Architecture.md).
+Architectural background (components, data flow, design decisions): [docs/Architecture.md](../docs/en/Architecture.md).
 
 ## Repository structure
 

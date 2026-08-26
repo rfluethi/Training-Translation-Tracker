@@ -84,7 +84,7 @@ The plugin lives in the same mono-repo under `wp-plugin/`. Architectural princip
 
 ## 3. Data model `tracker.json`
 
-Full JSON schema in [`action/schemas/tracker.schema.json`](../action/schemas/tracker.schema.json).
+Full JSON schema in [`action/schemas/tracker.schema.json`](../../action/schemas/tracker.schema.json).
 
 ### Top level
 
@@ -210,6 +210,14 @@ The set of metadata fields differs per item type. The JSON schema documents per 
 
 **4.5.5 CSS strategy.** Single source of truth (since 0.3.2): the entire frontend CSS is written exclusively as an inline `<style id="ttt-inline-critical">` block in the shortcode output. No external `style.css`, no `wp_enqueue_style`. Tokens (`--ttt-*`) with theme.json fallbacks for brand colours; status colours are plugin-fixed.
 
+**4.5.6 `Update URI:` header stays despite Plugin Check flagging it (0.4.11).** WordPress identifies plugins during its update check only by folder name on wordpress.org. If someone published a foreign plugin there under the slug `training-translation-tracker`, WordPress would offer it to our installations as an "update". The header prevents exactly that. Plugin Check tests the rules for wordpress.org-hosted plugins, where the header would be forbidden; for a GitHub-distributed plugin it is the recommended safeguard. The finding is an expected permanent finding, not a defect. Only a wordpress.org submission would remove the header.
+
+**4.5.7 Plugin Check "Offloading" findings are expected permanent findings.** The sniff flags the `raw.githubusercontent.com` URLs (default URL, allow-list, placeholder). It targets offloaded frontend assets; here the URLs are the server-side data source with cache, the core concept of the plugin. No action needed.
+
+**4.5.8 No automatic updater (0.4.2, confirmed 2026-08-26).** `plugin-update-checker` was removed: the library is itself an update mechanism, which Plugin Check forbids, and produced dozens of noise findings. On 2026-08-26 the available GitHub updater variants were reviewed and rejected. Updates are manual via release ZIP and the replace dialog; see [Operations.md](Operations.md). Trade-off: fixes only reach a site when someone acts.
+
+**4.5.9 Avatars can be switched off (0.5.1).** Setting "GitHub avatars" (default on). Switched off, the frontend renders initials and the visitor's browser makes no request to github.com. Rationale: the only third-party request in the visitor's browser (visitor IP to GitHub when a popover opens) must be avoidable without touching code. Trade-off: initials instead of faces, one more setting.
+
 ### 4.6 Content decisions
 
 **4.6.1 Locale filter in the GitHub project board.** Issues are marked in the DACH project board with the custom field `Locale = German`. The action filters on that value.
@@ -226,7 +234,7 @@ The set of metadata fields differs per item type. The JSON schema documents per 
 
 **4.7.1 Frontend string language.** English as the source language in the code (WP convention), translations via `.po`/`.mo` in `wp-plugin/languages/`. Currently shipped: English (default) and German (`de_DE`).
 
-**4.7.2 Maintenance.** Maintenance is done by the Learn WP DACH team. Repo owner: Rico. GPL v2 or later. Contributions via issues and pull requests are documented in [CONTRIBUTING.md](../CONTRIBUTING.md).
+**4.7.2 Maintenance.** Maintenance is done by the Learn WP DACH team. Repo owner: Rico. GPL v2 or later. Contributions via issues and pull requests are documented in [CONTRIBUTING.md](../../CONTRIBUTING.md).
 
 ## 5. Repository layout
 
@@ -299,7 +307,9 @@ The architecture is deliberately built to be robust against single failures.
 | Markdown status tables in issues fragile (typos) | medium | medium | Robust parser + `parse_error` marker + note in `last-run.md` |
 | Multiple issues per item in practice | medium | low | Frontend marker + manual cleanup by the team |
 | Page builder or cache plugin breaks JS loading for end users | low | medium | Inline `<script src>` strategy + diagnostic guidance |
-| Plugin Check bringing new rules in future versions | medium | low | Run once per release, treat findings as polish iteration |
+| Plugin Check bringing new rules in future versions | medium | low | Run once per release, treat findings as polish iteration; expected permanent findings see section 4.5.6/4.5.7 |
+| Board discipline slipping (statuses not maintained) | medium | medium | Since 0.5.0 the board status leads the dashboard; wrong numbers become visible to the team immediately |
+| Drift between the EN and DE documentation | medium | low | Both languages live side by side under `docs/en/` and `docs/de/`; every docs change updates both, PR review enforces it |
 
 ## 7. Extension points
 

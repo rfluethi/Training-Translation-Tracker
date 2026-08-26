@@ -6,7 +6,7 @@
 
 This plugin is the slim renderer half of the mono-repo. Instead of making GraphQL or REST calls against WordPress/Learn itself, it loads a single precomputed JSON file. That file is built by the GitHub Action in this same repo every 12 hours and published on a separate `data` branch.
 
-For the full picture (mono-repo, three-component pipeline, design decisions) see the [top-level README](../README.md) and [docs/Architecture.md](../docs/Architecture.md).
+For the full picture (mono-repo, three-component pipeline, design decisions) see the [top-level README](../README.md) and [docs/Architecture.md](../docs/en/Architecture.md).
 
 ## What it does
 
@@ -48,7 +48,7 @@ In WP admin: **Plugins → Training Translation Tracker** → activate, then **S
 [translation_tracker]
 ```
 
-Full usage including shortcode attributes lives in [docs/User-Guide.md](../docs/User-Guide.md).
+Full usage including shortcode attributes lives in [docs/User-Guide.md](../docs/en/User-Guide.md).
 
 ## Repository layout
 
